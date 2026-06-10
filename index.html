@@ -3,389 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CV — Radio Astronomer</title>
+<title>Alexandra Botnariuc — Pulsar Astronomer</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --black:    #080B14;
-    --deep:     #0D1220;
-    --card:     #111827;
-    --border:   #1E2940;
-    --cyan:     #00FFE7;
-    --cyan-dim: rgba(0,255,231,0.10);
-    --amber:    #FFB347;
-    --magenta:  #FF6B9D;
-    --white:    #E8F4FD;
-    --muted:    #7A8BA8;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-body:    'Inter', sans-serif;
-    --font-mono:    'Space Mono', monospace;
+    --black:#080B14; --deep:#0D1220; --card:#111827; --border:#1E2940;
+    --cyan:#00FFE7; --cyan-dim:rgba(0,255,231,0.10);
+    --amber:#FFB347; --magenta:#FF6B9D; --white:#E8F4FD; --muted:#7A8BA8;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'Space Mono',monospace;
   }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--white); font-family:var(--font-body); font-size:16px; line-height:1.6; overflow-x:hidden; }
+  #stars-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .page-wrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 28px; }
 
-  html { scroll-behavior: smooth; }
+  /* Nav dots */
+  #nav-dots { position:fixed; right:20px; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:14px; }
+  .nav-dot { width:8px; height:8px; border-radius:50%; background:var(--border); border:1px solid var(--muted); cursor:pointer; transition:all .3s; position:relative; }
+  .nav-dot:hover::after,.nav-dot.active::after { content:attr(data-label); position:absolute; right:18px; top:50%; transform:translateY(-50%); font-family:var(--font-mono); font-size:10px; color:var(--cyan); white-space:nowrap; letter-spacing:.05em; }
+  .nav-dot.active { background:var(--cyan); border-color:var(--cyan); box-shadow:0 0 10px var(--cyan); }
 
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
+  /* Sections */
+  .section { padding:90px 0 60px; }
+  .section-label { font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--cyan); text-transform:uppercase; margin-bottom:10px; opacity:.8; }
+  .section-title { font-family:var(--font-display); font-size:clamp(24px,4vw,34px); font-weight:700; color:var(--white); margin-bottom:36px; line-height:1.2; }
+  .divider { width:48px; height:2px; background:linear-gradient(90deg,var(--cyan),var(--magenta)); margin-bottom:20px; }
 
-  #stars-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  }
+  /* HERO */
+  #hero { min-height:100vh; display:flex; align-items:center; padding:80px 0; position:relative; }
+  .hero-inner { display:flex; align-items:center; gap:56px; width:100%; }
+  .hero-text { flex:1; min-width:0; }
 
-  .page-wrap {
-    position: relative; z-index: 1;
-    max-width: 880px; margin: 0 auto; padding: 0 28px;
-  }
+  /* Avatar */
+  .hero-avatar-wrap { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:0; }
+  .avatar-ring { position:relative; width:260px; height:260px; }
+  #avatar-pulsar-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .avatar-circle { position:absolute; inset:30px; border-radius:50%; overflow:hidden; background:var(--card); border:1.5px solid rgba(0,255,231,0.2); display:flex; align-items:center; justify-content:center; }
+  .avatar-circle img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .avatar-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+  .avatar-placeholder svg { opacity:.3; }
+  .avatar-placeholder span { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--muted); opacity:.5; text-align:center; line-height:1.4; }
+  .avatar-name-display { width:260px; margin-top:4px; }
+  #name-lightning-canvas { display:block; }
 
-  /* ── Nav dots ── */
-  #nav-dots {
-    position: fixed; right: 20px; top: 50%;
-    transform: translateY(-50%); z-index: 100;
-    display: flex; flex-direction: column; gap: 14px;
+  /* Name */
+  .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.25em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; }
+  .hero-name { font-family:var(--font-display); font-size:clamp(38px,6.5vw,70px); font-weight:700; line-height:1.05; letter-spacing:-.02em; margin-bottom:14px; }
+  .hero-name .name-first { color:var(--white); }
+  .hero-name .name-last {
+    background: linear-gradient(135deg, #E8F4FD 0%, #a8d8ea 40%, #00FFE7 70%, #E8F4FD 100%);
+    background-size: 200% auto;
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    animation: name-flow 6s ease-in-out infinite;
   }
-  .nav-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--border); border: 1px solid var(--muted);
-    cursor: pointer; transition: all .3s; position: relative;
-  }
-  .nav-dot:hover::after, .nav-dot.active::after {
-    content: attr(data-label);
-    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
-    font-family: var(--font-mono); font-size: 10px; color: var(--cyan);
-    white-space: nowrap; letter-spacing: .05em;
-  }
-  .nav-dot.active {
-    background: var(--cyan); border-color: var(--cyan);
-    box-shadow: 0 0 10px var(--cyan);
-  }
+  @keyframes name-flow { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
 
-  /* ── Sections ── */
-  .section { padding: 90px 0 60px; }
-  .section-label {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .2em; color: var(--cyan);
-    text-transform: uppercase; margin-bottom: 10px; opacity: .8;
-  }
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(24px, 4vw, 34px); font-weight: 700;
-    color: var(--white); margin-bottom: 36px; line-height: 1.2;
-  }
-  .divider {
-    width: 48px; height: 2px;
-    background: linear-gradient(90deg, var(--cyan), var(--magenta));
-    margin-bottom: 20px;
-  }
+  .hero-title { font-family:var(--font-display); font-size:clamp(14px,2vw,19px); font-weight:400; color:var(--muted); margin-bottom:24px; }
+  .hero-tagline { font-size:14px; color:rgba(232,244,253,.6); max-width:500px; margin-bottom:36px; line-height:1.8; }
+  .hero-links { display:flex; flex-wrap:wrap; gap:10px; }
+  .hero-link { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:5px; font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-decoration:none; border:1px solid var(--border); color:var(--muted); transition:all .25s; background:rgba(255,255,255,.02); }
+  .hero-link:hover { border-color:var(--cyan); color:var(--cyan); background:var(--cyan-dim); }
 
-  /* ── HERO ── */
-  #hero {
-    min-height: 100vh; display: flex; align-items: center;
-    padding: 80px 0; position: relative;
-  }
-  .hero-inner {
-    display: flex; align-items: center; gap: 60px; width: 100%;
-  }
-  .hero-text { flex: 1; min-width: 0; }
+  @media(max-width:780px){ .hero-inner{flex-direction:column-reverse;gap:36px;} .avatar-ring{width:200px;height:200px;} .avatar-name-display{width:200px;} #name-lightning-canvas{width:200px;} }
+  @media(max-width:500px){ #nav-dots{display:none;} }
 
-  /* Profile picture */
-  .hero-avatar-wrap {
-    flex-shrink: 0;
-    display: flex; flex-direction: column; align-items: center; gap: 20px;
-  }
-  .avatar-ring {
-    position: relative; width: 180px; height: 180px;
-  }
-  .avatar-ring svg.ring-svg {
-    position: absolute; inset: 0; width: 100%; height: 100%;
-    animation: spin-ring 20s linear infinite;
-  }
-  @keyframes spin-ring { to { transform: rotate(360deg); } }
-  .avatar-circle {
-    position: absolute; inset: 12px;
-    border-radius: 50%; overflow: hidden;
-    background: var(--card);
-    border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .avatar-circle img {
-    width: 100%; height: 100%; object-fit: cover;
-    border-radius: 50%;
-  }
-  .avatar-placeholder {
-    width: 100%; height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 8px;
-    color: var(--muted);
-  }
-  .avatar-placeholder svg { opacity: .4; }
-  .avatar-placeholder span {
-    font-family: var(--font-mono); font-size: 9px;
-    letter-spacing: .1em; color: var(--muted); opacity: .6;
-    text-align: center; line-height: 1.4;
-  }
-  /* file input hidden, label acts as button */
-  #avatar-input { display: none; }
-  .avatar-upload-btn {
-    font-family: var(--font-mono); font-size: 10px;
-    letter-spacing: .08em; color: var(--muted);
-    border: 1px solid var(--border); border-radius: 4px;
-    padding: 5px 12px; cursor: pointer;
-    transition: all .2s; background: transparent;
-    text-transform: uppercase;
-  }
-  .avatar-upload-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  /* About */
+  .about-text { font-size:15px; color:rgba(232,244,253,.72); line-height:1.88; max-width:720px; }
+  .about-text p+p { margin-top:16px; }
+  .about-text a { color:var(--cyan); text-decoration:none; opacity:.85; border-bottom:1px solid rgba(0,255,231,.25); transition:opacity .2s; }
+  .about-text a:hover { opacity:1; }
 
-  .hero-eyebrow {
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .25em; color: var(--muted);
-    text-transform: uppercase; margin-bottom: 18px;
-  }
-  .hero-name {
-    font-family: var(--font-display);
-    font-size: clamp(40px, 7vw, 74px); font-weight: 700;
-    line-height: 1.05; letter-spacing: -.02em;
-    color: var(--white); margin-bottom: 14px;
-  }
-  .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(15px, 2vw, 20px); font-weight: 400;
-    color: var(--muted); margin-bottom: 24px;
-  }
-  .hero-tagline {
-    font-size: 14px; color: rgba(232,244,253,.6);
-    max-width: 480px; margin-bottom: 36px; line-height: 1.75;
-  }
-  .hero-links { display: flex; flex-wrap: wrap; gap: 10px; }
-  .hero-link {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 8px 16px; border-radius: 5px;
-    font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: .06em; text-decoration: none;
-    border: 1px solid var(--border); color: var(--muted);
-    transition: all .25s; background: rgba(255,255,255,.02);
-  }
-  .hero-link svg { flex-shrink: 0; }
-  .hero-link:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
-  .hero-link:hover svg { stroke: var(--cyan); }
+  /* Research interests */
+  .interests-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .interest-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:22px 20px; transition:all .25s; position:relative; overflow:hidden; }
+  .interest-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .interest-card.c-cyan::before    { background:var(--cyan); }
+  .interest-card.c-amber::before   { background:var(--amber); }
+  .interest-card.c-magenta::before { background:var(--magenta); }
+  .interest-card.c-purple::before  { background:#8B5CF6; }
+  .interest-card.c-green::before   { background:#4ADE80; }
+  .interest-card.c-rose::before    { background:#FB7185; }
+  .interest-card:hover { border-color:rgba(0,255,231,.3); transform:translateY(-3px); box-shadow:0 10px 36px rgba(0,255,231,.06); }
+  .interest-icon { width:30px; height:30px; margin-bottom:12px; opacity:.65; }
+  .interest-icon svg { width:100%; height:100%; }
+  .interest-icon-canvas { margin-bottom:12px; line-height:0; }
+  .interest-title { font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--white); margin-bottom:6px; }
+  .interest-desc { font-size:12px; color:var(--muted); line-height:1.55; }
 
-  /* pulsar widget in hero */
-  .hero-pulsar-wrap {
-    position: absolute; right: -20px; bottom: 80px;
-    width: 140px; height: 140px; pointer-events: none;
-    opacity: .35;
+  /* Skills — richer layout */
+  .skills-section { display:flex; flex-direction:column; gap:36px; }
+  .skill-block-title {
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.2em;
+    color:var(--cyan); text-transform:uppercase; margin-bottom:16px; opacity:.8;
   }
-  @media (max-width: 780px) {
-    .hero-inner { flex-direction: column-reverse; gap: 40px; }
-    .hero-avatar-wrap { flex-direction: row; }
-    .avatar-ring { width: 120px; height: 120px; }
-    .hero-pulsar-wrap { display: none; }
-  }
-  @media (max-width: 500px) {
-    #nav-dots { display: none; }
-    .hero-avatar-wrap { flex-direction: column; }
-  }
+  .skill-rows { display:flex; flex-direction:column; gap:14px; }
+  .skill-row { display:flex; align-items:baseline; gap:16px; }
+  .skill-row-label { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; min-width:110px; flex-shrink:0; }
+  .skill-pills { display:flex; flex-wrap:wrap; gap:7px; }
+  .pill { padding:4px 11px; border-radius:20px; font-size:11px; font-family:var(--font-mono); letter-spacing:.04em; border:1px solid var(--border); color:var(--muted); background:rgba(255,255,255,.025); transition:all .2s; cursor:default; }
+  .pill:hover { color:var(--white); border-color:var(--muted); }
+  .pill.highlight { border-color:rgba(0,255,231,.35); color:rgba(232,244,253,.9); }
+  /* language bars */
+  .lang-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+  .lang-item { display:flex; flex-direction:column; gap:5px; }
+  .lang-name { font-family:var(--font-mono); font-size:11px; color:var(--white); letter-spacing:.06em; display:flex; justify-content:space-between; }
+  .lang-name span { color:var(--muted); font-size:10px; }
+  .lang-bar { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .lang-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--cyan),var(--magenta)); }
 
-  /* ── About ── */
-  .about-text {
-    font-size: 15px; color: rgba(232,244,253,.72);
-    line-height: 1.85; max-width: 700px;
-  }
-  .about-text p + p { margin-top: 16px; }
-
-  /* ── Research interests ── */
-  .interests-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 14px;
-  }
-  .interest-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 22px 20px; transition: all .25s;
-    position: relative; overflow: hidden;
-  }
-  .interest-card::before {
-    content:''; position: absolute; top:0; left:0; right:0; height:2px;
-  }
-  .interest-card.c-cyan::before    { background: var(--cyan); }
-  .interest-card.c-amber::before   { background: var(--amber); }
-  .interest-card.c-magenta::before { background: var(--magenta); }
-  .interest-card.c-purple::before  { background: #8B5CF6; }
-  .interest-card:hover {
-    border-color: rgba(0,255,231,.3); transform: translateY(-3px);
-    box-shadow: 0 10px 36px rgba(0,255,231,.06);
-  }
-  .interest-icon {
-    width: 32px; height: 32px; margin-bottom: 12px; opacity: .7;
-  }
-  .interest-icon svg { width: 100%; height: 100%; }
-  .interest-title {
-    font-family: var(--font-display); font-size: 14px;
-    font-weight: 600; color: var(--white); margin-bottom: 6px;
-  }
-  .interest-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-
-  /* ── Skills ── */
-  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(250px,1fr)); gap: 28px; }
-  .skill-group-title {
-    font-family: var(--font-mono); font-size: 10px;
-    letter-spacing: .18em; color: var(--muted);
-    text-transform: uppercase; margin-bottom: 12px;
-  }
-  .skill-pills { display: flex; flex-wrap: wrap; gap: 7px; }
-  .pill {
-    padding: 4px 11px; border-radius: 20px; font-size: 11px;
-    font-family: var(--font-mono); letter-spacing: .04em; border: 1px solid;
-    transition: all .2s; color: var(--muted); border-color: var(--border);
-    background: rgba(255,255,255,.025);
-  }
-  .pill:hover { color: var(--white); border-color: var(--muted); }
-
-  /* ── Timeline ── */
-  .timeline { position: relative; padding-left: 26px; }
-  .timeline::before {
-    content:''; position:absolute; left:0; top:8px; bottom:8px;
-    width:1px; background: linear-gradient(to bottom, var(--cyan), transparent); opacity:.2;
-  }
-  .tl-item { position:relative; margin-bottom: 38px; }
-  .tl-item::before {
-    content:''; position:absolute; left:-30px; top:7px;
-    width:8px; height:8px; border-radius:50%;
-    background: var(--deep); border: 2px solid var(--border);
-  }
-  .tl-date {
-    font-family: var(--font-mono); font-size: 10px;
-    color: var(--muted); letter-spacing: .1em; margin-bottom: 4px;
-  }
-  .tl-role {
-    font-family: var(--font-display); font-size: 16px;
-    font-weight: 600; color: var(--white); margin-bottom: 2px;
-  }
-  .tl-org { font-size: 13px; color: var(--cyan); margin-bottom: 7px; opacity: .8; }
-  .tl-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  /* Timeline */
+  .timeline { position:relative; padding-left:26px; }
+  .timeline::before { content:''; position:absolute; left:0; top:8px; bottom:8px; width:1px; background:linear-gradient(to bottom,var(--cyan),transparent); opacity:.2; }
+  .tl-item { position:relative; margin-bottom:40px; }
+  .tl-item::before { content:''; position:absolute; left:-30px; top:7px; width:8px; height:8px; border-radius:50%; background:var(--deep); border:2px solid var(--border); }
+  .tl-item.tl-highlight::before { border-color:var(--cyan); box-shadow:0 0 6px rgba(0,255,231,.4); }
+  .tl-date { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:.1em; margin-bottom:4px; }
+  .tl-role { font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--white); margin-bottom:2px; }
+  .tl-org { font-size:13px; color:var(--cyan); margin-bottom:7px; opacity:.85; }
+  .tl-org a { color:inherit; text-decoration:none; border-bottom:1px solid rgba(0,255,231,.2); transition:opacity .2s; }
+  .tl-org a:hover { opacity:.7; }
+  .tl-desc { font-size:13px; color:var(--muted); line-height:1.65; }
+  .tl-desc ul { margin-top:6px; padding-left:16px; }
+  .tl-desc li { margin-bottom:4px; }
   .tl-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
-  .tl-tag {
-    font-size:10px; font-family:var(--font-mono);
-    padding:2px 8px; border-radius:3px;
-    background:rgba(255,255,255,.03); border:1px solid var(--border); color:var(--muted);
-  }
+  .tl-tag { font-size:10px; font-family:var(--font-mono); padding:2px 8px; border-radius:3px; background:rgba(255,255,255,.03); border:1px solid var(--border); color:var(--muted); }
+  .tl-note { font-size:11px; font-family:var(--font-mono); color:var(--amber); margin-top:6px; opacity:.7; letter-spacing:.04em; }
 
-  /* ── Publications ── */
+  /* Collaborations */
+  .collab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+  .collab-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 20px; transition:all .25s; }
+  .collab-card:hover { border-color:rgba(0,255,231,.25); transform:translateY(-2px); }
+  .collab-title { font-family:var(--font-display); font-size:13px; font-weight:600; color:var(--white); margin-bottom:4px; }
+  .collab-role { font-family:var(--font-mono); font-size:10px; color:var(--cyan); letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px; opacity:.8; }
+  .collab-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+
+  /* Publications */
   .pub-list { display:flex; flex-direction:column; gap:14px; }
-  .pub-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:10px; padding:20px 22px; transition:border-color .25s;
-  }
-  .pub-card:hover { border-color: rgba(0,255,231,.25); }
-  .pub-title {
-    font-family:var(--font-display); font-size:14px;
-    font-weight:600; color:var(--white); margin-bottom:5px; line-height:1.4;
-  }
+  .pub-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 22px; transition:border-color .25s; position:relative; }
+  .pub-card:hover { border-color:rgba(0,255,231,.25); }
+  .pub-card.pub-inprep { border-style:dashed; }
+  .pub-badge { position:absolute; top:14px; right:16px; font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; padding:2px 8px; border-radius:3px; text-transform:uppercase; }
+  .pub-badge.inprep { background:rgba(255,179,71,.1); color:var(--amber); border:1px solid rgba(255,179,71,.3); }
+  .pub-badge.collab  { background:rgba(0,255,231,.07); color:var(--cyan); border:1px solid rgba(0,255,231,.25); }
+  .pub-title { font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--white); margin-bottom:5px; line-height:1.4; padding-right:80px; }
   .pub-authors { font-size:12px; color:var(--muted); margin-bottom:3px; }
-  .pub-authors strong { color: var(--white); font-weight:500; }
+  .pub-authors strong { color:var(--white); font-weight:500; }
   .pub-venue { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:.05em; }
-  .pub-link {
-    display:inline-block; margin-top:8px;
-    font-family:var(--font-mono); font-size:10px;
-    color:var(--cyan); text-decoration:none; letter-spacing:.06em; opacity:.8;
-  }
-  .pub-link:hover { opacity:1; }
 
-  /* ── Pulsar Widget ── */
-  #pulsar-widget {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 14px; padding: 32px; margin-top: 10px;
-  }
-  .widget-header {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: .2em;
-    color: var(--muted); text-transform: uppercase; margin-bottom: 24px;
-  }
-  .widget-layout { display: flex; gap: 40px; flex-wrap: wrap; }
-  .widget-canvas-wrap { flex-shrink: 0; }
-  #pulsar-canvas {
-    display: block; border-radius: 8px;
-    background: #07090F;
-  }
-  .widget-controls { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 20px; }
-  .ctrl-group label {
-    display: block; font-family: var(--font-mono); font-size: 10px;
-    letter-spacing: .12em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
-  }
-  .ctrl-group label span {
-    float: right; color: var(--white); font-size: 11px;
-  }
-  input[type=range] {
-    width: 100%; -webkit-appearance: none; height: 3px;
-    border-radius: 2px; background: var(--border); outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 14px; height: 14px;
-    border-radius: 50%; background: var(--cyan);
-    box-shadow: 0 0 8px var(--cyan); cursor: pointer;
-  }
-  input[type=range]::-moz-range-thumb {
-    width: 14px; height: 14px; border-radius: 50%;
-    background: var(--cyan); border: none; cursor: pointer;
-  }
-  .ctrl-row { display: flex; gap: 10px; flex-wrap: wrap; }
-  .ctrl-btn {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
-    padding: 7px 14px; border-radius: 5px; cursor: pointer;
-    border: 1px solid var(--border); background: rgba(255,255,255,.03);
-    color: var(--muted); text-transform: uppercase; transition: all .2s;
-  }
-  .ctrl-btn:hover, .ctrl-btn.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
-  .pulsar-presets { display: flex; flex-wrap: wrap; gap: 8px; }
-  .preset-btn {
-    font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em;
-    padding: 5px 10px; border-radius: 4px; cursor: pointer;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); text-transform: uppercase; transition: all .2s;
-  }
-  .preset-btn:hover { border-color: var(--amber); color: var(--amber); }
-  .widget-readout {
-    margin-top: 16px; padding: 12px 14px;
-    background: rgba(0,0,0,.3); border-radius: 6px;
-    font-family: var(--font-mono); font-size: 10px;
-    color: var(--muted); line-height: 1.8; letter-spacing: .04em;
-  }
-  .readout-val { color: var(--cyan); }
+  /* Pulsar Widget */
+  #pulsar-widget { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px; margin-top:10px; }
+  .widget-header { font-family:var(--font-mono); font-size:10px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:22px; }
+  .widget-main { display:flex; flex-direction:column; gap:14px; }
+  #pulsar-canvas { display:block; border-radius:8px; background:#07090F; width:100%; }
+  #signal-canvas { display:block; border-radius:6px; background:#07090F; width:100%; }
+  .widget-controls-row { display:flex; flex-wrap:wrap; gap:24px; }
+  .ctrl-col { flex:1; min-width:180px; display:flex; flex-direction:column; gap:15px; }
+  .ctrl-group label { display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin-bottom:7px; }
+  .ctrl-group label span { float:right; color:var(--white); font-size:11px; }
+  input[type=range] { width:100%; -webkit-appearance:none; height:3px; border-radius:2px; background:var(--border); outline:none; cursor:pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--cyan); box-shadow:0 0 7px var(--cyan); cursor:pointer; }
+  input[type=range]::-moz-range-thumb { width:13px; height:13px; border-radius:50%; background:var(--cyan); border:none; cursor:pointer; }
+  .ctrl-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .ctrl-btn { font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; padding:6px 13px; border-radius:5px; cursor:pointer; border:1px solid var(--border); background:rgba(255,255,255,.03); color:var(--muted); text-transform:uppercase; transition:all .2s; }
+  .ctrl-btn:hover,.ctrl-btn.active { border-color:var(--cyan); color:var(--cyan); background:var(--cyan-dim); }
+  .pulsar-presets { display:flex; flex-wrap:wrap; gap:7px; }
+  .preset-btn { font-family:var(--font-mono); font-size:9px; letter-spacing:.07em; padding:4px 9px; border-radius:4px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); text-transform:uppercase; transition:all .2s; }
+  .preset-btn:hover { border-color:var(--amber); color:var(--amber); }
+  .widget-readout { padding:11px 13px; background:rgba(0,0,0,.35); border-radius:6px; font-family:var(--font-mono); font-size:10px; color:var(--muted); line-height:1.9; letter-spacing:.04em; }
+  .readout-val { color:var(--cyan); }
 
-  /* ── Contact ── */
+  /* Contact */
   .contact-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:12px; }
-  .contact-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:10px; padding:16px 18px; text-decoration:none;
-    transition:all .25s; display:flex; align-items:center; gap:12px;
-  }
+  .contact-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; text-decoration:none; transition:all .25s; display:flex; align-items:center; gap:12px; }
   .contact-card:hover { border-color:rgba(0,255,231,.3); transform:translateY(-2px); }
-  .contact-card svg { flex-shrink:0; opacity:.5; transition: opacity .2s; }
-  .contact-card:hover svg { opacity:.9; }
-  .contact-label {
-    font-family:var(--font-mono); font-size:9px;
-    color:var(--muted); letter-spacing:.1em; text-transform:uppercase;
-  }
+  .contact-card svg { flex-shrink:0; opacity:.45; transition:opacity .2s; }
+  .contact-card:hover svg { opacity:.85; }
+  .contact-label { font-family:var(--font-mono); font-size:9px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
   .contact-value { font-size:12px; color:var(--white); margin-top:2px; }
 
-  footer {
-    padding:40px 0 60px; text-align:center;
-    font-family:var(--font-mono); font-size:10px;
-    color:var(--muted); opacity:.35; letter-spacing:.1em;
-  }
-
-  .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; }
+  footer { padding:40px 0 60px; text-align:center; font-family:var(--font-mono); font-size:10px; color:var(--muted); opacity:.3; letter-spacing:.1em; }
+  .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s ease,transform .6s ease; }
   .reveal.visible { opacity:1; transform:none; }
 </style>
 </head>
 <body>
-
 <canvas id="stars-canvas"></canvas>
 <div id="nav-dots"></div>
+
+<!-- SVG sprites -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ico-email"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></symbol>
+  <symbol id="ico-github"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></symbol>
+  <symbol id="ico-orcid"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 7v10M12 7c2.5 0 4 1.5 4 3.5S14.5 14 12 14H8"/><circle cx="9.5" cy="5.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="ico-signal"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="2"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4m11.4-11.4a8 8 0 0 1 0 11.4M3.5 3.5a13 13 0 0 0 0 17M20.5 3.5a13 13 0 0 1 0 17"/></symbol>
+  <symbol id="ico-web"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="ico-twitter"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h5l11 16H15zm0 16 7-7m3-3 6-6"/></symbol>
+  <symbol id="ico-linkedin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><path d="M7 10v7M7 7v.01M12 10v7m0-4c0-2 1-3 3-3s3 1 3 3v4"/></symbol>
+  <symbol id="ico-planet"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-20 12 12)"/></symbol>
+  <symbol id="ico-clock"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="ico-code"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></symbol>
+  <symbol id="ico-telescope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l4-8 14 6-4 2-2 6-3-4z"/><path d="M13 14l2 4M15 18l2 2"/></symbol>
+  <symbol id="ico-binary"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/></symbol>
+  <symbol id="ico-dna"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4c4 4 12 4 16 8S16 20 12 20 4 16 8 12 20 8 20 4"/><path d="M6 6h2M16 18h2M6 18h2M16 6h2"/></symbol>
+  <symbol id="ico-star"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="ico-cpu"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></symbol>
+  <symbol id="ico-users"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+</svg>
 
 <div class="page-wrap">
 
@@ -393,36 +219,45 @@
   <section class="section" id="hero">
     <div class="hero-inner">
       <div class="hero-text">
-        <p class="hero-eyebrow" id="hero-eyebrow"></p>
-        <h1 class="hero-name" id="hero-name"></h1>
-        <p class="hero-title" id="hero-title"></p>
-        <p class="hero-tagline" id="hero-tagline"></p>
-        <div class="hero-links" id="hero-links"></div>
+        <p class="hero-eyebrow">PhD Candidate · Max Planck Institute for Gravitational Physics</p>
+        <h1 class="hero-name">
+          <span class="name-first">Alexandra </span><span class="name-last">Botnariuc</span>
+        </h1>
+        <p class="hero-title">Pulsar Astronomer &amp; Astroinformatician</p>
+        <p class="hero-tagline">Searching for new pulsars and compact binaries in major radio surveys — from Arecibo and Parkes to FAST and MeerKAT. Combining custom search algorithms, GPU computing, and multi-telescope observations to find rare systems that push the boundaries of neutron star physics.</p>
+        <div class="hero-links">
+          <a class="hero-link" href="mailto:alexandra.a.s.negrea@gmail.com">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-email"/></svg> Email
+          </a>
+          <a class="hero-link" href="https://github.com/yourusername" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-github"/></svg> GitHub
+          </a>
+          <a class="hero-link" href="https://orcid.org/0000-0000-0000-0000" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-orcid"/></svg> ORCID
+          </a>
+          <a class="hero-link" href="https://ui.adsabs.harvard.edu/" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-signal"/></svg> ADS
+          </a>
+          <a class="hero-link" href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-web"/></svg> Pulsar Group
+          </a>
+        </div>
       </div>
       <div class="hero-avatar-wrap">
         <div class="avatar-ring">
-          <!-- spinning dashed orbit ring -->
-          <svg class="ring-svg" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="90" cy="90" r="84" stroke="#00FFE7" stroke-width="1"
-              stroke-dasharray="4 8" stroke-linecap="round" opacity="0.4"/>
-            <circle cx="90" cy="6" r="4" fill="#00FFE7" opacity="0.8"/>
-          </svg>
+          <canvas id="avatar-pulsar-canvas" width="260" height="260"></canvas>
           <div class="avatar-circle" id="avatar-circle">
+            <!-- profile_photo.jpg loaded by JS; fallback placeholder shown if missing -->
             <div class="avatar-placeholder" id="avatar-placeholder">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5">
-                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-              </svg>
-              <span>Upload<br>photo</span>
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <span>profile_photo<br>.jpg</span>
             </div>
           </div>
         </div>
-        <input type="file" id="avatar-input" accept="image/*">
-        <label for="avatar-input" class="avatar-upload-btn">Choose photo</label>
+        <div class="avatar-name-display" id="avatar-name-display">
+          <canvas id="name-lightning-canvas" width="260" height="52"></canvas>
+        </div>
       </div>
-    </div>
-    <!-- small decorative pulsar top right -->
-    <div class="hero-pulsar-wrap" aria-hidden="true">
-      <canvas id="hero-mini-pulsar" width="140" height="140"></canvas>
     </div>
   </section>
 
@@ -431,7 +266,11 @@
     <p class="section-label">01 — About</p>
     <h2 class="section-title">Who I Am</h2>
     <div class="divider"></div>
-    <div class="about-text" id="about-text"></div>
+    <div class="about-text">
+      <p>I'm a PhD candidate at <strong style="color:var(--white)">Leibniz University Hannover</strong>, employed by the <a href="https://www.aei.mpg.de" target="_blank" rel="noopener">Max Planck Institute for Gravitational Physics (AEI) in Hannover</a>, where I work in the <a href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">Pulsar Group led by Dr. Colin Clark</a>. My research focuses on discovering new radio pulsars and compact binaries in major survey datasets — working with data from PALFA (Arecibo), the FAST GPPS survey, the Parkes Multibeam Pulsar Survey, and the MeerKAT Galactic Centre search. I also observe actively with the Parkes radio telescope for discovery follow-up and timing.</p>
+      <p>My background spans Cambridge physics, professional software development (including a team lead role and Symfony certification), an MSc in computational science, and bioinformatics research. That combination means I approach pulsar searching as both an astronomer and an engineer: I build the pipelines, develop the algorithms, and run them on GPU and CPU clusters at scale.</p>
+      <p>My longer-term research goal is to develop a dedicated programme on pulsar planets. Key open questions remain largely unanswered: how and why did these systems form? Did the planets survive the supernova, or form from post-explosion debris? Could any of them be habitable in some sense? What do they tell us about planetary formation channels more broadly, and which assumptions from standard planet formation theory break down in this regime? I aim to build the observational and theoretical foundation needed to tackle these questions, and to pursue exoplanet expertise as a bridge toward a future ERC-funded programme in this area.</p>
+    </div>
   </section>
 
   <!-- RESEARCH -->
@@ -439,7 +278,46 @@
     <p class="section-label">02 — Research</p>
     <h2 class="section-title">Research Interests</h2>
     <div class="divider"></div>
-    <div class="interests-grid" id="interests-grid"></div>
+    <div class="interests-grid">
+      <div class="interest-card c-cyan">
+        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-code"/></svg></div>
+        <div class="interest-title">Astroinformatics &amp; Survey Searches</div>
+        <div class="interest-desc">Large-scale pulsar survey pipelines across PALFA, FAST GPPS, PMPS, and MeerKAT. Custom clustering algorithms and ML-based candidate classification on GPU/CPU clusters.</div>
+      </div>
+
+      <!-- Compact Binary — inspired by image 1: accretion disk + jet -->
+      <div class="interest-card c-amber">
+        <div class="interest-icon-canvas"><canvas id="ico-compact" width="48" height="36"></canvas></div>
+        <div class="interest-title">Compact Binary Searches</div>
+        <div class="interest-desc">Targeted acceleration searches for tight-orbit binary radio pulsars — computationally the hardest problem in pulsar astronomy, requiring jerk searches and GPU-accelerated pipelines.</div>
+      </div>
+
+      <div class="interest-card c-magenta">
+        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-telescope"/></svg></div>
+        <div class="interest-title">Radio Observations</div>
+        <div class="interest-desc">Discovery follow-up and precision timing of new pulsars with Parkes/Murriyang. Observational campaigns bridging survey discoveries to full timing solutions.</div>
+      </div>
+
+      <div class="interest-card c-purple">
+        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-planet"/></svg></div>
+        <div class="interest-title">Pulsar Planets</div>
+        <div class="interest-desc">Timing residual searches for planetary companions, formation theory, and ALMA observational constraints on post-supernova debris disks — a long-term ERC target.</div>
+      </div>
+
+      <!-- Binary Evolution — inspired by image 2: mass transfer stream between two stars -->
+      <div class="interest-card c-green">
+        <div class="interest-icon-canvas"><canvas id="ico-evolution" width="48" height="36"></canvas></div>
+        <div class="interest-title">Binary Evolution</div>
+        <div class="interest-desc">Recycling scenarios, mass transfer, and the formation of exotic compact binaries. Bridging observational search results to population synthesis models.</div>
+      </div>
+
+      <!-- Spider Pulsars — inspired by image 3: two compact objects + gravitational wave spirals -->
+      <div class="interest-card c-rose">
+        <div class="interest-icon-canvas"><canvas id="ico-spider" width="48" height="36"></canvas></div>
+        <div class="interest-title">Spider Pulsars</div>
+        <div class="interest-desc">Black widow and redback MSPs ablating their companions in tight orbits — characterisation, orbital dynamics, and multi-wavelength follow-up.</div>
+      </div>
+    </div>
   </section>
 
   <!-- PULSAR WIDGET -->
@@ -448,37 +326,39 @@
     <h2 class="section-title">Pulsar Simulator</h2>
     <div class="divider"></div>
     <div id="pulsar-widget">
-      <p class="widget-header">Visualise pulsar emission — set parameters below</p>
-      <div class="widget-layout">
-        <div class="widget-canvas-wrap">
-          <canvas id="pulsar-canvas" width="260" height="260"></canvas>
-        </div>
-        <div class="widget-controls">
-          <div class="ctrl-group">
-            <label>Period (s) <span id="val-period">0.714</span></label>
-            <input type="range" id="sl-period" min="0.001" max="4" step="0.001" value="0.714">
+      <p class="widget-header">Rotating neutron star — beam sweeps the observer · signal trace below</p>
+      <div class="widget-main">
+        <canvas id="pulsar-canvas" height="300"></canvas>
+        <canvas id="signal-canvas" height="80"></canvas>
+        <div class="widget-controls-row">
+          <div class="ctrl-col">
+            <div class="ctrl-group">
+              <label>Period (s) <span id="val-period">0.714</span></label>
+              <input type="range" id="sl-period" min="0.002" max="4" step="0.001" value="0.714">
+            </div>
+            <div class="ctrl-group">
+              <label>Pulse width (duty %) <span id="val-width">8</span></label>
+              <input type="range" id="sl-width" min="1" max="50" step="1" value="8">
+            </div>
+            <div class="ctrl-group">
+              <label>Beam half-angle (°) <span id="val-beam">15</span></label>
+              <input type="range" id="sl-beam" min="2" max="60" step="1" value="15">
+            </div>
+            <div class="ctrl-group">
+              <label>Dispersion measure <span id="val-dm">97.0</span></label>
+              <input type="range" id="sl-dm" min="0" max="500" step="0.5" value="97">
+            </div>
           </div>
-          <div class="ctrl-group">
-            <label>Pulse width (duty %) <span id="val-width">8</span></label>
-            <input type="range" id="sl-width" min="1" max="50" step="1" value="8">
+          <div class="ctrl-col">
+            <div class="ctrl-row">
+              <button class="ctrl-btn active" id="btn-play">Pause</button>
+            </div>
+            <div>
+              <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:9px;">Known pulsars</p>
+              <div class="pulsar-presets" id="presets"></div>
+            </div>
+            <div class="widget-readout" id="readout"></div>
           </div>
-          <div class="ctrl-group">
-            <label>Beam half-angle (°) <span id="val-beam">15</span></label>
-            <input type="range" id="sl-beam" min="2" max="60" step="1" value="15">
-          </div>
-          <div class="ctrl-group">
-            <label>Dispersion measure <span id="val-dm">97.0</span></label>
-            <input type="range" id="sl-dm" min="0" max="500" step="0.5" value="97">
-          </div>
-          <div class="ctrl-row">
-            <button class="ctrl-btn active" id="btn-play">Pause</button>
-            <button class="ctrl-btn" id="btn-profile">Profile view</button>
-          </div>
-          <div>
-            <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Known pulsars</p>
-            <div class="pulsar-presets" id="presets"></div>
-          </div>
-          <div class="widget-readout" id="readout"></div>
         </div>
       </div>
     </div>
@@ -489,626 +369,992 @@
     <p class="section-label">04 — Skills</p>
     <h2 class="section-title">Technical Skills</h2>
     <div class="divider"></div>
-    <div class="skills-grid" id="skills-grid"></div>
+    <div class="skills-section">
+
+      <div>
+        <p class="skill-block-title">Pulsar &amp; Radio Astronomy Software</p>
+        <div class="skill-rows">
+          <div class="skill-row">
+            <span class="skill-row-label">Search</span>
+            <div class="skill-pills">
+              <span class="pill highlight">PRESTO</span>
+              <span class="pill highlight">PEASOUP</span>
+              <span class="pill highlight">SIGPROC</span>
+              <span class="pill">HEIMDALL</span>
+              <span class="pill">SEEK</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">Timing</span>
+            <div class="skill-pills">
+              <span class="pill highlight">TEMPO2</span>
+              <span class="pill highlight">PSRCHIVE</span>
+              <span class="pill">DSPSR</span>
+              <span class="pill">PINT</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">Surveys</span>
+            <div class="skill-pills">
+              <span class="pill highlight">PALFA (Arecibo)</span>
+              <span class="pill highlight">FAST GPPS</span>
+              <span class="pill highlight">Parkes PMPS</span>
+              <span class="pill highlight">MeerKAT GC</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">Telescopes</span>
+            <div class="skill-pills">
+              <span class="pill highlight">Parkes / Murriyang</span>
+              <span class="pill">MeerKAT</span>
+              <span class="pill">FAST</span>
+              <span class="pill">Arecibo (archival)</span>
+              <span class="pill">ALMA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="skill-block-title">Programming &amp; Computing</p>
+        <div class="skill-rows">
+          <div class="skill-row">
+            <span class="skill-row-label">Python</span>
+            <div class="skill-pills">
+              <span class="pill highlight">NumPy</span>
+              <span class="pill highlight">Astropy</span>
+              <span class="pill highlight">Pandas</span>
+              <span class="pill highlight">SciPy</span>
+              <span class="pill">Matplotlib</span>
+              <span class="pill">scikit-learn</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">Other languages</span>
+            <div class="skill-pills">
+              <span class="pill highlight">C++ (OpenMP)</span>
+              <span class="pill highlight">R / Shiny</span>
+              <span class="pill">PHP (Symfony)</span>
+              <span class="pill">JavaScript</span>
+              <span class="pill">Matlab</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">HPC &amp; Infra</span>
+            <div class="skill-pills">
+              <span class="pill highlight">HTCondor</span>
+              <span class="pill highlight">GPU computing</span>
+              <span class="pill highlight">CPU clusters</span>
+              <span class="pill">SLURM</span>
+              <span class="pill">Docker</span>
+              <span class="pill">Linux</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">ML / Data</span>
+            <div class="skill-pills">
+              <span class="pill highlight">Clustering algorithms</span>
+              <span class="pill">scikit-learn</span>
+              <span class="pill">Large-dataset pipelines</span>
+              <span class="pill">PostgreSQL</span>
+              <span class="pill">MongoDB</span>
+            </div>
+          </div>
+          <div class="skill-row">
+            <span class="skill-row-label">Tools</span>
+            <div class="skill-pills">
+              <span class="pill">Git</span>
+              <span class="pill">LaTeX</span>
+              <span class="pill">Jupyter</span>
+              <span class="pill">JIRA</span>
+              <span class="pill">OpenCV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="skill-block-title">Languages</p>
+        <div class="lang-grid">
+          <div class="lang-item">
+            <div class="lang-name">Romanian <span>Native</span></div>
+            <div class="lang-bar"><div class="lang-fill" style="width:100%"></div></div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">English <span>Fluent — CAE Grade A</span></div>
+            <div class="lang-bar"><div class="lang-fill" style="width:97%"></div></div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">German <span>Fluent — C1</span></div>
+            <div class="lang-bar"><div class="lang-fill" style="width:82%"></div></div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">Spanish <span>Intermediate</span></div>
+            <div class="lang-bar"><div class="lang-fill" style="width:45%"></div></div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">French <span>Beginner</span></div>
+            <div class="lang-bar"><div class="lang-fill" style="width:20%"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COLLABORATIONS -->
+  <section class="section reveal" id="collaborations" data-label="Collabs">
+    <p class="section-label">05 — Collaborations</p>
+    <h2 class="section-title">Active Collaborations</h2>
+    <div class="divider"></div>
+    <div class="collab-grid">
+      <div class="collab-card">
+        <div class="collab-title">Lars Nieder — Pulsar Planets Paper</div>
+        <div class="collab-role">Contributing author · AEI Hannover</div>
+        <div class="collab-desc">Contributed ALMA observational campaign targeting a candidate pulsar planet-formation disk; upper limits obtained. Results to appear as secondary authorship in forthcoming publication.</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-title">Prajwal Padmanabh — MeerKAT GC</div>
+        <div class="collab-role">Algorithm collaborator · AEI Hannover</div>
+        <div class="collab-desc">Contributed custom clustering algorithm for classification of MeerKAT Galactic Centre pulsar candidates. Work in progress.</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-title">Rahul Sengar &amp; Xiao Jin Liu</div>
+        <div class="collab-role">Survey search · Parkes &amp; FAST archival</div>
+        <div class="collab-desc">Collaborative re-analysis of Parkes and FAST archival survey data with international team. Search and candidate follow-up pipeline development.</div>
+      </div>
+      <div class="collab-card">
+        <div class="collab-title">COMPACT Group, Bonn</div>
+        <div class="collab-role">Community · MPIfR Bonn</div>
+        <div class="collab-desc">Part of the broader compact binary pulsar search community alongside the COMPACT group (MPIfR Bonn) — sharing methods, pipelines, and survey strategy for acceleration-search science.</div>
+      </div>
+    </div>
   </section>
 
   <!-- EXPERIENCE -->
   <section class="section reveal" id="experience" data-label="Experience">
-    <p class="section-label">05 — Experience</p>
+    <p class="section-label">06 — Experience</p>
     <h2 class="section-title">Experience</h2>
     <div class="divider"></div>
-    <div class="timeline" id="experience-timeline"></div>
+    <div class="timeline">
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2021 — Present (excl. maternity leave 2024–2025)</div>
+        <div class="tl-role">PhD Researcher — Radio Pulsar Astronomy</div>
+        <div class="tl-org"><a href="https://www.aei.mpg.de/continuousgravitationalwaves/pulsars" target="_blank" rel="noopener">Max Planck Institute for Gravitational Physics (AEI) · Hannover</a> / Leibniz University Hannover</div>
+        <div class="tl-desc">
+          <ul>
+            <li>Large-scale re-searches of PALFA (Arecibo), FAST GPPS, Parkes PMPS, and MeerKAT Galactic Centre survey data for new pulsars and compact binaries.</li>
+            <li>Developed custom clustering algorithms for candidate classification; shared with collaborators for independent science cases.</li>
+            <li>Active observing with the Parkes radio telescope for discovery follow-up and timing.</li>
+            <li>ALMA proposal and data reduction for candidate pulsar planet-formation disk (upper limits obtained).</li>
+            <li>HTCondor and GPU-accelerated processing of terabyte-scale filterbank data.</li>
+            <li>Teaching: Datalab seminar (marked course, Leibniz University Hannover) — two semesters.</li>
+          </ul>
+        </div>
+        <div class="tl-tags"><span class="tl-tag">Pulsar Search</span><span class="tl-tag">Binary Search</span><span class="tl-tag">PRESTO</span><span class="tl-tag">HTCondor</span><span class="tl-tag">GPU</span><span class="tl-tag">ALMA</span><span class="tl-tag">Parkes</span><span class="tl-tag">Python</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2024 — 2025</div>
+        <div class="tl-role">Maternity Leave</div>
+        <div class="tl-org">Career break</div>
+        <div class="tl-desc">Second maternity leave.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2019 — 2020</div>
+        <div class="tl-role">Bioinformatician</div>
+        <div class="tl-org">Uniklinikum Schleswig-Holstein (UKSH), Kiel</div>
+        <div class="tl-desc">Hematology Lab under Dr. Nikos Darzentas. Extended the ARResT/Interrogate Genome visualisation tool (R/Shiny); built Python libraries for patient data retrieval, processing and analysis for future publications. Attended two EuroClonality-NGS international meetings.</div>
+        <div class="tl-tags"><span class="tl-tag">R</span><span class="tl-tag">Shiny</span><span class="tl-tag">Python</span><span class="tl-tag">Bioinformatics</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2020 — 2021</div>
+        <div class="tl-role">Maternity Leave</div>
+        <div class="tl-org">Career break</div>
+        <div class="tl-desc">First maternity leave following birth of son in March 2020.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2016 — 2017</div>
+        <div class="tl-role">Programmer (Remote)</div>
+        <div class="tl-org">Trisoft</div>
+        <div class="tl-desc">Freelance web development during first two semesters of MSc studies.</div>
+        <div class="tl-tags"><span class="tl-tag">PHP</span><span class="tl-tag">JavaScript</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2013 — 2016</div>
+        <div class="tl-role">Programmer → Team Lead</div>
+        <div class="tl-org">Pitech+Plus, Cluj-Napoca, Romania</div>
+        <div class="tl-desc">Progressed from trainee to team leader in three years. Designed, developed, tested and shipped PHP backends for industry clients across diverse technical domains. Became the third person in Romania to obtain Symfony framework certification.</div>
+        <div class="tl-tags"><span class="tl-tag">PHP</span><span class="tl-tag">Symfony</span><span class="tl-tag">Team Lead</span><span class="tl-tag">REST API</span><span class="tl-tag">PostgreSQL</span></div>
+        <div class="tl-note">Symfony Certified Developer — 3rd in Romania</div>
+      </div>
+
+    </div>
   </section>
 
   <!-- EDUCATION -->
   <section class="section reveal" id="education" data-label="Education">
-    <p class="section-label">06 — Education</p>
+    <p class="section-label">07 — Education</p>
     <h2 class="section-title">Education</h2>
     <div class="divider"></div>
-    <div class="timeline" id="education-timeline"></div>
+    <div class="timeline">
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2021 — Present</div>
+        <div class="tl-role">PhD in Radio Pulsar Astronomy</div>
+        <div class="tl-org">Leibniz University Hannover / Max Planck Institute for Gravitational Physics</div>
+        <div class="tl-desc">Supervisor: Prof. Bruce Allen (Director, AEI Hannover). Research group: Dr. Colin Clark Pulsar Group. Thesis: large-scale survey searches for new pulsars and compact binaries across multi-telescope archival datasets.</div>
+        <div class="tl-tags"><span class="tl-tag">Pulsar Astronomy</span><span class="tl-tag">Astroinformatics</span><span class="tl-tag">Binary Pulsars</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2017 — 2019</div>
+        <div class="tl-role">MSc Computational Science &amp; Engineering with Physics</div>
+        <div class="tl-org">University of Rostock · Grade 2.1</div>
+        <div class="tl-desc">Thesis: Impact of Stellar Variability on the Observational Appearance of Protoplanetary Disks (advisors: Prof. Sebastian Wolf, Prof. Ronald Redmer). Coursework included HPC (OpenMP), numerical methods, PDEs, computer vision (OpenCV), plasma and astrophysics.</div>
+        <div class="tl-tags"><span class="tl-tag">HPC</span><span class="tl-tag">Numerical Methods</span><span class="tl-tag">Astrophysics</span><span class="tl-tag">C++ / OpenMP</span></div>
+      </div>
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2010 — 2013</div>
+        <div class="tl-role">BA Natural Sciences: Physics — 1st Class</div>
+        <div class="tl-org">University of Cambridge (Trinity College)</div>
+        <div class="tl-desc">Part I: Mathematics (2010–2011). Part II: Experimental &amp; Theoretical Physics (2011–2013). STEP II/III examinations. Member of Cambridge University Astronomy Society and Trinity Maths Society.</div>
+        <div class="tl-tags"><span class="tl-tag">1st Class Honours</span><span class="tl-tag">Mathematics</span><span class="tl-tag">Physics</span></div>
+        <div class="tl-note">STEP II/III · 1st Class · Cambridge</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2006 — 2010</div>
+        <div class="tl-role">Mathematics &amp; Computer Science with English</div>
+        <div class="tl-org">"Alexandru Papiu Ilarian" National College, Romania</div>
+        <div class="tl-desc">Valedictorian, GPA 9.99/10. Baccalaureate 9.73/10. Competed in 79 mathematics and physics competitions, including silver medal mentions at the National Physics and National Mathematics Olympiads (2008, 2009).</div>
+        <div class="tl-note">Valedictorian · GPA 9.99/10 · 2× National Olympiad silver</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONFERENCES -->
+  <section class="section reveal" id="conferences" data-label="Talks">
+    <p class="section-label">08 — Conferences &amp; Outreach</p>
+    <h2 class="section-title">Conferences &amp; Teaching</h2>
+    <div class="divider"></div>
+    <div class="timeline">
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2025 · Sardinia, Italy</div>
+        <div class="tl-role">Pulsar Conference 2025 — Poster presentation</div>
+        <div class="tl-org">International pulsar community conference</div>
+        <div class="tl-desc">Presented poster on compact binary pulsar searches from large-scale survey data.</div>
+        <div class="tl-tags"><span class="tl-tag">Poster</span><span class="tl-tag">Binary Pulsars</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2022–2024 · Bonn, Germany</div>
+        <div class="tl-role">Bonn Neutron Star Workshops — Annual participant</div>
+        <div class="tl-org">MPIfR Bonn</div>
+        <div class="tl-desc">Regular attendee at the neutron star community workshops, contributing to discussions on survey strategy and binary search methods.</div>
+      </div>
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2022 · Rome, Italy</div>
+        <div class="tl-role">PHAROS Conference — Poster presentation</div>
+        <div class="tl-org">PHAROS Cost Action, Physics of Neutron Stars</div>
+        <div class="tl-desc">Presented poster on pulsar survey searches and candidate classification pipeline.</div>
+        <div class="tl-tags"><span class="tl-tag">Poster</span><span class="tl-tag">Neutron Stars</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2021–2024 · Hannover</div>
+        <div class="tl-role">AEI Lecture Weeks — Participant</div>
+        <div class="tl-org">Albert Einstein Institute, Hannover</div>
+        <div class="tl-desc">Attended multiple AEI-organised lecture weeks on gravitational wave astronomy, pulsar timing, and data analysis methods.</div>
+      </div>
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2022–2024 · Hannover</div>
+        <div class="tl-role">Teaching — Datalab Seminar</div>
+        <div class="tl-org">Leibniz University Hannover</div>
+        <div class="tl-desc">Taught the Datalab — a graded data science seminar at LUH — for two semesters. Course covered practical data analysis, Python workflows, and scientific computing for physics students.</div>
+        <div class="tl-tags"><span class="tl-tag">Teaching</span><span class="tl-tag">Python</span><span class="tl-tag">Data Analysis</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">July 2018 · Hamburg</div>
+        <div class="tl-role">Northern Astrophysics Colloquium</div>
+        <div class="tl-org">Participant as MSc candidate with CAU Kiel astrophysics group</div>
+        <div class="tl-desc"></div>
+      </div>
+
+    </div>
   </section>
 
   <!-- PUBLICATIONS -->
   <section class="section reveal" id="publications" data-label="Papers">
-    <p class="section-label">07 — Publications</p>
-    <h2 class="section-title">Selected Publications</h2>
+    <p class="section-label">09 — Publications</p>
+    <h2 class="section-title">Publications &amp; Work in Progress</h2>
     <div class="divider"></div>
-    <div class="pub-list" id="pub-list"></div>
+    <div class="pub-list">
+
+      <div class="pub-card pub-inprep">
+        <span class="pub-badge inprep">In prep</span>
+        <div class="pub-title">ALMA Observations of a Candidate Pulsar Planet-Formation Disk: Upper Limits on Debris Disk Emission</div>
+        <div class="pub-authors">Lars Nieder, <strong>A. Botnariuc</strong>, et al.</div>
+        <div class="pub-venue">In preparation · AEI Hannover · ALMA programme</div>
+      </div>
+
+      <div class="pub-card pub-inprep">
+        <span class="pub-badge inprep">In progress</span>
+        <div class="pub-title">Clustering-Based Classification of MeerKAT Galactic Centre Pulsar Candidates</div>
+        <div class="pub-authors">Prajwal Padmanabh, <strong>A. Botnariuc</strong> (algorithm), et al.</div>
+        <div class="pub-venue">Work in progress · AEI Hannover / MeerKAT GC survey</div>
+      </div>
+
+      <div class="pub-card pub-inprep">
+        <span class="pub-badge inprep">In progress</span>
+        <div class="pub-title">Pulsar Search Results from Parkes and FAST Archival Survey Data</div>
+        <div class="pub-authors"><strong>A. Botnariuc</strong>, R. Sengar, X. J. Liu, et al.</div>
+        <div class="pub-venue">Work in progress · Parkes / FAST archival</div>
+      </div>
+
+    </div>
+    <p style="margin-top:20px;font-family:var(--font-mono);font-size:11px;color:var(--muted);opacity:.6;letter-spacing:.05em;">Publications forthcoming. Full list will appear on ADS once submitted.</p>
   </section>
 
   <!-- CONTACT -->
   <section class="section reveal" id="contact" data-label="Contact">
-    <p class="section-label">08 — Contact</p>
+    <p class="section-label">10 — Contact</p>
     <h2 class="section-title">Get in Touch</h2>
     <div class="divider"></div>
-    <div class="contact-grid" id="contact-grid"></div>
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:alexandra.a.s.negrea@gmail.com">
+        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-email"/></svg>
+        <div><div class="contact-label">Email</div><div class="contact-value">alexandra.a.s.negrea@gmail.com</div></div>
+      </a>
+      <a class="contact-card" href="https://github.com/yourusername" target="_blank" rel="noopener">
+        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-github"/></svg>
+        <div><div class="contact-label">GitHub</div><div class="contact-value">github.com/yourusername</div></div>
+      </a>
+      <a class="contact-card" href="https://orcid.org/0000-0000-0000-0000" target="_blank" rel="noopener">
+        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-orcid"/></svg>
+        <div><div class="contact-label">ORCID</div><div class="contact-value">0000-0000-0000-0000</div></div>
+      </a>
+      <a class="contact-card" href="https://ui.adsabs.harvard.edu/" target="_blank" rel="noopener">
+        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-signal"/></svg>
+        <div><div class="contact-label">ADS</div><div class="contact-value">NASA/ADS publications</div></div>
+      </a>
+      <a class="contact-card" href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">
+        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-web"/></svg>
+        <div><div class="contact-label">Research Group</div><div class="contact-value">AEI Pulsar Group</div></div>
+      </a>
+    </div>
   </section>
 
-  <footer id="footer"></footer>
+  <footer>Alexandra Botnariuc · Radio Pulsar Astronomy · AEI Hannover</footer>
 </div>
-
-<!-- SVG icon sprites (no emojis) -->
-<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="ico-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <rect x="2" y="4" width="20" height="16" rx="2"/>
-    <path d="m2 7 10 7 10-7"/>
-  </symbol>
-  <symbol id="ico-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-  </symbol>
-  <symbol id="ico-orcid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M8 7v10M12 7c2.5 0 4 1.5 4 3.5S14.5 14 12 14H8"/>
-    <circle cx="9.5" cy="5.5" r=".5" fill="currentColor"/>
-  </symbol>
-  <symbol id="ico-web" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-  </symbol>
-  <symbol id="ico-twitter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <path d="M4 4l16 16M4 20 20 4"/>
-    <path d="M20 4H4v16h16V4z" stroke="none"/>
-    <path d="M4 4h5l11 16H15z"/>
-  </symbol>
-  <symbol id="ico-linkedin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <rect x="2" y="2" width="20" height="20" rx="4"/>
-    <path d="M7 10v7M7 7v.01M12 10v7m0-4c0-2 1-3 3-3s3 1 3 3v4"/>
-  </symbol>
-  <symbol id="ico-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <circle cx="12" cy="12" r="2"/>
-    <path d="M6.3 6.3a8 8 0 0 0 0 11.4m11.4-11.4a8 8 0 0 1 0 11.4M3.5 3.5a13 13 0 0 0 0 17M20.5 3.5a13 13 0 0 1 0 17"/>
-  </symbol>
-  <symbol id="ico-planet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <circle cx="12" cy="12" r="5"/>
-    <path d="M3 7c4 2 14 6 18 4M3 17c4-2 14-6 18-4" opacity=".5"/>
-    <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-20 12 12)"/>
-  </symbol>
-  <symbol id="ico-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 6v6l4 2"/>
-  </symbol>
-  <symbol id="ico-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-    <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>
-  </symbol>
-</svg>
 
 <script>
 /* ============================================================
-   CONFIG — edit this object only
+   AVATAR — orbiting pulsar with its own spinning beams + name lightning
    ============================================================ */
-const CONFIG = {
-  name: { first: "Your First", last: "Name" },
-  eyebrow:  "PhD Candidate · Radio Astronomy",
-  title:    "Pulsar Hunter & Astroinformatician",
-  tagline:  "Searching for spinning neutron stars and the worlds that orbit them. I combine radio telescope data, signal processing, and software to push the boundaries of pulsar science.",
+(function(){
+  // Try to load profile photo
+  const img = new Image();
+  img.onload = function(){
+    document.getElementById('avatar-circle').innerHTML =
+      `<img src="./profile_photo.jpg" alt="Alexandra Botnariuc">`;
+  };
+  img.onerror = function(){};
+  img.src = './profile_photo.jpg';
 
-  heroLinks: [
-    { label: "Email",    href: "mailto:you@university.edu",             icon: "ico-email"    },
-    { label: "GitHub",   href: "https://github.com/yourusername",       icon: "ico-github"   },
-    { label: "ORCID",    href: "https://orcid.org/0000-0000-0000-0000", icon: "ico-orcid"    },
-    { label: "ADS",      href: "https://ui.adsabs.harvard.edu/",        icon: "ico-signal"   },
-    { label: "Website",  href: "https://yourwebsite.com",               icon: "ico-web"      },
-  ],
+  const c = document.getElementById('avatar-pulsar-canvas');
+  const ctx = c.getContext('2d');
+  const W=260, H=260, CX=130, CY=130;
+  const ORBIT_R = 118;   // orbit radius (pulsar path)
+  const BEAM_HALF = 0.22; // beam half-angle radians on the mini pulsar
 
-  about: `
-    <p>I'm a final-year PhD candidate at Your University, working with the radio astronomy group on pulsar searches and timing. My thesis focuses on discovering new pulsars in archival and new survey data, with a special eye toward exotic systems — millisecond pulsars, double neutron stars, and the rare possibility of pulsar planets.</p>
-    <p>Before my PhD I worked as a software developer, which means I bring a programmer's instinct to every research problem. I care about reproducible pipelines, open-source tools, and making radio data actually usable. This intersection of coding and astrophysics is what drew me to astroinformatics.</p>
-    <p>When I'm not combing through dedispersed time series, I think about the strange philosophical implications of planets orbiting pulsars — worlds born in a supernova's wake, bathed in relentless radiation.</p>
-  `,
+  let orbitAngle = 0;      // pulsar position around photo
+  let spinAngle  = 0;      // beam spin on the pulsar itself
 
-  interests: [
-    { icon: "ico-signal", title: "Pulsar Searching",  desc: "FFT-based and ML-accelerated candidate detection from large-area radio surveys.", color: "c-cyan"    },
-    { icon: "ico-planet", title: "Pulsar Planets",    desc: "Timing residual analysis and formation of planetary systems around neutron stars.", color: "c-magenta" },
-    { icon: "ico-clock",  title: "Pulsar Timing",     desc: "Precision TOA analysis, DM variations, and noise modelling with TEMPO2.",          color: "c-amber"   },
-    { icon: "ico-code",   title: "Astroinformatics",  desc: "ML classifiers for RFI rejection, GPU-accelerated dedispersion, open pipelines.",   color: "c-purple"  },
-  ],
+  function draw(){
+    ctx.clearRect(0,0,W,H);
 
-  skills: [
-    { group: "Languages",        pills: ["Python", "C/C++", "Bash", "SQL", "JavaScript", "R"] },
-    { group: "Radio Astronomy",  pills: ["PRESTO", "PSRCHIVE", "TEMPO2", "SIGPROC", "DSPSR", "Filterbank"] },
-    { group: "Data & ML",        pills: ["NumPy", "SciPy", "scikit-learn", "PyTorch", "Pandas", "Matplotlib"] },
-    { group: "Tools & Infra",    pills: ["Git", "Docker", "HPC/SLURM", "Linux", "LaTeX", "Jupyter"] },
-  ],
+    // dashed orbit ring
+    ctx.save();
+    ctx.setLineDash([3,9]);
+    ctx.beginPath(); ctx.arc(CX,CY,ORBIT_R,0,Math.PI*2);
+    ctx.strokeStyle='rgba(0,255,231,0.12)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.restore();
 
-  experience: [
-    {
-      date: "2022 — Present", role: "PhD Researcher",
-      org: "Your University · Radio Astronomy Group",
-      desc: "Leading pulsar search analysis on [Telescope] survey data. Developed an automated candidate classification pipeline that reduced human vetting time by 70%.",
-      tags: ["Pulsar Search", "Python", "HPC", "Machine Learning"]
-    },
-    {
-      date: "2019 — 2022", role: "Software Developer",
-      org: "Your Company / Institute",
-      desc: "Built backend services and data engineering pipelines. Contributed to open-source tooling used in the group.",
-      tags: ["Backend", "Python", "PostgreSQL", "Docker"]
-    },
-    {
-      date: "2021", role: "Research Intern",
-      org: "Observatory / Institute Name",
-      desc: "Assisted with RFI mitigation strategies for commensal pulsar survey data. Scripts now part of the standard pipeline.",
-      tags: ["RFI Mitigation", "Signal Processing", "Python"]
-    },
-  ],
+    // pulsar position on orbit
+    const px = CX + ORBIT_R * Math.cos(orbitAngle);
+    const py = CY + ORBIT_R * Math.sin(orbitAngle);
 
-  education: [
-    {
-      date: "2022 — Present", role: "PhD in Radio Astronomy",
-      org: "Your University",
-      desc: "Thesis: \"[Your Thesis Title: Searching for Pulsars and Their Planets in Survey Data]\"",
-      tags: ["Pulsar Astronomy", "Astroinformatics"]
-    },
-    {
-      date: "2017 — 2022", role: "BSc / MSc in Physics",
-      org: "Your University",
-      desc: "Graduated with honours. Master's thesis on [topic].",
-      tags: ["Astrophysics", "Computational Physics"]
-    },
-  ],
+    // draw the two spinning beams emanating from the orbiting pulsar
+    const beamLen = 38;
+    [spinAngle, spinAngle + Math.PI].forEach((ba, bi) => {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(ba);
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0, beamLen, -BEAM_HALF, BEAM_HALF);
+      ctx.closePath();
+      const base = bi===0 ? 0.65 : 0.30;
+      const g = ctx.createRadialGradient(0,0,0,0,0,beamLen);
+      g.addColorStop(0, `rgba(0,255,231,${base})`);
+      g.addColorStop(0.5, `rgba(0,255,231,${base*0.35})`);
+      g.addColorStop(1, 'rgba(0,255,231,0)');
+      ctx.fillStyle=g; ctx.fill();
+      ctx.restore();
+    });
 
-  publications: [
-    {
-      title: "Discovery of PSR J0000+0000: A Recycled Pulsar in a Wide Binary System",
-      authors: "<strong>Your Name</strong>, Co-Author A, Co-Author B, et al.",
-      venue: "ApJ · 2024",  link: "https://doi.org/10.xxxx/xxxxxx", linkLabel: "ADS →"
-    },
-    {
-      title: "A Machine-Learning Pipeline for Pulsar Candidate Classification in [Survey] Data",
-      authors: "<strong>Your Name</strong>, Co-Author A, et al.",
-      venue: "MNRAS · 2023", link: "https://doi.org/10.xxxx/xxxxxx", linkLabel: "ADS →"
-    },
-    {
-      title: "Constraints on Planetary Companions to [Pulsar Name] from Long-Term Timing",
-      authors: "Co-Author A, <strong>Your Name</strong>, Co-Author B",
-      venue: "A&A · 2023",   link: "https://doi.org/10.xxxx/xxxxxx", linkLabel: "ADS →"
-    },
-  ],
+    // check if either beam points roughly toward centre (the "viewer" = photo)
+    // direction from pulsar to centre
+    const toCentreAngle = Math.atan2(CY-py, CX-px);
+    [spinAngle, spinAngle+Math.PI].forEach(ba => {
+      let diff = Math.abs(((ba - toCentreAngle + Math.PI*3) % (Math.PI*2)) - Math.PI);
+      if(diff < BEAM_HALF * 1.2){
+        const intensity = 1 - diff/(BEAM_HALF*1.2);
+        // glow ring around photo circle when beam hits
+        ctx.beginPath(); ctx.arc(CX,CY,88,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(0,255,231,${intensity*0.35})`; ctx.lineWidth=2+intensity*2; ctx.stroke();
+      }
+    });
 
-  contact: [
-    { icon: "ico-email",    label: "Email",    value: "you@university.edu",          href: "mailto:you@university.edu" },
-    { icon: "ico-github",   label: "GitHub",   value: "github.com/yourusername",     href: "https://github.com/yourusername" },
-    { icon: "ico-orcid",    label: "ORCID",    value: "0000-0000-0000-0000",         href: "https://orcid.org/0000-0000-0000-0000" },
-    { icon: "ico-web",      label: "Website",  value: "yourwebsite.com",             href: "https://yourwebsite.com" },
-    { icon: "ico-twitter",  label: "Twitter/X",value: "@yourusername",               href: "https://x.com/yourusername" },
-    { icon: "ico-linkedin", label: "LinkedIn", value: "linkedin.com/in/yourprofile", href: "https://linkedin.com/in/yourprofile" },
-  ],
+    // pulsar core (the orbiting dot)
+    const dg = ctx.createRadialGradient(px,py,0,px,py,10);
+    dg.addColorStop(0,'rgba(255,255,255,1)');
+    dg.addColorStop(0.25,'rgba(0,255,231,0.9)');
+    dg.addColorStop(1,'rgba(0,255,231,0)');
+    ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2); ctx.fillStyle=dg; ctx.fill();
 
-  footer: "Radio Astronomy · Pulsar Science · Astroinformatics",
-};
+    orbitAngle += 0.012;
+    spinAngle  += 0.055; // pulsar spins ~4.5× faster than it orbits
+    requestAnimationFrame(draw);
+  }
+  draw();
 
-/* ============================================================
-   RENDERER
-   ============================================================ */
-function svgUse(id, size=16) {
-  return `<svg width="${size}" height="${size}" stroke="#7A8BA8" stroke-width="1.5" fill="none"><use href="#${id}"/></svg>`;
-}
+  // ── Name lightning canvas ──
+  const nc = document.getElementById('name-lightning-canvas');
+  const nCtx = nc.getContext('2d');
+  const NW=260, NH=52;
+  let nT=0;
 
-function render() {
-  document.title = `CV — ${CONFIG.name.first} ${CONFIG.name.last}`;
-  document.getElementById('hero-eyebrow').textContent = CONFIG.eyebrow;
-  document.getElementById('hero-name').textContent = `${CONFIG.name.first} ${CONFIG.name.last}`;
-  document.getElementById('hero-title').textContent = CONFIG.title;
-  document.getElementById('hero-tagline').textContent = CONFIG.tagline;
+  // lightning bolt helper: jagged line between two points
+  function lightning(x0,y0,x1,y1,roughness,depth){
+    if(depth<=0){
+      nCtx.beginPath(); nCtx.moveTo(x0,y0); nCtx.lineTo(x1,y1); nCtx.stroke();
+      return;
+    }
+    const mx=(x0+x1)/2 + (Math.random()-0.5)*roughness;
+    const my=(y0+y1)/2 + (Math.random()-0.5)*roughness;
+    lightning(x0,y0,mx,my,roughness*0.5,depth-1);
+    lightning(mx,my,x1,y1,roughness*0.5,depth-1);
+  }
 
-  const linksEl = document.getElementById('hero-links');
-  CONFIG.heroLinks.forEach(l => {
-    const a = document.createElement('a');
-    a.className = 'hero-link'; a.href = l.href; a.target = '_blank'; a.rel = 'noopener';
-    a.innerHTML = svgUse(l.icon, 14) + ` ${l.label}`;
-    linksEl.appendChild(a);
-  });
+  function drawName(){
+    nCtx.clearRect(0,0,NW,NH);
+    nT++;
 
-  document.getElementById('about-text').innerHTML = CONFIG.about;
+    // fonts
+    nCtx.textAlign='center';
+    nCtx.textBaseline='middle';
 
-  const ig = document.getElementById('interests-grid');
-  CONFIG.interests.forEach(it => {
-    ig.innerHTML += `
-      <div class="interest-card ${it.color}">
-        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#${it.icon}"/></svg></div>
-        <div class="interest-title">${it.title}</div>
-        <div class="interest-desc">${it.desc}</div>
-      </div>`;
-  });
+    const firstName = 'Alexandra';
+    const lastName  = 'Botnariuc';
 
-  const sg = document.getElementById('skills-grid');
-  CONFIG.skills.forEach(s => {
-    const pills = s.pills.map(p => `<span class="pill">${p}</span>`).join('');
-    sg.innerHTML += `<div><p class="skill-group-title">${s.group}</p><div class="skill-pills">${pills}</div></div>`;
-  });
+    // ── First name — magenta/purple lightning ──
+    const pulse1 = Math.sin(nT * 0.07) * 0.5 + 0.5;
+    const pulse1b = Math.sin(nT * 0.11 + 1) * 0.5 + 0.5;
 
-  renderTimeline('experience-timeline', CONFIG.experience);
-  renderTimeline('education-timeline',  CONFIG.education);
+    // base text — white
+    nCtx.font = 'bold 17px "Space Grotesk", sans-serif';
+    nCtx.fillStyle = `rgba(232,220,255,${0.82 + pulse1*0.18})`;
+    nCtx.fillText(firstName, 65, NH/2);
 
-  const pl = document.getElementById('pub-list');
-  CONFIG.publications.forEach(p => {
-    pl.innerHTML += `
-      <div class="pub-card">
-        <div class="pub-title">${p.title}</div>
-        <div class="pub-authors">${p.authors}</div>
-        <div class="pub-venue">${p.venue}</div>
-        ${p.link ? `<a class="pub-link" href="${p.link}" target="_blank" rel="noopener">${p.linkLabel||'View →'}</a>` : ''}
-      </div>`;
-  });
+    // glow layer 1 — magenta
+    nCtx.shadowColor = '#FF6B9D';
+    nCtx.shadowBlur  = 8 + pulse1*12;
+    nCtx.fillStyle   = `rgba(255,107,157,${0.55 + pulse1*0.45})`;
+    nCtx.fillText(firstName, 65, NH/2);
 
-  const cg = document.getElementById('contact-grid');
-  CONFIG.contact.forEach(c => {
-    cg.innerHTML += `
-      <a class="contact-card" href="${c.href}" target="_blank" rel="noopener">
-        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#${c.icon}"/></svg>
-        <div><div class="contact-label">${c.label}</div><div class="contact-value">${c.value}</div></div>
-      </a>`;
-  });
+    // glow layer 2 — purple
+    nCtx.shadowColor = '#C084FC';
+    nCtx.shadowBlur  = 14 + pulse1b*18;
+    nCtx.fillStyle   = `rgba(192,132,252,${0.3 + pulse1b*0.4})`;
+    nCtx.fillText(firstName, 65, NH/2);
+    nCtx.shadowBlur=0; nCtx.shadowColor='transparent';
 
-  document.getElementById('footer').textContent = CONFIG.footer;
-}
+    // occasional lightning arcs over first name
+    if(Math.random() < 0.18){
+      const x0 = 20 + Math.random()*90, y0 = 4+Math.random()*8;
+      const x1 = 20 + Math.random()*90, y1 = NH-4-Math.random()*8;
+      nCtx.strokeStyle=`rgba(255,107,157,${0.5+Math.random()*0.5})`;
+      nCtx.lineWidth=0.8;
+      lightning(x0,y0,x1,y1,10,4);
+    }
+    if(Math.random() < 0.10){
+      const x0 = 22+Math.random()*86, y0 = NH/2-6;
+      const x1 = x0+(Math.random()-0.5)*30, y1 = NH/2+6;
+      nCtx.strokeStyle=`rgba(216,180,254,${0.4+Math.random()*0.5})`;
+      nCtx.lineWidth=0.6;
+      lightning(x0,y0,x1,y1,6,3);
+    }
 
-function renderTimeline(id, items) {
-  const el = document.getElementById(id);
-  items.forEach(item => {
-    const tags = (item.tags||[]).map(t => `<span class="tl-tag">${t}</span>`).join('');
-    el.innerHTML += `
-      <div class="tl-item">
-        <div class="tl-date">${item.date}</div>
-        <div class="tl-role">${item.role}</div>
-        <div class="tl-org">${item.org}</div>
-        <div class="tl-desc">${item.desc}</div>
-        ${tags ? `<div class="tl-tags">${tags}</div>` : ''}
-      </div>`;
-  });
-}
+    // ── Last name — brighter magenta/electric purple ──
+    const pulse2  = Math.sin(nT * 0.09 + 2) * 0.5 + 0.5;
+    const pulse2b = Math.sin(nT * 0.13 + 3.5) * 0.5 + 0.5;
+
+    nCtx.font = 'bold 17px "Space Grotesk", sans-serif';
+    nCtx.fillStyle = `rgba(255,230,255,${0.85 + pulse2*0.15})`;
+    nCtx.fillText(lastName, 195, NH/2);
+
+    nCtx.shadowColor = '#E879F9';
+    nCtx.shadowBlur  = 10 + pulse2*16;
+    nCtx.fillStyle   = `rgba(232,121,249,${0.6 + pulse2*0.4})`;
+    nCtx.fillText(lastName, 195, NH/2);
+
+    nCtx.shadowColor = '#FF6B9D';
+    nCtx.shadowBlur  = 6 + pulse2b*10;
+    nCtx.fillStyle   = `rgba(255,107,157,${0.25 + pulse2b*0.35})`;
+    nCtx.fillText(lastName, 195, NH/2);
+    nCtx.shadowBlur=0; nCtx.shadowColor='transparent';
+
+    if(Math.random() < 0.20){
+      const x0 = 145+Math.random()*100, y0 = 3+Math.random()*8;
+      const x1 = 145+Math.random()*100, y1 = NH-3-Math.random()*8;
+      nCtx.strokeStyle=`rgba(232,121,249,${0.5+Math.random()*0.5})`;
+      nCtx.lineWidth=0.8;
+      lightning(x0,y0,x1,y1,10,4);
+    }
+    if(Math.random() < 0.12){
+      const x0 = 148+Math.random()*94, y0 = NH/2-8;
+      const x1 = x0+(Math.random()-0.5)*28, y1 = NH/2+8;
+      nCtx.strokeStyle=`rgba(255,200,255,${0.35+Math.random()*0.5})`;
+      nCtx.lineWidth=0.6;
+      lightning(x0,y0,x1,y1,5,3);
+    }
+
+    requestAnimationFrame(drawName);
+  }
+  drawName();
+})();
 
 /* ============================================================
    PULSAR WIDGET
    ============================================================ */
-const PRESETS = [
-  { name: "B1919+21", period: 1.3373, width: 4,  beam: 8,  dm: 12.4,  note: "First pulsar discovered (1967)" },
-  { name: "B0833-45", period: 0.0893, width: 3,  beam: 6,  dm: 67.9,  note: "Vela pulsar" },
-  { name: "J0437-47", period: 0.00576,width: 6,  beam: 12, dm: 2.6,   note: "Nearest MSP" },
-  { name: "B1257+12", period: 0.00621,width: 5,  beam: 10, dm: 10.2,  note: "First pulsar planets!" },
-  { name: "B0531+21", period: 0.0334, width: 2,  beam: 5,  dm: 56.8,  note: "Crab pulsar" },
-  { name: "J0737-30", period: 0.0228, width: 7,  beam: 14, dm: 48.9,  note: "Double pulsar" },
-];
+(function(){
+  const PRESETS=[
+    {name:"B1919+21",period:1.3373,width:4, beam:8, dm:12.4},
+    {name:"B0833-45",period:0.0893,width:3, beam:6, dm:67.9},
+    {name:"J0437-47",period:0.00576,width:6,beam:12,dm:2.6},
+    {name:"B1257+12",period:0.00621,width:5,beam:10,dm:10.2},
+    {name:"B0531+21",period:0.0334,width:2, beam:5, dm:56.8},
+    {name:"J0737-30",period:0.0228,width:7, beam:14,dm:48.9},
+  ];
 
-(function initPulsarWidget() {
-  const canvas  = document.getElementById('pulsar-canvas');
-  const ctx     = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, CX = W/2, CY = H/2;
+  const pC=document.getElementById('pulsar-canvas');
+  const sC=document.getElementById('signal-canvas');
+  const pCtx=pC.getContext('2d');
+  const sCtx=sC.getContext('2d');
 
-  let period  = 0.714;
-  let dutyPct = 8;
-  let beamDeg = 15;
-  let dm      = 97;
-  let running = true;
-  let profileMode = false;
-  let t = 0;
-  let lastTimestamp = null;
-  const PROFILE_LEN = 200;
-  const profile = new Float32Array(PROFILE_LEN);
+  function resize(){
+    const w=pC.parentElement.clientWidth||600;
+    pC.width=w; sC.width=w;
+  }
+  resize(); window.addEventListener('resize',resize);
 
-  // sliders
-  const slPeriod = document.getElementById('sl-period');
-  const slWidth  = document.getElementById('sl-width');
-  const slBeam   = document.getElementById('sl-beam');
-  const slDM     = document.getElementById('sl-dm');
-  const valPeriod= document.getElementById('val-period');
-  const valWidth = document.getElementById('val-width');
-  const valBeam  = document.getElementById('val-beam');
-  const valDM    = document.getElementById('val-dm');
+  let period=0.714,dutyPct=8,beamDeg=15,dm=97;
+  let running=true,t=0,lastTS=null;
+  const SIG_LEN=600;
+  const sigBuf=new Float32Array(SIG_LEN);
+  let sigHead=0;
 
-  function updateSliders(p,w,b,d) {
-    period=p; dutyPct=w; beamDeg=b; dm=d;
-    slPeriod.value=p; slWidth.value=w; slBeam.value=b; slDM.value=d;
-    valPeriod.textContent = p < 0.01 ? p.toFixed(5) : p.toFixed(3);
-    valWidth.textContent  = w;
-    valBeam.textContent   = b;
-    valDM.textContent     = parseFloat(d).toFixed(1);
-    updateReadout();
+  function fmt(v){return v<0.01?(v*1000).toFixed(3)+' ms':v.toFixed(3)+' s';}
+
+  function sync(){
+    document.getElementById('val-period').textContent=fmt(period);
+    document.getElementById('val-width').textContent=dutyPct;
+    document.getElementById('val-beam').textContent=beamDeg;
+    document.getElementById('val-dm').textContent=parseFloat(dm).toFixed(1);
+    document.getElementById('readout').innerHTML=
+      `Period &nbsp;&nbsp;<span class="readout-val">${fmt(period)}</span><br>`+
+      `Freq &nbsp;&nbsp;&nbsp;<span class="readout-val">${(1/period).toFixed(4)} Hz</span><br>`+
+      `Duty &nbsp;&nbsp;&nbsp;<span class="readout-val">${dutyPct}%</span><br>`+
+      `Beam &nbsp;&nbsp;&nbsp;<span class="readout-val">${beamDeg}°</span><br>`+
+      `DM &nbsp;&nbsp;&nbsp;&nbsp;<span class="readout-val">${parseFloat(dm).toFixed(1)} pc·cm⁻³</span>`;
   }
 
-  slPeriod.addEventListener('input',()=>updateSliders(+slPeriod.value,dutyPct,beamDeg,dm));
-  slWidth.addEventListener('input', ()=>updateSliders(period,+slWidth.value,beamDeg,dm));
-  slBeam.addEventListener('input',  ()=>updateSliders(period,dutyPct,+slBeam.value,dm));
-  slDM.addEventListener('input',    ()=>updateSliders(period,dutyPct,beamDeg,+slDM.value));
+  document.getElementById('sl-period').addEventListener('input',e=>{period=+e.target.value;sync();});
+  document.getElementById('sl-width') .addEventListener('input',e=>{dutyPct=+e.target.value;sync();});
+  document.getElementById('sl-beam')  .addEventListener('input',e=>{beamDeg=+e.target.value;sync();});
+  document.getElementById('sl-dm')    .addEventListener('input',e=>{dm=+e.target.value;sync();});
 
-  // presets
-  const presetsEl = document.getElementById('presets');
-  PRESETS.forEach(ps => {
-    const b = document.createElement('button');
-    b.className = 'preset-btn'; b.textContent = ps.name;
-    b.addEventListener('click', () => {
-      updateSliders(ps.period, ps.width, ps.beam, ps.dm);
-      profile.fill(0); t = 0;
+  const presetsEl=document.getElementById('presets');
+  PRESETS.forEach(ps=>{
+    const b=document.createElement('button'); b.className='preset-btn'; b.textContent=ps.name;
+    b.addEventListener('click',()=>{
+      period=ps.period; dutyPct=ps.width; beamDeg=ps.beam; dm=ps.dm;
+      document.getElementById('sl-period').value=ps.period;
+      document.getElementById('sl-width').value=ps.width;
+      document.getElementById('sl-beam').value=ps.beam;
+      document.getElementById('sl-dm').value=ps.dm;
+      sync(); sigBuf.fill(0); t=0;
     });
     presetsEl.appendChild(b);
   });
 
-  // play/pause
-  document.getElementById('btn-play').addEventListener('click', function() {
-    running = !running;
-    this.textContent = running ? 'Pause' : 'Play';
-    this.classList.toggle('active', running);
-    if (running) { lastTimestamp = null; requestAnimationFrame(loop); }
+  const btnPlay=document.getElementById('btn-play');
+  btnPlay.addEventListener('click',()=>{
+    running=!running;
+    btnPlay.textContent=running?'Pause':'Play';
+    btnPlay.classList.toggle('active',running);
+    if(running){lastTS=null;requestAnimationFrame(loop);}
   });
+  sync();
 
-  // profile view toggle
-  document.getElementById('btn-profile').addEventListener('click', function() {
-    profileMode = !profileMode;
-    this.classList.toggle('active', profileMode);
-    profile.fill(0);
-  });
-
-  function updateReadout() {
-    const freq = 1/period;
-    const pdot_approx = 1e-15; // illustrative
-    const el = document.getElementById('readout');
-    el.innerHTML =
-      `Period &nbsp;&nbsp;&nbsp;&nbsp;<span class="readout-val">${period < 0.01 ? (period*1000).toFixed(3)+' ms' : period.toFixed(4)+' s'}</span><br>` +
-      `Freq &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="readout-val">${freq.toFixed(4)} Hz</span><br>` +
-      `Duty cycle &nbsp;<span class="readout-val">${dutyPct}%</span><br>` +
-      `Beam angle &nbsp;<span class="readout-val">${beamDeg}°</span><br>` +
-      `DM &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="readout-val">${parseFloat(dm).toFixed(1)} pc cm⁻³</span>`;
-  }
-  updateSliders(0.714, 8, 15, 97);
-
-  // draw
-  function drawBeam(phase) {
-    ctx.clearRect(0,0,W,H);
-    const R = 90;
-
-    // background glow
-    const grd = ctx.createRadialGradient(CX,CY,2,CX,CY,R*1.4);
-    grd.addColorStop(0,'rgba(0,255,231,0.04)');
-    grd.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0,0,W,H);
-
-    // orbit circles
-    [0.35,0.65,1.0].forEach((f,i) => {
-      ctx.beginPath();
-      ctx.arc(CX,CY,R*f,0,Math.PI*2);
-      ctx.strokeStyle = `rgba(30,41,64,${0.6-i*0.15})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+  function drawBeam(phase,W,H){
+    pCtx.clearRect(0,0,W,H);
+    const CX=W/2,CY=H/2,R=Math.min(W,H)*0.35;
+    const ag=pCtx.createRadialGradient(CX,CY,0,CX,CY,R*1.6);
+    ag.addColorStop(0,'rgba(0,255,231,0.03)'); ag.addColorStop(1,'rgba(0,0,0,0)');
+    pCtx.fillStyle=ag; pCtx.fillRect(0,0,W,H);
+    [0.4,0.7,1.0].forEach((f,i)=>{
+      pCtx.beginPath(); pCtx.arc(CX,CY,R*f,0,Math.PI*2);
+      pCtx.strokeStyle=`rgba(30,41,64,${0.7-i*0.15})`; pCtx.lineWidth=1; pCtx.stroke();
     });
-
-    // beam cone
-    const beamRad = (beamDeg * Math.PI / 180);
-    const angle   = phase * Math.PI * 2;
-    // two beams (opposite poles)
-    [angle, angle + Math.PI].forEach((a, bi) => {
-      const grad = ctx.createConicalGradient ? null : null;
-      ctx.save();
-      ctx.translate(CX, CY);
-      ctx.rotate(a);
-      // beam body
-      ctx.beginPath();
-      ctx.moveTo(0,0);
-      ctx.arc(0,0,R*1.2, -beamRad, beamRad);
-      ctx.closePath();
-      const intensity = bi === 0 ? 0.55 : 0.25;
-      const g = ctx.createRadialGradient(0,0,0,0,0,R*1.2);
-      g.addColorStop(0, `rgba(0,255,231,${intensity})`);
-      g.addColorStop(0.6,`rgba(0,255,231,${intensity*0.4})`);
-      g.addColorStop(1,  'rgba(0,255,231,0)');
-      ctx.fillStyle = g;
-      ctx.fill();
-      ctx.restore();
+    const beamRad=beamDeg*Math.PI/180;
+    const angle=phase*Math.PI*2;
+    // observer
+    const vx=CX+R*1.42,vy=CY;
+    pCtx.save(); pCtx.translate(vx,vy);
+    pCtx.beginPath(); pCtx.arc(0,0,5,0,Math.PI*2);
+    pCtx.strokeStyle='rgba(255,179,71,0.45)'; pCtx.lineWidth=1.5; pCtx.stroke();
+    pCtx.beginPath(); pCtx.arc(0,0,2,0,Math.PI*2);
+    pCtx.fillStyle='rgba(255,179,71,0.55)'; pCtx.fill();
+    pCtx.font=`8px 'Space Mono',monospace`; pCtx.fillStyle='rgba(255,179,71,0.4)'; pCtx.textAlign='center';
+    pCtx.fillText('obs',0,17); pCtx.restore();
+    [angle,angle+Math.PI].forEach((a,bi)=>{
+      let diff=((a%(Math.PI*2))+(Math.PI*2))%(Math.PI*2);
+      if(diff>Math.PI) diff=Math.PI*2-diff;
+      const onV=diff<beamRad;
+      const base=bi===0?0.58:0.26;
+      const extra=onV?0.22:0;
+      pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(a);
+      pCtx.beginPath(); pCtx.moveTo(0,0);
+      pCtx.arc(0,0,R*1.32,-beamRad,beamRad); pCtx.closePath();
+      const g=pCtx.createRadialGradient(0,0,0,0,0,R*1.32);
+      g.addColorStop(0,`rgba(0,255,231,${base+extra})`);
+      g.addColorStop(0.55,`rgba(0,255,231,${(base+extra)*0.3})`);
+      g.addColorStop(1,'rgba(0,255,231,0)');
+      pCtx.fillStyle=g; pCtx.fill(); pCtx.restore();
     });
-
-    // DM smear arc (illustrative) — brighter when DM high
-    if (dm > 10) {
-      const smearFrac = Math.min(dm/500, 0.4) * (dutyPct/50);
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(CX,CY,R*0.68, angle-smearFrac, angle+smearFrac);
-      ctx.strokeStyle = `rgba(255,179,71,${smearFrac*2})`;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.restore();
+    if(dm>30){
+      const sf=Math.min(dm/500,0.28);
+      pCtx.beginPath(); pCtx.arc(CX,CY,R*0.52,0,Math.PI*2);
+      pCtx.strokeStyle=`rgba(255,179,71,${sf*0.9})`; pCtx.lineWidth=2; pCtx.stroke();
     }
-
-    // neutron star core
-    ctx.beginPath();
-    ctx.arc(CX,CY,7,0,Math.PI*2);
-    const coreGrd = ctx.createRadialGradient(CX,CY,0,CX,CY,14);
-    coreGrd.addColorStop(0,'rgba(255,255,255,1)');
-    coreGrd.addColorStop(0.4,'rgba(0,255,231,0.9)');
-    coreGrd.addColorStop(1,'rgba(0,255,231,0)');
-    ctx.fillStyle = coreGrd;
-    ctx.fill();
-
-    // rotation indicator tick
-    ctx.save();
-    ctx.translate(CX,CY);
-    ctx.rotate(angle);
-    ctx.beginPath();
-    ctx.moveTo(0,-R*1.05);
-    ctx.lineTo(0,-R*1.15);
-    ctx.strokeStyle='rgba(0,255,231,0.5)';
-    ctx.lineWidth=1.5;
-    ctx.stroke();
-    ctx.restore();
+    // rotation axis
+    pCtx.save(); pCtx.setLineDash([4,6]);
+    pCtx.beginPath(); pCtx.moveTo(CX,CY-R*1.42); pCtx.lineTo(CX,CY+R*1.42);
+    pCtx.strokeStyle='rgba(255,255,255,0.05)'; pCtx.lineWidth=1; pCtx.stroke(); pCtx.restore();
+    // core
+    const cg=pCtx.createRadialGradient(CX,CY,0,CX,CY,16);
+    cg.addColorStop(0,'rgba(255,255,255,1)');
+    cg.addColorStop(0.3,'rgba(0,255,231,0.9)');
+    cg.addColorStop(1,'rgba(0,255,231,0)');
+    pCtx.beginPath(); pCtx.arc(CX,CY,8,0,Math.PI*2); pCtx.fillStyle=cg; pCtx.fill();
+    // tick
+    pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(angle);
+    pCtx.beginPath(); pCtx.moveTo(0,-R*1.02); pCtx.lineTo(0,-R*1.14);
+    pCtx.strokeStyle='rgba(0,255,231,0.35)'; pCtx.lineWidth=1.5; pCtx.stroke(); pCtx.restore();
   }
 
-  function drawProfile(phase) {
-    // shift profile buffer
-    const bin = Math.floor(phase * PROFILE_LEN) % PROFILE_LEN;
-    const halfDuty = (dutyPct / 100) * PROFILE_LEN / 2;
-    for (let i = 0; i < PROFILE_LEN; i++) {
-      profile[i] *= 0.92;
+  function drawSignal(W){
+    const H=sC.height;
+    sCtx.clearRect(0,0,W,H);
+    const bl=H*0.72;
+    sCtx.beginPath(); sCtx.moveTo(0,bl); sCtx.lineTo(W,bl);
+    sCtx.strokeStyle='rgba(30,41,64,0.8)'; sCtx.lineWidth=1; sCtx.stroke();
+    sCtx.font=`8px 'Space Mono',monospace`; sCtx.fillStyle='rgba(122,139,168,0.4)';
+    sCtx.fillText('flux',4,12); sCtx.fillText('time →',W-46,H-4);
+    sCtx.beginPath();
+    for(let i=0;i<SIG_LEN;i++){
+      const idx=(sigHead-SIG_LEN+i+SIG_LEN*2)%SIG_LEN;
+      const x=(i/SIG_LEN)*W, y=bl-sigBuf[idx]*(H*0.55);
+      if(i===0) sCtx.moveTo(x,y); else sCtx.lineTo(x,y);
     }
-    // add gaussian pulse at bin
-    for (let i = 0; i < PROFILE_LEN; i++) {
-      const d = Math.min(Math.abs(i-bin), PROFILE_LEN-Math.abs(i-bin));
-      const v = Math.exp(-(d*d)/(2*halfDuty*halfDuty));
-      if (v > 0.01) profile[i] = Math.max(profile[i], v);
-    }
-
-    ctx.clearRect(0,0,W,H);
-    // axes
-    ctx.strokeStyle='rgba(30,41,64,0.8)';
-    ctx.lineWidth=1;
-    ctx.beginPath();
-    ctx.moveTo(30,H-30); ctx.lineTo(W-10,H-30);
-    ctx.moveTo(30,20);   ctx.lineTo(30,H-30);
-    ctx.stroke();
-    // label
-    ctx.fillStyle='rgba(122,139,168,0.5)';
-    ctx.font=`9px 'Space Mono', monospace`;
-    ctx.fillText('Phase (0→1)',W/2-25,H-10);
-
-    // profile line
-    ctx.beginPath();
-    for (let i = 0; i < PROFILE_LEN; i++) {
-      const x = 32 + (i/PROFILE_LEN)*(W-44);
-      const y = (H-32) - profile[i]*(H-52);
-      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-    }
-    ctx.strokeStyle='rgba(0,255,231,0.85)';
-    ctx.lineWidth=1.5;
-    ctx.stroke();
-
-    // fill
-    ctx.lineTo(32+(PROFILE_LEN/PROFILE_LEN)*(W-44), H-32);
-    ctx.lineTo(32,H-32);
-    ctx.closePath();
-    ctx.fillStyle='rgba(0,255,231,0.06)';
-    ctx.fill();
-
-    // phase cursor
-    const cx = 32 + phase*(W-44);
-    ctx.beginPath();
-    ctx.moveTo(cx,20); ctx.lineTo(cx,H-30);
-    ctx.strokeStyle='rgba(255,179,71,0.5)';
-    ctx.lineWidth=1;
-    ctx.stroke();
+    sCtx.strokeStyle='rgba(0,255,231,0.85)'; sCtx.lineWidth=1.5; sCtx.stroke();
+    sCtx.lineTo(W,bl); sCtx.lineTo(0,bl); sCtx.closePath();
+    sCtx.fillStyle='rgba(0,255,231,0.05)'; sCtx.fill();
   }
 
-  function loop(ts) {
-    if (!running) return;
-    if (!lastTimestamp) lastTimestamp = ts;
-    const dt = (ts - lastTimestamp) / 1000;
-    lastTimestamp = ts;
-
-    // cap dt to avoid jumps
-    t += Math.min(dt, 0.1) / period;
-    const phase = t % 1;
-
-    if (profileMode) drawProfile(phase);
-    else             drawBeam(phase);
-
+  function loop(ts){
+    if(!running) return;
+    if(!lastTS) lastTS=ts;
+    const dt=Math.min((ts-lastTS)/1000,0.05); lastTS=ts;
+    t+=dt/period;
+    const phase=t%1;
+    const W=pC.width,H=pC.height;
+    drawBeam(phase,W,H);
+    const beamPhase=beamDeg/360;
+    const dPhase=Math.min(Math.abs(phase),Math.abs(1-phase));
+    const amp=dPhase<beamPhase?Math.exp(-0.5*(dPhase/beamPhase)*(dPhase/beamPhase)*4):0;
+    sigBuf[sigHead%SIG_LEN]=amp+(Math.random()-.5)*0.035;
+    sigHead=(sigHead+1)%SIG_LEN;
+    drawSignal(W);
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
 })();
 
-/* ── Mini hero pulsar (decorative) ── */
-(function() {
-  const c = document.getElementById('hero-mini-pulsar');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const W=140,H=140,CX=70,CY=70;
-  let ang=0;
-  function draw() {
-    ctx.clearRect(0,0,W,H);
-    // rings
-    [20,40,60].forEach(r=>{
-      ctx.beginPath(); ctx.arc(CX,CY,r,0,Math.PI*2);
-      ctx.strokeStyle=`rgba(0,255,231,0.1)`; ctx.lineWidth=1; ctx.stroke();
-    });
-    // beam
-    ctx.save(); ctx.translate(CX,CY); ctx.rotate(ang);
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,64,-0.2,0.2); ctx.closePath();
-    const g=ctx.createRadialGradient(0,0,0,0,0,64);
-    g.addColorStop(0,'rgba(0,255,231,0.6)'); g.addColorStop(1,'rgba(0,255,231,0)');
-    ctx.fillStyle=g; ctx.fill(); ctx.restore();
-    // core
-    ctx.beginPath(); ctx.arc(CX,CY,4,0,Math.PI*2);
-    ctx.fillStyle='rgba(0,255,231,0.9)'; ctx.fill();
-    ang += 0.015;
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-/* ── Starfield ── */
-function initStars() {
-  const canvas = document.getElementById('stars-canvas');
-  const ctx = canvas.getContext('2d');
-  let W,H,stars=[];
-  const resize = () => { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; };
+/* ============================================================
+   STARFIELD
+   ============================================================ */
+(function(){
+  const c=document.getElementById('stars-canvas');
+  const ctx=c.getContext('2d'); let W,H,stars=[];
+  const resize=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight;};
   resize(); window.addEventListener('resize',resize);
-  for (let i=0;i<320;i++) {
-    stars.push({
-      x:Math.random(), y:Math.random(),
-      r:Math.random()*1.1+0.2,
-      a:Math.random(), da:(Math.random()-.5)*0.0025,
-      col: Math.random()>.94?'#00FFE7': Math.random()>.88?'#FFB347':'#E8F4FD'
-    });
-  }
+  for(let i=0;i<320;i++) stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.1+0.2,a:Math.random(),da:(Math.random()-.5)*0.0025,col:Math.random()>.94?'#00FFE7':Math.random()>.88?'#FFB347':'#E8F4FD'});
   const draw=()=>{
     ctx.clearRect(0,0,W,H);
     stars.forEach(s=>{
-      s.a=Math.max(0.05,Math.min(1,s.a+s.da));
-      if(s.a<=0.05||s.a>=1) s.da*=-1;
+      s.a=Math.max(0.05,Math.min(1,s.a+s.da)); if(s.a<=0.05||s.a>=1) s.da*=-1;
       ctx.globalAlpha=s.a*0.65; ctx.fillStyle=s.col;
       ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2); ctx.fill();
     });
     ctx.globalAlpha=1; requestAnimationFrame(draw);
   };
   draw();
-}
+})();
 
-/* ── Nav dots ── */
-function initNav() {
-  const sections=['hero','about','research','pulsars','skills','experience','education','publications','contact'];
-  const labels  =['Top','About','Research','Pulsars','Skills','Experience','Education','Papers','Contact'];
+/* ============================================================
+   NAV DOTS
+   ============================================================ */
+(function(){
+  const sections=['hero','about','research','pulsars','skills','collaborations','experience','education','conferences','publications','contact'];
+  const labels  =['Top','About','Research','Pulsars','Skills','Collabs','Experience','Education','Talks','Papers','Contact'];
   const container=document.getElementById('nav-dots');
   sections.forEach((id,i)=>{
-    const d=document.createElement('div');
-    d.className='nav-dot'; d.setAttribute('data-label',labels[i]);
+    const d=document.createElement('div'); d.className='nav-dot';
+    d.setAttribute('data-label',labels[i]);
     d.addEventListener('click',()=>document.getElementById(id).scrollIntoView({behavior:'smooth'}));
     container.appendChild(d);
   });
   const dots=container.querySelectorAll('.nav-dot');
   const obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
-      if(e.isIntersecting){
-        const idx=sections.indexOf(e.target.id);
-        dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
-      }
+      if(e.isIntersecting){ const idx=sections.indexOf(e.target.id); dots.forEach((d,i)=>d.classList.toggle('active',i===idx)); }
     });
-  },{threshold:0.35});
-  sections.forEach(id=>{ const el=document.getElementById(id); if(el)obs.observe(el); });
-}
+  },{threshold:0.3});
+  sections.forEach(id=>{ const el=document.getElementById(id); if(el) obs.observe(el); });
+})();
 
-/* ── Scroll reveal ── */
-function initReveal() {
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+(function(){
   const obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
-  },{threshold:0.08});
+  },{threshold:0.06});
   document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-}
+})();
 
-/* ── Avatar upload ── */
-function initAvatar() {
-  document.getElementById('avatar-input').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const circle = document.getElementById('avatar-circle');
-      circle.innerHTML = `<img src="${e.target.result}" alt="Profile photo">`;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+/* ============================================================
+   INTEREST CARD ICONS — canvas illustrations
+   ============================================================ */
 
-render();
-initStars();
-initNav();
-initReveal();
-initAvatar();
+/* ── Icon 1: Compact Binary (image 1 reference)
+   Large companion star (red/orange) on left, neutron star with accretion
+   disk + two jets on right, mass-transfer stream between them ── */
+(function(){
+  const c = document.getElementById('ico-compact');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W=48, H=36;
+  let t=0;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // companion star — large orange-red glow, left
+    const cg = ctx.createRadialGradient(11,18,1,11,18,11);
+    cg.addColorStop(0,'rgba(255,160,40,0.95)');
+    cg.addColorStop(0.5,'rgba(220,70,10,0.7)');
+    cg.addColorStop(1,'rgba(180,30,0,0)');
+    ctx.beginPath(); ctx.arc(11,18,10,0,Math.PI*2);
+    ctx.fillStyle=cg; ctx.fill();
+
+    // mass-transfer stream — curved orange line
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(19,15);
+    ctx.bezierCurveTo(26,12, 30,16, 34,18);
+    ctx.strokeStyle='rgba(255,120,20,0.55)';
+    ctx.lineWidth=2.5; ctx.stroke();
+    ctx.restore();
+
+    // accretion disk — elliptical rings around neutron star
+    const diskPulse = 0.5 + 0.15*Math.sin(t*0.08);
+    [[9,0.55],[6,0.4],[3.5,0.25]].forEach(([rx,a])=>{
+      ctx.save();
+      ctx.translate(35,19); ctx.scale(1,0.28);
+      ctx.beginPath(); ctx.arc(0,0,rx,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(255,${140+rx*8},0,${a*diskPulse})`;
+      ctx.lineWidth=1; ctx.stroke();
+      ctx.restore();
+    });
+
+    // neutron star core
+    const ng = ctx.createRadialGradient(35,19,0,35,19,4);
+    ng.addColorStop(0,'rgba(255,255,255,1)');
+    ng.addColorStop(0.4,'rgba(180,220,255,0.9)');
+    ng.addColorStop(1,'rgba(100,180,255,0)');
+    ctx.beginPath(); ctx.arc(35,19,3,0,Math.PI*2);
+    ctx.fillStyle=ng; ctx.fill();
+
+    // jets — two cones above and below, white/blue
+    const jetA = 0.35+0.15*Math.sin(t*0.06);
+    ctx.save(); ctx.translate(35,19);
+    // upper jet
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.lineTo(-4,-14); ctx.lineTo(4,-14); ctx.closePath();
+    ctx.fillStyle=`rgba(200,230,255,${jetA})`; ctx.fill();
+    // lower jet
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.lineTo(-3,13); ctx.lineTo(3,13); ctx.closePath();
+    ctx.fillStyle=`rgba(200,230,255,${jetA*0.7})`; ctx.fill();
+    ctx.restore();
+
+    t++; requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Icon 2: Binary Evolution (image 2 reference)
+   Two stars, large white donor on left, smaller cyan neutron star on right,
+   Roche-lobe overflow stream connecting them ── */
+(function(){
+  const c = document.getElementById('ico-evolution');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W=48, H=36;
+  let t=0;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    const pulse = 0.5+0.5*Math.sin(t*0.07);
+
+    // large donor star — white/blue glow, left
+    const lg = ctx.createRadialGradient(13,18,1,13,18,12);
+    lg.addColorStop(0,'rgba(255,255,255,0.95)');
+    lg.addColorStop(0.4,'rgba(180,210,255,0.75)');
+    lg.addColorStop(1,'rgba(100,150,255,0)');
+    ctx.beginPath(); ctx.arc(13,18,11,0,Math.PI*2);
+    ctx.fillStyle=lg; ctx.fill();
+
+    // teardrop distortion toward neutron star (Roche lobe)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(22,18);
+    ctx.bezierCurveTo(24,15,26,16,27,18);
+    ctx.bezierCurveTo(26,20,24,21,22,18);
+    ctx.fillStyle=`rgba(160,200,255,${0.35+pulse*0.2})`; ctx.fill();
+    ctx.restore();
+
+    // mass stream
+    ctx.beginPath();
+    ctx.moveTo(26,17);
+    ctx.bezierCurveTo(29,15,32,16,34,18);
+    ctx.strokeStyle=`rgba(150,200,255,${0.5+pulse*0.25})`;
+    ctx.lineWidth=1.8; ctx.stroke();
+
+    // smaller neutron star — bright cyan
+    const sg = ctx.createRadialGradient(36,18,0,36,18,6);
+    sg.addColorStop(0,'rgba(255,255,255,1)');
+    sg.addColorStop(0.35,'rgba(0,220,255,0.9)');
+    sg.addColorStop(1,'rgba(0,180,255,0)');
+    ctx.beginPath(); ctx.arc(36,18,5,0,Math.PI*2);
+    ctx.fillStyle=sg; ctx.fill();
+
+    // spin glow on neutron star
+    ctx.beginPath(); ctx.arc(36,18,6+pulse*2,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(0,255,231,${0.15+pulse*0.2})`; ctx.lineWidth=1; ctx.stroke();
+
+    t++; requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Icon 3: Spider Pulsars (image 3 reference)
+   Two compact objects in a tight orbit, gravitational-wave-like spiral
+   rings fading outward, purple/dark palette ── */
+(function(){
+  const c = document.getElementById('ico-spider');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W=48, H=36;
+  let t=0;
+  const CX=24, CY=18, OR=8; // orbit centre and radius
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    const orb = t*0.055;
+
+    // spiral/GW rings — elliptical, purple, fading out
+    for(let i=4;i>=1;i--){
+      const rr=5+i*5;
+      const alpha=(5-i)*0.055;
+      ctx.save(); ctx.translate(CX,CY); ctx.scale(1,0.42);
+      ctx.beginPath(); ctx.arc(0,0,rr,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(160,100,220,${alpha})`; ctx.lineWidth=1+0.3*i; ctx.stroke();
+      ctx.restore();
+    }
+
+    // pulsar — bright white, smaller, primary
+    const p1x = CX + OR*Math.cos(orb);
+    const p1y = CY + OR*0.42*Math.sin(orb);
+    const p1g = ctx.createRadialGradient(p1x,p1y,0,p1x,p1y,5);
+    p1g.addColorStop(0,'rgba(255,255,255,1)');
+    p1g.addColorStop(0.4,'rgba(200,200,255,0.85)');
+    p1g.addColorStop(1,'rgba(160,120,255,0)');
+    ctx.beginPath(); ctx.arc(p1x,p1y,3.5,0,Math.PI*2); ctx.fillStyle=p1g; ctx.fill();
+
+    // mini pulsar beam
+    ctx.save(); ctx.translate(p1x,p1y); ctx.rotate(orb*3.5);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,10,-0.2,0.2); ctx.closePath();
+    const bg=ctx.createRadialGradient(0,0,0,0,0,10);
+    bg.addColorStop(0,'rgba(0,255,231,0.5)'); bg.addColorStop(1,'rgba(0,255,231,0)');
+    ctx.fillStyle=bg; ctx.fill(); ctx.restore();
+
+    // companion — slightly larger, pinkish, ablated
+    const p2x = CX + OR*Math.cos(orb+Math.PI);
+    const p2y = CY + OR*0.42*Math.sin(orb+Math.PI);
+    const p2g = ctx.createRadialGradient(p2x,p2y,0,p2x,p2y,5);
+    p2g.addColorStop(0,'rgba(255,200,230,0.95)');
+    p2g.addColorStop(0.5,'rgba(200,100,180,0.6)');
+    p2g.addColorStop(1,'rgba(180,80,160,0)');
+    ctx.beginPath(); ctx.arc(p2x,p2y,4.5,0,Math.PI*2); ctx.fillStyle=p2g; ctx.fill();
+
+    // ablation stream from companion toward pulsar
+    const midX=(p1x+p2x)/2, midY=(p1y+p2y)/2;
+    ctx.beginPath(); ctx.moveTo(p2x,p2y); ctx.quadraticCurveTo(midX,midY-3,p1x,p1y);
+    ctx.strokeStyle='rgba(255,150,200,0.25)'; ctx.lineWidth=1.2; ctx.stroke();
+
+    t++; requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>
