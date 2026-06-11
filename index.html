@@ -1038,91 +1038,135 @@
       name: 'PSR B1919+21',
       period: 1.3373, width: 4, beam: 8, dm: 12.4,
       label: 'First pulsar ever discovered',
-      discoverer: 'Jocelyn Bell Burnell · Cambridge, 1967',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Dame_Jocelyn_Bell_Burnell_at_the_IAU_XXIX_General_Assembly_%28iauga15-d2-28%29.jpg/240px-Dame_Jocelyn_Bell_Burnell_at_the_IAU_XXIX_General_Assembly_%28iauga15-d2-28%29.jpg',
-      text: 'Discovered on 28 November 1967 by PhD student Jocelyn Bell Burnell at the Mullard Radio Astronomy Observatory, Cambridge. Initially nicknamed "LGM-1" (Little Green Men). The Nobel Prize for its discovery was awarded to her supervisor Antony Hewish — not to Bell Burnell herself.',
+      discoverer: 'Hewish & Bell Burnell et al. · Cambridge, 1967',
+      photo: 'assets/pics/bell_burnell.jpg',
+      photoFallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Dame_Jocelyn_Bell_Burnell_at_the_IAU_XXIX_General_Assembly_%28iauga15-d2-28%29.jpg/240px-Dame_Jocelyn_Bell_Burnell_at_the_IAU_XXIX_General_Assembly_%28iauga15-d2-28%29.jpg',
+      photoCredit: 'IAU/L.Fourtune · CC-BY 4.0',
+      text: 'Discovered on 28 November 1967 by PhD student Jocelyn Bell Burnell at Cambridge. Temporarily nicknamed "LGM-1" (Little Green Men). The Nobel Prize was awarded to supervisor Antony Hewish — not Bell Burnell — sparking lasting debate. In 2018 she donated her entire £2.3 million Breakthrough Prize to fund diversity scholarships in physics.',
       link: 'https://doi.org/10.1038/217709a0',
-      linkLabel: 'Hewish et al. 1968, Nature →'
+      linkLabel: 'Hewish et al. 1968, Nature'
     },
     {
       name: 'PSR J1748-2446ad',
       period: 0.001396, width: 6, beam: 12, dm: 242.0,
-      label: 'Fastest spinning pulsar known (as of June 2026)',
+      label: 'Fastest spinning pulsar known (June 2026)',
       discoverer: 'Hessels et al. · Terzan 5 globular cluster, 2006',
-      photo: '',
-      text: 'Located in the globular cluster Terzan 5, this pulsar rotates 716 times per second (period 1.396 ms) — the fastest known as of today. It was discovered in 2004–2005 using the Green Bank Telescope. Its extreme spin was spun up by accreting matter from a companion star over billions of years.',
+      photo: 'assets/pics/terzan5.jpg',
+      photoFallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Terzan_5_Globular_Cluster.jpg/480px-Terzan_5_Globular_Cluster.jpg',
+      photoCredit: 'NASA/ESA/HST · public domain',
+      text: 'Located in the dense globular cluster Terzan 5, spinning 716 times per second. Globular clusters are extraordinary pulsar hunting grounds: their extreme stellar density means stars interact and recycle neutron stars into millisecond pulsars far more efficiently than the galactic field. Terzan 5 alone hosts 39 known pulsars. The Hessels et al. (2006) author list includes Prajwal Padmanabh\'s mentor J.W.T. Hessels — directly connecting this discovery to the current generation of pulsar scientists at AEI.',
       link: 'https://doi.org/10.1126/science.1123430',
-      linkLabel: 'Hessels et al. 2006, Science →'
+      linkLabel: 'Hessels et al. 2006, Science'
+    },
+    {
+      name: 'PSR J2007+2722',
+      period: 0.02451, width: 5, beam: 10, dm: 40.8,
+      label: 'First Einstein@Home PALFA discovery',
+      discoverer: 'Knispel, Allen et al. · Einstein@Home / Arecibo, 2010',
+      photo: 'assets/pics/knispel.jpg',
+      photoFallback: 'https://www.aei.mpg.de/person/23736/26370/photo.jpg',
+      photoCredit: '© MPI for Gravitational Physics',
+      text: 'PSR J2007+2722 — the first genuine astronomical discovery by a volunteer distributed computing project. Found in PALFA (Arecibo L-band Feed Array) data by Einstein@Home, powered by 250,000 volunteers across 192 countries. Benjamin Knispel (then PhD student at AEI, supervised by Bruce Allen) led the discovery. Spins 40.8 times/second, likely a recycled pulsar that lost its companion. Proving that citizen computing can discover new astrophysical objects.',
+      link: 'https://www.aei.mpg.de/68877',
+      linkLabel: 'AEI press release',
+      link2: 'https://doi.org/10.1126/science.1195253',
+      linkLabel2: 'Knispel et al. 2010, Science'
     },
     {
       name: 'PSR J1950+2414',
       period: 0.00431, width: 5, beam: 10, dm: 67.9,
-      label: 'PALFA discovery by Einstein@Home',
-      discoverer: 'B. Knispel, B. Allen et al. · AEI Hannover, 2015',
-      photo: 'https://www.aei.mpg.de/person/23736/26370/photo.jpg',
-      text: 'Discovered by the Einstein@Home distributed computing project in PALFA (Arecibo L-band Feed Array) survey data. PSR J1950+2414 is a 4.3 ms millisecond pulsar in a 22-day eccentric binary orbit — unusual because standard recycling predicts circular orbits. Benjamin Knispel (then PhD student at AEI, supervisor: Bruce Allen) led the discovery paper.',
+      label: 'E@H PALFA eccentric binary MSP',
+      discoverer: 'Knispel, Allen et al. · Einstein@Home / PALFA, 2015',
+      photo: 'assets/pics/knispel.jpg',
+      photoFallback: 'https://www.aei.mpg.de/person/23736/26370/photo.jpg',
+      photoCredit: '© MPI for Gravitational Physics',
+      text: 'A 4.3 ms MSP in an unusual eccentric (e=0.08) 22-day orbit — standard recycling theory predicts circular orbits, so the eccentricity hints at exotic formation: a triple system gone unstable, a dynamical encounter, or collapse of a super-Chandrasekhar white dwarf. Discovered by Einstein@Home in PALFA data. Benjamin Knispel (AEI) led the paper.',
       link: 'https://arxiv.org/abs/1504.03684',
-      linkLabel: 'Knispel et al. 2015, ApJ →'
+      linkLabel: 'Knispel et al. 2015, ApJ'
     },
     {
       name: 'PSR J1555-2908',
       period: 0.00179, width: 6, beam: 12, dm: 71.5,
       label: 'Black widow eclipsing pulsar',
-      discoverer: 'Ray, Nieder, Clark et al. · GBT / Fermi, 2022',
-      photo: 'https://www.aei.mpg.de/person/27310/43608/photo.jpg',
-      text: 'A 1.79 ms black widow millisecond pulsar with a 5.6 hr orbit. The companion star — whittled down to just 0.052 solar masses — eclipses the radio signal for ~10% of the orbit, twice what simple Roche-lobe geometry would predict. Discovered via a Fermi gamma-ray source, searched with GBT. Colin Clark is a co-author and group leader at AEI.',
+      discoverer: 'Ray, Nieder, Clark et al. · GBT/Fermi, 2022',
+      photo: 'assets/pics/clark.jpg',
+      photoFallback: 'https://www.aei.mpg.de/person/27310/43608/photo.jpg',
+      photoCredit: '© MPI for Gravitational Physics',
+      text: 'A 1.79 ms black widow MSP: the companion (0.052 solar masses) has been almost fully evaporated by the pulsar wind and eclipses the radio signal for ~10% of the orbit. Black widows are the final stage of spider pulsar evolution — redbacks (heavier companion, like J2039) evolve into black widows as the companion is stripped away. Colin Clark (AEI group leader) is a co-author. These systems are key labs for neutron star mass measurement and equation-of-state constraints.',
       link: 'https://arxiv.org/abs/2202.04783',
-      linkLabel: 'Ray, Nieder, Clark et al. 2022, ApJ →'
+      linkLabel: 'Ray, Nieder, Clark et al. 2022, ApJ'
     },
     {
       name: 'PSR J2039-5617',
       period: 0.00265, width: 7, beam: 14, dm: 20.2,
-      label: 'Gamma-ray spider pulsar — Einstein@Home',
-      discoverer: 'Clark, Nieder et al. · Einstein@Home / Fermi, 2021',
-      photo: 'https://www.aei.mpg.de/person/97815/photo.jpg',
-      text: 'A 2.65 ms redback pulsar evaporating its companion (1/6 solar mass). Discovered by Einstein@Home searching Fermi gamma-ray data — the pulsations had been hiding in a known gamma-ray source for years. Lars Nieder (then PhD student at AEI) led the discovery search method. The companion\'s orbit varies unpredictably due to stellar activity.',
+      label: 'Gamma-ray redback spider — Einstein@Home',
+      discoverer: 'Clark & Nieder et al. · Einstein@Home/Fermi, 2021',
+      photo: 'assets/pics/nieder.jpg',
+      photoFallback: 'https://www.aei.mpg.de/person/32844/2784/photo.jpg',
+      photoCredit: '© MPI for Gravitational Physics',
+      text: 'A 2.65 ms redback spider pulsar — evaporating its companion (1/6 solar mass) in a 5.5-hr orbit. Lars Nieder (then PhD student at AEI, co-first-author) led the search method. Spider pulsars are observed across the full EM spectrum: radio eclipses, gamma-ray pulsations, X-ray intrabinary shocks, optical companion heating. Clark et al. pioneered gamma-ray eclipse timing to weigh neutron stars directly — a powerful new technique with no radio counterpart needed.',
       link: 'https://doi.org/10.1093/mnras/staa3484',
-      linkLabel: 'Clark, Nieder et al. 2021, MNRAS →'
+      linkLabel: 'Clark & Nieder et al. 2021, MNRAS'
+    },
+    {
+      name: 'PSR B1257+12',
+      period: 0.00621, width: 5, beam: 10, dm: 10.2,
+      label: 'First exoplanets ever discovered',
+      discoverer: 'Wolszczan & Frail · Arecibo, 1992',
+      photo: 'assets/pics/pulsar_planets.jpg',
+      photoFallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Pulsar_planet_NASA.jpg/480px-Pulsar_planet_NASA.jpg',
+      photoCredit: 'NASA/JPL artist impression · public domain',
+      text: 'Three confirmed planets orbit this 6.2 ms pulsar — the first exoplanets ever discovered, predating 51 Peg b by 3 years. Two Earth-mass worlds and one Moon-mass body orbit a stellar corpse. Their origin remains debated: did they survive the supernova, or form from a post-explosion debris disk? This question is central to Alexandra\'s long-term research programme targeting a future ERC project on pulsar planet formation.',
+      link: 'https://doi.org/10.1038/355145a0',
+      linkLabel: 'Wolszczan & Frail 1992, Nature'
     },
     {
       name: 'PSR B0833-45',
       period: 0.0893, width: 3, beam: 6, dm: 67.9,
-      label: 'Vela pulsar — young and energetic',
+      label: 'Vela pulsar — jets, rings and glitches',
       discoverer: 'Large, Vaughan & Mills · Molonglo, 1968',
-      photo: '',
-      text: 'One of the brightest radio pulsars, associated with the Vela supernova remnant ~1000 light-years away. About 11,000 years old. It "glitches" — suddenly spinning up — making it a key laboratory for neutron star interiors.',
+      photo: 'assets/pics/vela_pulsar.jpg',
+      photoFallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Vela_Pulsar_jet.jpg/480px-Vela_Pulsar_jet.jpg',
+      photoCredit: 'NASA/CXC/Chandra · public domain',
+      text: 'The Vela pulsar sits in a remnant ~1000 ly away, ~11,000 years old. Chandra\'s X-ray image reveals jets, rings and a bow shock as it plows through space at 65 km/s. It glitches — suddenly spinning up — roughly every 3 years, driven by quantum vortices in its superfluid interior suddenly coupling to the crust. One of the best probes of neutron star interior physics available to current observatories.',
       link: 'https://doi.org/10.1038/220340a0',
-      linkLabel: 'Large et al. 1968, Nature →'
+      linkLabel: 'Large et al. 1968, Nature'
     },
     {
       name: 'PSR B0531+21',
       period: 0.0334, width: 2, beam: 5, dm: 56.8,
       label: 'Crab pulsar — born 970 years ago',
       discoverer: 'Staelin & Reifenstein · Arecibo, 1968',
-      photo: '',
-      text: 'The neutron star at the heart of the Crab Nebula, created in the supernova of 1054 AD observed by Chinese astronomers. At 33 ms it is one of the faster young pulsars. It powers the entire Crab Nebula through its relativistic wind and is visible across the electromagnetic spectrum.',
+      photo: 'assets/pics/crab_nebula.jpg',
+      photoFallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Crab_Nebula.jpg/480px-Crab_Nebula.jpg',
+      photoCredit: 'NASA/ESA Hubble Space Telescope · public domain',
+      text: 'Born in the supernova of 1054 AD — visible in daylight for 23 days, recorded by Chinese and Japanese astronomers. Today it powers the entire 10 ly nebula through relativistic winds. The Hubble image shows blue synchrotron radiation from the pulsar\'s magnetic field. Visible at all wavelengths from radio to TeV gamma rays, the Crab is the definitive calibration standard for high-energy astrophysics.',
       link: 'https://doi.org/10.1126/science.162.3861.1481',
-      linkLabel: 'Staelin & Reifenstein 1968, Science →'
+      linkLabel: 'Staelin & Reifenstein 1968, Science'
     },
     {
       name: 'PSR J0437-4715',
       period: 0.00576, width: 6, beam: 12, dm: 2.6,
-      label: 'Nearest millisecond pulsar',
+      label: 'Nearest MSP — discovered with Parkes',
       discoverer: 'Johnston et al. · Parkes, 1993',
       photo: '',
-      text: 'The nearest and brightest millisecond pulsar, just 510 light-years away. Discovered at Parkes with a 5.76 ms period in a 5.7-day binary with a white dwarf. It is a primary target for pulsar timing arrays and for tests of general relativity.',
+      photoFallback: '',
+      photoCredit: '',
+      text: 'The nearest and brightest millisecond pulsar, just 510 ly away. Discovered with Parkes at 5.76 ms in a 5.7-day binary with a white dwarf. Primary target for pulsar timing arrays and precision GR tests. Parkes/Murriyang is also the telescope Alexandra uses for discovery follow-up and timing — directly connecting this classic discovery to current work.',
       link: 'https://doi.org/10.1038/361613a0',
-      linkLabel: 'Johnston et al. 1993, Nature →'
+      linkLabel: 'Johnston et al. 1993, Nature'
     },
     {
       name: 'PSR J0737-3039A',
       period: 0.02277, width: 7, beam: 14, dm: 48.9,
-      label: 'Double pulsar system',
+      label: 'Double pulsar — unique GR laboratory',
       discoverer: 'Burgay et al. · Parkes, 2003',
-      photo: '',
-      text: 'The only known system where BOTH neutron stars are detectable as pulsars (B at 2.77 s). Discovered at Parkes, it provides the most stringent tests of general relativity in the strong-field regime and won the 2021 Einstein Prize.',
+      photo: 'assets/pics/double_pulsar.jpg',
+      photoFallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Artist%27s_impression_of_the_double_pulsar_system_PSR_J0737-3039.jpg/480px-Artist%27s_impression_of_the_double_pulsar_system_PSR_J0737-3039.jpg',
+      photoCredit: 'ESO/L.Calçada · CC-BY 4.0',
+      text: 'The only known system where both neutron stars are detectable as radio pulsars (A at 22.7 ms, B at 2.77 s). Discovered at Parkes, it provides the most stringent tests of general relativity in the strong-field regime — all five classical GR tests pass with <0.05% deviation. Won the Einstein Prize in 2022. Finding more such double neutron stars is exactly the science that compact binary searches like Alexandra\'s are designed for.',
       link: 'https://doi.org/10.1038/nature02124',
-      linkLabel: 'Burgay et al. 2003, Nature →'
+      linkLabel: 'Burgay et al. 2003, Nature'
     },
   ];
 
@@ -1153,16 +1197,44 @@
   function showInfo(ps){
     infoPanel.style.display = 'block';
     infoName.textContent  = ps.name + (ps.label ? ' — ' + ps.label : '');
-    // Discoverer line is now a clickable link to the paper
-    infoDisc.textContent  = (ps.linkLabel || ps.discoverer);
+    // Discoverer = clickable paper link
+    infoDisc.textContent  = (ps.discoverer || '');
     infoDisc.href         = ps.link || '#';
-    infoDisc.title        = ps.discoverer;
+    infoDisc.title        = ps.linkLabel || '';
     infoText.textContent  = ps.text;
-    if(ps.photo){
-      infoPhoto.src   = ps.photo;
-      infoPhoto.alt   = ps.discoverer;
+    // Second link if present
+    let link2El = document.getElementById('pulsar-info-link2');
+    if(!link2El){
+      link2El = document.createElement('a');
+      link2El.id = 'pulsar-info-link2';
+      link2El.target = '_blank'; link2El.rel = 'noopener';
+      link2El.style.cssText = 'font-family:var(--font-mono);font-size:10px;color:var(--cyan);text-decoration:none;letter-spacing:.06em;opacity:.8;margin-top:4px;display:block;';
+      infoText.parentNode.appendChild(link2El);
+    }
+    if(ps.link2){ link2El.textContent = ps.linkLabel2 || 'Paper 2 →'; link2El.href = ps.link2; link2El.style.display='block'; }
+    else { link2El.style.display='none'; }
+    // Photo with fallback URL
+    if(ps.photo || ps.photoFallback){
       infoPhoto.style.display = 'block';
-      infoPhoto.onerror = ()=>{ infoPhoto.style.display='none'; };
+      infoPhoto.alt   = ps.discoverer || '';
+      // Try local first, fall back to remote URL
+      infoPhoto.src   = ps.photo || ps.photoFallback;
+      infoPhoto.onerror = ()=>{
+        if(ps.photoFallback && infoPhoto.src !== ps.photoFallback){
+          infoPhoto.src = ps.photoFallback;
+        } else {
+          infoPhoto.style.display = 'none';
+        }
+      };
+      // Photo credit
+      let creditEl = document.getElementById('pulsar-photo-credit');
+      if(!creditEl){
+        creditEl = document.createElement('p');
+        creditEl.id = 'pulsar-photo-credit';
+        creditEl.style.cssText = 'font-size:9px;color:var(--muted);opacity:.55;margin-top:3px;font-family:var(--font-mono);letter-spacing:.04em;';
+        infoPhoto.parentNode.appendChild(creditEl);
+      }
+      creditEl.textContent = ps.photoCredit || '';
     } else {
       infoPhoto.style.display = 'none';
     }
@@ -1345,16 +1417,6 @@
     pCtx.fillStyle='rgba(40,160,80,0.22)'; pCtx.fill();
     pCtx.restore();
 
-    // Earth glow when beam hits
-    if(obsIntensity > 0.03){
-      const eg2=pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er*3);
-      eg2.addColorStop(0,`rgba(0,255,231,${obsIntensity*0.55})`);
-      eg2.addColorStop(0.5,`rgba(0,255,231,${obsIntensity*0.18})`);
-      eg2.addColorStop(1,'rgba(0,255,231,0)');
-      pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er*3,0,Math.PI*2);
-      pCtx.fillStyle=eg2; pCtx.fill();
-    }
-
     // Dish
     pCtx.save(); pCtx.translate(OBS_X, OBS_Y-er);
     pCtx.beginPath(); pCtx.moveTo(0,0); pCtx.lineTo(0,5);
@@ -1367,11 +1429,23 @@
 
     // Store
     drawBeam.lastObsIntensity = obsIntensity;
+    // Earth glow is driven by drawSignal.lastWinAmp (pulse at window), not obsIntensity
+    // so it lights up when the pulse actually passes the observation strip
+    const earthGlowAmp = drawBeam.earthGlow || 0;
+    if(earthGlowAmp > 0.03){
+      const eg2=pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er*3);
+      eg2.addColorStop(0,`rgba(0,255,231,${earthGlowAmp*0.55})`);
+      eg2.addColorStop(0.5,`rgba(0,255,231,${earthGlowAmp*0.18})`);
+      eg2.addColorStop(1,'rgba(0,255,231,0)');
+      pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er*3,0,Math.PI*2);
+      pCtx.fillStyle=eg2; pCtx.fill();
+    }
     drawBeam.earthX = OBS_X;
     drawBeam.earthR = er;
     drawBeam.earthY = OBS_Y;
   }
   drawBeam.lastObsIntensity = 0;
+  drawBeam.earthGlow = 0;
   drawBeam.earthX = 0; drawBeam.earthR = 13; drawBeam.earthY = 0;
 
       /* ── Signal trace ──
@@ -1456,6 +1530,9 @@
     sCtx.textAlign = 'right';
     sCtx.fillText('inspired by M. Kramer', W - 4, H - 2);
     sCtx.textAlign = 'left';
+
+    // Feed winAmp back so Earth glow syncs with pulse at window
+    drawBeam.earthGlow = winAmp;
   }
 
     /* ── Pre-fill: visible pulses across the trace on startup ── */
@@ -1832,72 +1909,122 @@
   loop();
 })();
 
-/* ── Astroinformatics — minimal single-line terminal icon
-   Just: blinking cursor at idle, then a short command types out,
-   holds briefly, clears. No bar, no traffic lights. Fires once on
-   first view of the research section, then quietly every ~28s. ── */
+/* ── Astroinformatics — 2-row code editor icon
+   Peacefully types Python/pulsar code across two lines.
+   Line 1 stays as context, line 2 types new content slowly.
+   Triggers once on first view, then repeats every ~40s. ── */
 (function(){
   const c = document.getElementById('ico-astro');
   if(!c) return;
   const ctx = c.getContext('2d');
   const W=54, H=42;
 
-  const COMMANDS = ['presto -dm 97','fold -p 714','./pipeline.py','cluster.py','readheader'];
-  let cmdIdx=0, charPos=0, blinkT=0;
+  // Pairs: [line1 (context/previous), line2 (typing now)]
+  const SNIPPETS = [
+    ['import presto',     'fold_period(dm=97)'],
+    ['cands = search()',  'cluster(cands)'],
+    ['p = 1.337  # s',   'f = 1/p  # Hz'],
+    ['data = load(fb)',   'dedisperse(dm)'],
+    ['from astropy',      'import units as u'],
+    ['t_arr = toas()',    'fit_timing(t_arr)'],
+  ];
+
+  let idx=0, charPos=0, blinkT=0;
   let state='idle'; // idle | typing | hold | clearing
   let holdT=0, clearT=0, nextTrigger=0, triggered=false, frame=0;
+  let line1='', line2='';
 
   const section = document.getElementById('research');
   if(section){
     new IntersectionObserver(entries=>{
       entries.forEach(e=>{
-        if(e.isIntersecting && !triggered){ triggered=true; nextTrigger=50; }
+        if(e.isIntersecting && !triggered){ triggered=true; nextTrigger=80; }
       });
     },{threshold:0.3}).observe(section);
   }
 
-  function draw(cmd, cur){
+  function draw(typing, cur){
     ctx.clearRect(0,0,W,H);
-    // subtle dark bg
-    ctx.fillStyle='rgba(6,10,20,0.85)';
+    // editor bg — very dark, slight blue tint
+    ctx.fillStyle='rgba(5,8,16,0.92)';
     ctx.fillRect(0,0,W,H);
-    // single prompt line centered vertically
-    ctx.font='5px "Space Mono",monospace';
-    ctx.fillStyle='rgba(0,255,231,0.55)';
-    ctx.fillText('>', 3, H/2+2);
-    ctx.fillStyle='rgba(220,235,245,0.8)';
-    ctx.fillText(cmd, 10, H/2+2);
+
+    // thin top bar (title bar colour)
+    ctx.fillStyle='rgba(20,32,52,0.9)';
+    ctx.fillRect(0,0,W,6);
+
+    // line numbers — dim cyan
+    ctx.font='4.5px "Space Mono",monospace';
+    ctx.fillStyle='rgba(0,255,231,0.22)';
+    ctx.fillText('1',2,17);
+    ctx.fillText('2',2,30);
+
+    // separator line
+    ctx.strokeStyle='rgba(30,45,70,0.8)';
+    ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(8,9); ctx.lineTo(8,H); ctx.stroke();
+
+    // line 1 — dimmer, already written context
+    ctx.font='4.8px "Space Mono",monospace';
+    // keyword colouring: crude but effective
+    const kw=['import','from','def ','return','as '];
+    ctx.fillStyle='rgba(180,200,220,0.45)';
+    ctx.fillText(line1, 11, 17);
+
+    // line 2 — what's being typed now, brighter
+    ctx.fillStyle='rgba(220,238,255,0.82)';
+    ctx.fillText(typing, 11, 30);
+
+    // cursor on line 2
     if(cur){
-      const tw=ctx.measureText(cmd).width;
-      ctx.fillStyle='rgba(0,255,231,0.7)';
-      ctx.fillRect(10+tw, H/2-5, 2.5, 7);
+      const tw = ctx.measureText(typing).width;
+      ctx.fillStyle='rgba(0,255,231,0.65)';
+      ctx.fillRect(11+tw, 24.5, 2, 6.5);
     }
   }
 
   function loop(){
     frame++; blinkT++;
     if(state==='idle'){
-      if(nextTrigger>0){ nextTrigger--; if(nextTrigger===0){state='typing';charPos=0;cmdIdx=(cmdIdx+1)%COMMANDS.length;holdT=0;} }
-      draw('', Math.floor(blinkT/28)%2===0);
+      if(nextTrigger>0){
+        nextTrigger--;
+        if(nextTrigger===0){
+          // Shift: line2 becomes line1, pick new snippet
+          idx = (idx+1) % SNIPPETS.length;
+          line1 = SNIPPETS[(idx-1+SNIPPETS.length)%SNIPPETS.length][1];
+          line2  = SNIPPETS[idx][1];
+          charPos=0; holdT=0; state='typing';
+        }
+      }
+      draw('', Math.floor(blinkT/34)%2===0);
       requestAnimationFrame(loop); return;
     }
-    const cmd=COMMANDS[cmdIdx];
+
     if(state==='typing'){
-      if(frame%5===0) charPos++;
-      if(charPos>=cmd.length){state='hold';holdT=0;}
-      draw(cmd.slice(0,charPos), Math.floor(blinkT/20)%2===0);
-    } else if(state==='hold'){
+      // Slow, peaceful typing — one char every 7 frames (~9 chars/sec at 60fps)
+      if(frame%7===0) charPos++;
+      if(charPos>=line2.length){ state='hold'; holdT=0; }
+      draw(line2.slice(0,charPos), Math.floor(blinkT/22)%2===0);
+    }
+    else if(state==='hold'){
       holdT++;
-      if(holdT>80){state='clearing';clearT=0;}
-      draw(cmd, false);
-    } else if(state==='clearing'){
+      // Hold fully typed line for ~2.5s then gently clear
+      if(holdT>150){ state='clearing'; clearT=0; }
+      draw(line2, false);
+    }
+    else if(state==='clearing'){
       clearT++;
-      if(clearT>14){state='idle';charPos=0;nextTrigger=1700;}
-      draw('',false);
+      if(clearT>20){ state='idle'; charPos=0; nextTrigger=2400; } // ~40s
+      draw('', false);
     }
     requestAnimationFrame(loop);
   }
-  draw('',true); loop();
+
+  // Init with first snippet already showing as context
+  line1 = SNIPPETS[SNIPPETS.length-1][1];
+  line2  = SNIPPETS[0][1];
+  draw('', true);
+  loop();
 })();
 
 
