@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alexandra Botnariuc — Pulsar Astronomer</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,10 +22,13 @@
   .page-wrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 28px; }
 
   /* Nav dots */
-  #nav-dots { position:fixed; right:20px; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:14px; }
-  .nav-dot { width:8px; height:8px; border-radius:50%; background:var(--border); border:1px solid var(--muted); cursor:pointer; transition:all .3s; position:relative; }
-  .nav-dot:hover::after,.nav-dot.active::after { content:attr(data-label); position:absolute; right:18px; top:50%; transform:translateY(-50%); font-family:var(--font-mono); font-size:10px; color:var(--cyan); white-space:nowrap; letter-spacing:.05em; }
-  .nav-dot.active { background:var(--cyan); border-color:var(--cyan); box-shadow:0 0 10px var(--cyan); }
+  #nav-dots { position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:6px; padding:10px 0; background:rgba(8,11,20,0.55); backdrop-filter:blur(8px); border-radius:10px 0 0 10px; border:1px solid var(--border); border-right:none; }
+  .nav-dot { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 10px; cursor:pointer; transition:all .25s; position:relative; white-space:nowrap; }
+  .nav-dot-label { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; transition:color .25s; }
+  .nav-dot:hover .nav-dot-label, .nav-dot.active .nav-dot-label { color:var(--cyan); }
+  .nav-dot-pip { width:6px; height:6px; border-radius:50%; background:var(--border); border:1px solid var(--muted); flex-shrink:0; transition:all .25s; }
+  .nav-dot.active .nav-dot-pip { background:var(--cyan); border-color:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+  .nav-dot:hover .nav-dot-pip { border-color:var(--cyan); }
 
   /* Sections */
   .section { padding:90px 0 60px; }
@@ -48,7 +52,7 @@
   .avatar-placeholder span { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--muted); opacity:.5; text-align:center; line-height:1.4; }
 
   /* Name */
-  .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.25em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; }
+  .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hero-name {
     font-family:var(--font-display);
     font-size:clamp(28px,5.5vw,70px);
@@ -109,7 +113,7 @@
   .interest-icon svg { width:100%; height:100%; }
   .interest-icon-canvas { margin-bottom:12px; line-height:0; }
   .interest-title { font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--white); margin-bottom:6px; }
-  .interest-desc { font-size:12px; color:var(--muted); line-height:1.55; }
+  .interest-desc { font-size:12px; color:var(--muted); line-height:1.6; margin-top:8px; }
 
   /* Skills — richer layout */
   .skills-section { display:flex; flex-direction:column; gap:36px; }
@@ -215,15 +219,14 @@
   .citizen-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:20px; }
   .citizen-card { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all .3s; display:flex; flex-direction:column; }
   .citizen-card:hover { border-color:rgba(0,255,231,.3); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,255,231,.06); }
-  .citizen-logo-link { display:block; height:130px; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:20px; text-decoration:none; border-bottom:1px solid var(--border); }
-  .citizen-logo { max-height:90px; max-width:100%; object-fit:contain; opacity:.85; filter:brightness(1.1); }
-  .citizen-logo-sq { border-radius:8px; }
-  .citizen-logo-fallback { text-align:center; }
+  .citizen-logo-panel { height:110px; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:flex-start; gap:18px; padding:16px 24px; border-bottom:1px solid var(--border); }
+  .citizen-logo-panel img { height:56px; width:56px; object-fit:contain; opacity:.9; filter:brightness(1.1); flex-shrink:0; }
+  .citizen-panel-title { font-family:var(--font-display); font-size:36px; font-weight:700; color:var(--white); letter-spacing:-.02em; line-height:1; }
   .citizen-body { padding:22px 22px 20px; flex:1; display:flex; flex-direction:column; gap:6px; }
-  .citizen-title { font-family:var(--font-display); font-size:16px; font-weight:600; }
-  .citizen-title a { color:var(--white); text-decoration:none; border-bottom:1px solid rgba(232,244,253,.15); }
-  .citizen-title a:hover { border-color:var(--cyan); color:var(--cyan); }
-  .citizen-role { font-family:var(--font-mono); font-size:10px; color:var(--cyan); letter-spacing:.1em; text-transform:uppercase; opacity:.8; }
+
+  .citizen-role { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:.08em; opacity:.75; }
+  .citizen-role a { color:#4ADE80; text-decoration:none; border-bottom:1px solid rgba(74,222,128,.25); }
+  .citizen-role a:hover { opacity:.8; }
   .citizen-desc { font-size:13px; color:var(--muted); line-height:1.65; margin-top:4px; flex:1; }
   .citizen-link { font-family:var(--font-mono); font-size:10px; color:var(--magenta); text-decoration:none; letter-spacing:.06em; opacity:.8; margin-top:8px; }
   .citizen-link:hover { opacity:1; }
@@ -274,8 +277,8 @@
         <h1 class="hero-name">
           <span class="name-first">Alexandra&nbsp;</span><span class="name-last">Botnariuc</span>
         </h1>
-        <p class="hero-title">Pulsar Astronomer &amp; Astroinformatician</p>
-        <p class="hero-tagline">Searching for new pulsars and compact binaries in major radio surveys — from Arecibo and Parkes to FAST and MeerKAT. Combining custom search algorithms, GPU computing, and multi-telescope observations to find rare systems that push the boundaries of neutron star physics.</p>
+        <p class="hero-title">Radio Astronomer · Pulsar Searcher · Astroinformatician</p>
+        <p class="hero-tagline">Searching for new pulsars, with a focus on compact binaries, in major radio surveys' archival data — from Arecibo and Parkes to FAST and MeerKAT. Combining template search algorithms with volunteer computing, custom candidate clustering and selection, and multi-telescope observations to find rare systems that push the boundaries of neutron star physics.</p>
         <div class="hero-links">
           <a class="hero-link" id="email-link" href="#" onclick="window.location.href='mai'+'lto:'+'alexandra.botnariuc'+'@'+'aei.mpg.de';return false;">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-email"/></svg> Email
@@ -283,12 +286,14 @@
           <a class="hero-link" href="https://github.com/alexandra-botnariuc/" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-github"/></svg> GitHub
           </a>
+          <!-- ORCID and ADS commented out until first publication
           <a class="hero-link" href="https://orcid.org/0000-0002-6874-8096" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-orcid"/></svg> ORCID
           </a>
           <a class="hero-link" href="https://ui.adsabs.harvard.edu/search/q=author%3ABotnariuc&sort=date+desc" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-signal"/></svg> ADS
           </a>
+          -->
           <a class="hero-link" href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-web"/></svg> Pulsar Group
           </a>
@@ -307,17 +312,37 @@
         </div>
       </div>
     </div>
+    <a href="https://open.spotify.com/episode/51ZWeXGq9dmveShF6mqHva" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:#1DB954;text-decoration:none;text-transform:uppercase;opacity:.8;transition:opacity .25s;"
+       onmouseover="this.style.opacity=1" onmouseout="this.style.opacity='.8'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 0 1-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.622.622 0 1 1-.277-1.215c3.809-.87 7.076-.496 9.712 1.115.294.18.386.563.207.857zm1.223-2.722a.78.78 0 0 1-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 0 1-.97-.519.781.781 0 0 1 .52-.97c3.632-1.102 8.147-.568 11.23 1.328a.78.78 0 0 1 .257 1.07zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.938.938 0 0 1-.583-1.782c3.532-1.157 9.404-.933 13.115 1.338a.937.937 0 0 1-.915 1.6z"/></svg>
+      Listen: my journey to the PhD
+    </a>
+    <a href="#pulsars" onclick="document.getElementById('pulsars').scrollIntoView({behavior:'smooth'});return false;"
+       style="display:inline-flex;align-items:center;gap:8px;margin-top:28px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-decoration:none;text-transform:uppercase;opacity:.6;transition:all .25s;"
+       onmouseover="this.style.opacity=1;this.style.color='var(--cyan)'"
+       onmouseout="this.style.opacity='.6';this.style.color='var(--muted)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Go to Pulsar Simulator
+    </a>
   </section>
 
   <!-- ABOUT -->
   <section class="section reveal" id="about" data-label="About">
     <p class="section-label">01 — About</p>
-    <h2 class="section-title">Who I Am</h2>
+    <h2 class="section-title">Nice to meet you!</h2>
     <div class="divider"></div>
     <div class="about-text">
-      <p>I'm a PhD candidate at <strong style="color:var(--white)">Leibniz University Hannover</strong>, employed by the <a href="https://www.aei.mpg.de" target="_blank" rel="noopener">Max Planck Institute for Gravitational Physics (AEI) in Hannover</a>, where I work in the <a href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">Pulsar Group led by Dr. Colin Clark</a>. My research focuses on discovering new radio pulsars and compact binaries in major survey datasets — working with data from PALFA (Arecibo), the FAST GPPS survey, the Parkes Multibeam Pulsar Survey, and the MeerKAT Galactic Centre search. I also observe actively with the Parkes radio telescope for discovery follow-up and timing.</p>
-      <p>My background spans Cambridge physics, professional software development (including a team lead role and Symfony certification), an MSc in computational science, and bioinformatics research. That combination means I approach pulsar searching as both an astronomer and an engineer: I build the pipelines, develop the algorithms, and run them on GPU and CPU clusters at scale.</p>
-      <p>My longer-term research goal is to develop a dedicated programme on pulsar planets. Key open questions remain largely unanswered: how and why did these systems form? Did the planets survive the supernova, or form from post-explosion debris? Could any of them be habitable in some sense? What do they tell us about planetary formation channels more broadly, and which assumptions from standard planet formation theory break down in this regime? I aim to build the observational and theoretical foundation needed to tackle these questions, and to pursue exoplanet expertise as a bridge toward a future ERC-funded programme in this area.</p>
+      <p>I am currently a PhD student at <a href="https://www.uni-hannover.de" target="_blank" rel="noopener" class="link-inst">Leibniz Universit&auml;t Hannover</a>, working in the <a href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener" class="link-inst">Pulsar Group</a> led by <a href="https://www.aei.mpg.de/person/27310/43608" target="_blank" rel="noopener" class="link-person">Dr. Colin Clark</a> and part of <a href="https://www.aei.mpg.de/obs-rel-cosm" target="_blank" rel="noopener" class="link-person">Prof. Bruce Allen</a>&apos;s Observational Relativity and Cosmology group at the <a href="https://www.aei.mpg.de" target="_blank" rel="noopener" class="link-inst">Max Planck Institute for Gravitational Physics</a> in Hannover. My research has focused mainly on the discovery and follow-up of new radio pulsars — canonical and in tight binaries — in large archival datasets, specifically from the <span class="tx-inst">PALFA</span> (Arecibo), <span class="tx-inst">PMPS</span> (Parkes), and public <span class="tx-inst">FAST GPPS</span> surveys. I have been involved in several group projects, and obtained telescope time with <span class="tx-inst">ALMA</span> to search for debris disks as potential evidence for pulsar planets. I am currently actively observing with the <a href="https://www.csiro.au/en/about/facilities-collections/atnf/parkes-radio-telescope-murriyang" target="_blank" rel="noopener" class="link-inst">Murriyang (Parkes) radio telescope</a>.</p>
+
+      <p>My path to astrophysics was anything but straight. Though always drawn more to physics than to mathematics — even if, at first, mathematics was the easier one — I worked hard to acquire the elusive <strong><em>physics intuition</em></strong> that good scientists possess. I read Natural Sciences at <a href="https://www.cam.ac.uk" target="_blank" rel="noopener" class="link-inst">Cambridge University</a>, where I studied Mathematics and then Physics, before pursuing a career in professional software development. There, analytical thinking, fast learning, and a natural aptitude for leading people quickly brought me to a Team Lead role, managing projects and developer teams. My passion for physics never faded, and when I could finally make it work, I enrolled in an MSc at <a href="https://www.uni-rostock.de" target="_blank" rel="noopener" class="link-inst">Rostock University</a> combining computational science and physics. My thesis was carried out in the Star Formation and Protoplanetary Disks group of <a href="https://www.astrophysik.uni-kiel.de/~wolf/" target="_blank" rel="noopener" class="link-person">Prof. Sebastian Wolf</a> in Kiel, using Monte Carlo simulations to fit luminosity and temperature profiles to observations of protoplanetary disks. That combination — physical modelling, large-scale computation, and observational data — is exactly what defines my current work, where I build pipelines, develop algorithms, run large-scale searches on CPU and GPU clusters, and let the physical nature of the objects shape every step of the search design.</p>
+
+      <p>My longer-term research goal is to help establish <strong style="background:linear-gradient(90deg,var(--cyan),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">pulsar planets</strong> as a dedicated field of study. Key questions I want to answer: <span class="q-color-1">How and why did these systems form?</span> <span class="q-color-2">Did the planets survive the supernova, or condense from post-explosion debris?</span> <span class="q-color-3">Could any of them be habitable in some meaningful sense?</span> <span class="q-color-4">What do they reveal about planetary formation channels more broadly — and which assumptions from standard formation theory break down in this extreme regime?</span></p>
+
+      <p style="margin-top:20px;padding:14px 18px;background:rgba(29,185,84,0.07);border:1px solid rgba(29,185,84,0.2);border-radius:8px;font-size:14px;">
+        <a href="https://open.spotify.com/episode/51ZWeXGq9dmveShF6mqHva" target="_blank" rel="noopener" style="color:#1DB954;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(29,185,84,0.3);">&#127911; Hello PhD podcast</a>
+        <span style="color:rgba(232,244,253,0.6);"> &mdash; If you want to hear all about my journey to the PhD, have a listen to this interview.</span>
+      </p>
     </div>
   </section>
 
@@ -326,105 +351,174 @@
     <p class="section-label">02 — Research</p>
     <h2 class="section-title">Research Interests</h2>
     <div class="divider"></div>
+    <p style="font-size:11px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:20px;opacity:.5;">hover or tap a card to read more</p>
     <div class="interests-grid">
-      <div class="interest-card c-cyan">
-        <div class="interest-icon-canvas"><canvas id="ico-astro" width="54" height="42"></canvas></div>
-        <div class="interest-title">Astroinformatics &amp; Survey Searches</div>
-        <div class="interest-desc">Large-scale pulsar survey pipelines across PALFA, FAST GPPS, PMPS, and MeerKAT. Custom clustering algorithms and ML-based candidate classification on GPU/CPU clusters.</div>
-      </div>
 
-      <!-- Compact Binary — tight two-body orbit with GW spirals (image 3) -->
-      <div class="interest-card c-amber">
-        <div class="interest-icon-canvas"><canvas id="ico-compact" width="54" height="42"></canvas></div>
-        <div class="interest-title">Compact Binary Searches</div>
-        <div class="interest-desc">Targeted acceleration searches for tight-orbit binary radio pulsars — computationally the hardest problem in pulsar astronomy, requiring jerk searches and GPU-accelerated pipelines.</div>
-      </div>
-
+      <!-- 1. Radio Observations -->
       <div class="interest-card c-magenta">
-        <div class="interest-icon-canvas"><canvas id="ico-parkes" width="54" height="42"></canvas></div>
+        <div class="interest-icon-canvas"><canvas id="ico-parkes" width="44" height="34"></canvas></div>
         <div class="interest-title">Radio Observations</div>
-        <div class="interest-desc">Discovery follow-up and precision timing of new pulsars with Parkes/Murriyang. Observational campaigns bridging survey discoveries to full timing solutions.</div>
+        <div class="interest-desc">Discovery follow-up, timing solutions, and long-baseline monitoring of new pulsars with the Murriyang (Parkes) radio telescope. As an active observer I bridge survey discoveries to full timing solutions — confirming and characterising new pulsars from data taken with the world's best southern radio telescope.</div>
       </div>
 
-      <!-- Pulsar Planets — planets as main show, muted pulsar behind (new image) -->
-      <div class="interest-card c-purple">
-        <div class="interest-icon-canvas"><canvas id="ico-planets" width="54" height="42"></canvas></div>
-        <div class="interest-title">Pulsar Planets</div>
-        <div class="interest-desc">Timing residual searches for planetary companions, formation theory, and ALMA observational constraints on post-supernova debris disks — a long-term ERC target.</div>
+      <!-- 2. Astroinformatics -->
+      <div class="interest-card c-cyan">
+        <div class="interest-icon-canvas"><canvas id="ico-astro" width="44" height="34"></canvas></div>
+        <div class="interest-title">Astroinformatics</div>
+        <div class="interest-desc">Astroinformatics covers computationally intensive research on astrophysical phenomena — from simulations and modelling to statistics, large-scale data searches, machine learning classifications, and other data science topics. I have done simulations, volunteer-based large-scale searches, image classification, and custom clustering and candidate sorting on data from Arecibo, FAST, Parkes and MeerKAT. I love all of it.</div>
       </div>
 
-      <!-- Binary Evolution — mass transfer stream, Roche lobe (image 2) -->
-      <div class="interest-card c-green">
-        <div class="interest-icon-canvas"><canvas id="ico-evolution" width="54" height="42"></canvas></div>
-        <div class="interest-title">Binary Evolution</div>
-        <div class="interest-desc">Recycling scenarios, mass transfer, and the formation of exotic compact binaries. Bridging observational search results to population synthesis models.</div>
+      <!-- 3. Compact Binary Searches -->
+      <div class="interest-card c-amber">
+        <div class="interest-icon-canvas"><canvas id="ico-compact" width="44" height="34"></canvas></div>
+        <div class="interest-title">Compact Binary Searches</div>
+        <div class="interest-desc">Compact binaries — systems of two compact objects (neutron stars, pulsars, black holes) — are extraordinary laboratories. The <a href="#pulsars" onclick="document.getElementById(&quot;pulsars&quot;).scrollIntoView({behavior:&quot;smooth&quot;});return false;" style="color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(255,179,71,.35);">double pulsar</a> showed we can stringently test General Relativity and detect quasi-continuous gravitational waves. Searching for pulsars in orbits shorter than ~20 minutes is one of the hardest problems in radio astronomy: the pulsar accelerates continuously, smearing its signal. Extra acceleration and jerk parameters multiply the template bank enormously. One solution: <a href="https://einsteinathome.org" target="_blank" rel="noopener" style="color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(255,179,71,.35);">Einstein@Home</a>, which parallelises the search across thousands of volunteer computers.</div>
       </div>
 
-      <!-- Spider Pulsars — ablating companion, accretion stream, disk (image 1) -->
+      <!-- 4. Spider Pulsars -->
       <div class="interest-card c-rose">
-        <div class="interest-icon-canvas"><canvas id="ico-spider" width="54" height="42"></canvas></div>
+        <div class="interest-icon-canvas"><canvas id="ico-spider" width="44" height="34"></canvas></div>
         <div class="interest-title">Spider Pulsars</div>
-        <div class="interest-desc">Black widow and redback MSPs ablating their companions in tight orbits — characterisation, orbital dynamics, and multi-wavelength follow-up.</div>
+        <div class="interest-desc">Black widow and redback millisecond pulsars slowly ablate their companions in tight orbits. Observed across the full electromagnetic spectrum — radio eclipses, gamma-ray pulsations, X-ray intrabinary shocks, and optically heated companions — they are key laboratories for measuring neutron star masses and constraining the nuclear equation of state. Their orbital dynamics vary unpredictably due to stellar activity, making timing both challenging and uniquely rich.</div>
       </div>
+
+      <!-- 5. Binary Evolution -->
+      <div class="interest-card c-green">
+        <div class="interest-icon-canvas"><canvas id="ico-evolution" width="44" height="34"></canvas></div>
+        <div class="interest-title">Binary Evolution</div>
+        <div class="interest-desc">How do millisecond pulsars form? A neutron star accretes matter from a companion, spinning up over billions of years into a fast-rotating recycled pulsar. The details — mass transfer stability, common-envelope phases, supernova kicks — determine what systems we observe and where. Comparing observed populations with binary evolution models helps constrain both formation channels and the neutron star equation of state.</div>
+      </div>
+
+      <!-- 6. Pulsar Planets -->
+      <div class="interest-card c-purple">
+        <div class="interest-icon-canvas"><canvas id="ico-planets" width="44" height="34"></canvas></div>
+        <div class="interest-title">Pulsar Planets</div>
+        <div class="interest-desc">The first exoplanets ever discovered orbit a pulsar — yet pulsar planets remain the least understood planetary systems. Did they survive the supernova, or form from post-explosion debris? Could any be habitable? I have already obtained ALMA time searching for a debris disk, and this is the foundation of my long-term ERC vision: to make pulsar planets a thriving field of study.</div>
+      </div>
+
     </div>
   </section>
 
-  <!-- PULSAR WIDGET -->
-  <section class="section reveal" id="pulsars" data-label="Pulsars">
-    <p class="section-label">03 — Interactive</p>
-    <h2 class="section-title">Pulsar Simulator</h2>
+  <!-- CV -->
+  <section class="section reveal" id="cv" data-label="CV">
+    <p class="section-label">03 — CV</p>
+    <h2 class="section-title">Curriculum Vitae</h2>
     <div class="divider"></div>
-    <div id="pulsar-widget">
-      <p class="widget-header">Lighthouse beam in 3D — sweeps toward the observer · signal spike on each pass · <a href="https://www.jb.man.ac.uk/~mkramer/" target="_blank" rel="noopener" style="color:var(--muted);opacity:.6;text-decoration:none;border-bottom:1px solid rgba(122,139,168,0.25);">visualisation inspired by M. Kramer</a></p>
-      <div class="widget-main">
-        <canvas id="pulsar-canvas" height="320"></canvas>
-        <canvas id="signal-canvas" height="44"></canvas>
-        <div class="widget-controls-row">
-          <div class="ctrl-col">
-            <div class="ctrl-group">
-              <label>Period (s) <span id="val-period">1.337</span></label>
-              <input type="range" id="sl-period" min="0.002" max="8" step="0.001" value="1.337">
-            </div>
-            <div class="ctrl-group">
-              <label>Pulse width (duty %) <span id="val-width">4</span></label>
-              <input type="range" id="sl-width" min="1" max="50" step="1" value="4">
-            </div>
-            <div class="ctrl-group">
-              <label>Beam half-angle (°) <span id="val-beam">8</span></label>
-              <input type="range" id="sl-beam" min="2" max="60" step="1" value="8">
-            </div>
-            <div class="ctrl-group">
-              <label>Dispersion measure <span id="val-dm">12.4</span></label>
-              <input type="range" id="sl-dm" min="0" max="500" step="0.5" value="12.4">
-            </div>
-          </div>
-          <div class="ctrl-col">
-            <div class="ctrl-row">
-              <button class="ctrl-btn active" id="btn-play">Pause</button>
-            </div>
-            <div>
-              <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:9px;">Notable pulsars</p>
-              <div class="pulsar-presets" id="presets"></div>
-            </div>
-            <div class="widget-readout" id="readout"></div>
-          </div>
+    <button id="cv-toggle" onclick="toggleCV()" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:10px 22px;border-radius:6px;cursor:pointer;border:1px solid var(--cyan);background:rgba(0,255,231,.06);color:var(--cyan);transition:all .25s;margin-bottom:32px;display:block;">&#9660;&nbsp; Show CV</button>
+    <div id="cv-content" style="display:none;">
+
+<!-- EXPERIENCE -->
+  <section class="section reveal" id="experience" data-label="Experience">
+    <p class="section-label">06 — Experience</p>
+    <h2 class="section-title">Experience</h2>
+    <div class="divider"></div>
+    <div class="timeline">
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2021 — Present (excl. maternity leave 2024–2025)</div>
+        <div class="tl-role">PhD Researcher — Radio Pulsar Astronomy</div>
+        <div class="tl-org"><a href="https://www.aei.mpg.de/continuousgravitationalwaves/pulsars" target="_blank" rel="noopener">Max Planck Institute for Gravitational Physics (AEI) · Hannover</a> / Leibniz University Hannover</div>
+        <div class="tl-desc">
+          <ul>
+            <li>Large-scale re-searches of PALFA (Arecibo), FAST GPPS, Parkes PMPS, and MeerKAT Galactic Centre survey data for new pulsars and compact binaries.</li>
+            <li>Developed custom clustering algorithms for candidate classification; shared with collaborators for independent science cases.</li>
+            <li>Active observing with the Parkes radio telescope for discovery follow-up and timing.</li>
+            <li>ALMA proposal and data reduction for candidate pulsar planet-formation disk (upper limits obtained).</li>
+            <li>HTCondor and GPU-accelerated processing of terabyte-scale filterbank data.</li>
+            <li>Teaching: Datalab seminar (marked course, Leibniz University Hannover) — two semesters.</li>
+          </ul>
         </div>
-        <div id="pulsar-info-panel" style="display:none;margin-top:16px;padding:16px 18px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;">
-          <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
-            <img id="pulsar-info-photo" src="" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;display:none;">
-            <div style="flex:1;min-width:180px;">
-              <p id="pulsar-info-name" style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;"></p>
-              <a id="pulsar-info-discoverer" href="" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);letter-spacing:.06em;margin-bottom:7px;opacity:.8;display:block;text-decoration:none;border-bottom:1px solid rgba(0,255,231,0.18);padding-bottom:6px;margin-bottom:8px;transition:opacity .2s;"></a>
-              <p id="pulsar-info-text" style="font-size:12px;color:var(--muted);line-height:1.65;"></p>
-            </div>
-          </div>
-        </div>
+        <div class="tl-tags"><span class="tl-tag">Pulsar Search</span><span class="tl-tag">Binary Search</span><span class="tl-tag">PRESTO</span><span class="tl-tag">HTCondor</span><span class="tl-tag">GPU</span><span class="tl-tag">ALMA</span><span class="tl-tag">Parkes</span><span class="tl-tag">Python</span></div>
       </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2024 — 2025</div>
+        <div class="tl-role">Maternity Leave</div>
+        <div class="tl-org">Career break</div>
+        <div class="tl-desc">Second maternity leave.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2019 — 2020</div>
+        <div class="tl-role">Bioinformatician</div>
+        <div class="tl-org">Uniklinikum Schleswig-Holstein (UKSH), Kiel</div>
+        <div class="tl-desc">Hematology Lab under Dr. Nikos Darzentas. Extended the ARResT/Interrogate Genome visualisation tool (R/Shiny); built Python libraries for patient data retrieval, processing and analysis for future publications. Attended two EuroClonality-NGS international meetings.</div>
+        <div class="tl-tags"><span class="tl-tag">R</span><span class="tl-tag">Shiny</span><span class="tl-tag">Python</span><span class="tl-tag">Bioinformatics</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2020 — 2021</div>
+        <div class="tl-role">Maternity Leave</div>
+        <div class="tl-org">Career break</div>
+        <div class="tl-desc">First maternity leave following birth of son in March 2020.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2016 — 2017</div>
+        <div class="tl-role">Programmer (Remote)</div>
+        <div class="tl-org">Trisoft</div>
+        <div class="tl-desc">Freelance web development during first two semesters of MSc studies.</div>
+        <div class="tl-tags"><span class="tl-tag">PHP</span><span class="tl-tag">JavaScript</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2013 — 2016</div>
+        <div class="tl-role">Programmer → Team Lead</div>
+        <div class="tl-org">Pitech+Plus, Cluj-Napoca, Romania</div>
+        <div class="tl-desc">Progressed from trainee to team leader in three years. Designed, developed, tested and shipped PHP backends for industry clients across diverse technical domains. Became the third person in Romania to obtain Symfony framework certification.</div>
+        <div class="tl-tags"><span class="tl-tag">PHP</span><span class="tl-tag">Symfony</span><span class="tl-tag">Team Lead</span><span class="tl-tag">REST API</span><span class="tl-tag">PostgreSQL</span></div>
+        <div class="tl-note">Symfony Certified Developer — 3rd in Romania</div>
+      </div>
+
     </div>
   </section>
-  <!-- SKILLS -->
+
+<!-- EDUCATION -->
+  <section class="section reveal" id="education" data-label="Education">
+    <p class="section-label">07 — Education</p>
+    <h2 class="section-title">Education</h2>
+    <div class="divider"></div>
+    <div class="timeline">
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2021 — Present</div>
+        <div class="tl-role">PhD in Radio Pulsar Astronomy</div>
+        <div class="tl-org">Leibniz University Hannover / Max Planck Institute for Gravitational Physics</div>
+        <div class="tl-desc">Supervisor: Prof. Bruce Allen (Director, AEI Hannover). Research group: Dr. Colin Clark Pulsar Group. Thesis: large-scale survey searches for new pulsars and compact binaries across multi-telescope archival datasets.</div>
+        <div class="tl-tags"><span class="tl-tag">Pulsar Astronomy</span><span class="tl-tag">Astroinformatics</span><span class="tl-tag">Binary Pulsars</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2017 — 2019</div>
+        <div class="tl-role">MSc Computational Science &amp; Engineering with Physics</div>
+        <div class="tl-org">University of Rostock · Grade 2.1</div>
+        <div class="tl-desc">Thesis: Impact of Stellar Variability on the Observational Appearance of Protoplanetary Disks (advisors: Prof. Sebastian Wolf, Prof. Ronald Redmer). Coursework included HPC (OpenMP), numerical methods, PDEs, computer vision (OpenCV), plasma and astrophysics.</div>
+        <div class="tl-tags"><span class="tl-tag">HPC</span><span class="tl-tag">Numerical Methods</span><span class="tl-tag">Astrophysics</span><span class="tl-tag">C++ / OpenMP</span></div>
+      </div>
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-date">2010 — 2013</div>
+        <div class="tl-role">BA Natural Sciences: Physics</div>
+        <div class="tl-org">University of Cambridge (Trinity College)</div>
+        <div class="tl-desc">Part I: Mathematics (2010–2011). Part II: Experimental &amp; Theoretical Physics (2011–2013). STEP II/III examinations (1st in year). Member of Cambridge University Astronomy Society and Trinity Maths Society.</div>
+        <div class="tl-tags"><span class="tl-tag">Natural Sciences</span><span class="tl-tag">Mathematics</span><span class="tl-tag">Physics</span></div>
+        <div class="tl-note">STEP II/III · Cambridge</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">2006 — 2010</div>
+        <div class="tl-role">Mathematics &amp; Computer Science with English</div>
+        <div class="tl-org">"Alexandru Papiu Ilarian" National College, Romania</div>
+        <div class="tl-desc">Valedictorian, GPA 9.99/10. Baccalaureate 9.73/10. Competed in 79 mathematics and physics competitions, including silver medal mentions at the National Physics and National Mathematics Olympiads (2008, 2009).</div>
+        <div class="tl-note">Valedictorian · GPA 9.99/10 · 2× National Olympiad silver</div>
+      </div>
+
+    </div>
+  </section>
+
+<!-- SKILLS -->
   <section class="section reveal" id="skills" data-label="Skills">
-    <p class="section-label">04 — Skills</p>
+    <p class="section-label">CV — Skills</p>
     <h2 class="section-title">Technical Skills</h2>
     <div class="divider"></div>
     <div class="skills-section">
@@ -638,153 +732,60 @@
 
     </div>
   </section>
-
-  <!-- COLLABORATIONS — commented out
--- COLLABORATIONS -->
-  <!--
-  <section class="section reveal" id="collaborations" data-label="Collabs">
-    <p class="section-label">05 — Collaborations</p>
-    <h2 class="section-title">Active Collaborations</h2>
-    <div class="divider"></div>
-    <div class="collab-grid">
-      <div class="collab-card">
-        <div class="collab-title">Lars Nieder — Pulsar Planets Paper</div>
-        <div class="collab-role">Contributing author · AEI Hannover</div>
-        <div class="collab-desc">Contributed ALMA observational campaign targeting a candidate pulsar planet-formation disk; upper limits obtained. Results to appear as secondary authorship in forthcoming publication.</div>
-      </div>
-      <div class="collab-card">
-        <div class="collab-title">Prajwal Padmanabh — MeerKAT GC</div>
-        <div class="collab-role">Algorithm collaborator · AEI Hannover</div>
-        <div class="collab-desc">Contributed custom clustering algorithm for classification of MeerKAT Galactic Centre pulsar candidates. Work in progress.</div>
-      </div>
-      <div class="collab-card">
-        <div class="collab-title">Rahul Sengar &amp; Xiao Jin Liu</div>
-        <div class="collab-role">Survey search · Parkes &amp; FAST archival</div>
-        <div class="collab-desc">Collaborative re-analysis of Parkes and FAST archival survey data with international team. Search and candidate follow-up pipeline development.</div>
-      </div>
-      <div class="collab-card">
-        <div class="collab-title">COMPACT Group, Bonn</div>
-        <div class="collab-role">Community · MPIfR Bonn</div>
-        <div class="collab-desc">Part of the broader compact binary pulsar search community alongside the COMPACT group (MPIfR Bonn) — sharing methods, pipelines, and survey strategy for acceleration-search science.</div>
-      </div>
     </div>
   </section>
-  -->
 
-
-  -->
-    <!-- EXPERIENCE -->
-  <section class="section reveal" id="experience" data-label="Experience">
-    <p class="section-label">06 — Experience</p>
-    <h2 class="section-title">Experience</h2>
+<!-- CITIZEN SCIENCE -->
+  <section class="section reveal" id="citizen" data-label="Citizen Sci">
+    <p class="section-label">04 — Citizen Science</p>
+    <h2 class="section-title">Citizen Science Projects</h2>
     <div class="divider"></div>
-    <div class="timeline">
+    <div class="citizen-grid">
 
-      <div class="tl-item tl-highlight">
-        <div class="tl-date">2021 — Present (excl. maternity leave 2024–2025)</div>
-        <div class="tl-role">PhD Researcher — Radio Pulsar Astronomy</div>
-        <div class="tl-org"><a href="https://www.aei.mpg.de/continuousgravitationalwaves/pulsars" target="_blank" rel="noopener">Max Planck Institute for Gravitational Physics (AEI) · Hannover</a> / Leibniz University Hannover</div>
-        <div class="tl-desc">
-          <ul>
-            <li>Large-scale re-searches of PALFA (Arecibo), FAST GPPS, Parkes PMPS, and MeerKAT Galactic Centre survey data for new pulsars and compact binaries.</li>
-            <li>Developed custom clustering algorithms for candidate classification; shared with collaborators for independent science cases.</li>
-            <li>Active observing with the Parkes radio telescope for discovery follow-up and timing.</li>
-            <li>ALMA proposal and data reduction for candidate pulsar planet-formation disk (upper limits obtained).</li>
-            <li>HTCondor and GPU-accelerated processing of terabyte-scale filterbank data.</li>
-            <li>Teaching: Datalab seminar (marked course, Leibniz University Hannover) — two semesters.</li>
-          </ul>
+      <!-- Einstein@Home -->
+      <div class="citizen-card">
+        <div class="citizen-logo-panel">
+          <img src="assets/pics/eah_logo.png"
+               onerror="this.src='https://pbs.twimg.com/profile_images/1605148977950867459/wEz05Jlb_400x400.png';"
+               alt="" style="border-radius:50%;height:52px;width:52px;object-fit:cover;flex-shrink:0;">
+          <span class="citizen-panel-title">Einstein<strong style="color:#4db8ff;">@</strong>Home</span>
         </div>
-        <div class="tl-tags"><span class="tl-tag">Pulsar Search</span><span class="tl-tag">Binary Search</span><span class="tl-tag">PRESTO</span><span class="tl-tag">HTCondor</span><span class="tl-tag">GPU</span><span class="tl-tag">ALMA</span><span class="tl-tag">Parkes</span><span class="tl-tag">Python</span></div>
+        <div class="citizen-body">
+          <div class="citizen-role">
+            a <a href="https://boinc.berkeley.edu" target="_blank" rel="noopener">BOINC</a> project
+            &nbsp;·&nbsp;
+            <a href="https://einsteinathome.org/science/binary-radio-pulsar-search" target="_blank" rel="noopener">binary pulsar search results →</a>
+          </div>
+          <div class="citizen-desc">Einstein@Home harnesses donated computing time from volunteers worldwide to search for pulsars in radio survey data. A core part of my PhD involves running binary pulsar acceleration searches on PALFA (Arecibo L-band Feed Array) data through the Einstein@Home infrastructure — targeting compact binary systems that are too computationally expensive for standard FFT methods. The project was founded at AEI Hannover by Bruce Allen, my PhD supervisor.</div>
+          <a href="https://einsteinathome.org/volunteer" target="_blank" rel="noopener" class="citizen-link">Join Einstein@Home →</a>
+        </div>
       </div>
 
-      <div class="tl-item">
-        <div class="tl-date">2024 — 2025</div>
-        <div class="tl-role">Maternity Leave</div>
-        <div class="tl-org">Career break</div>
-        <div class="tl-desc">Second maternity leave.</div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-date">2019 — 2020</div>
-        <div class="tl-role">Bioinformatician</div>
-        <div class="tl-org">Uniklinikum Schleswig-Holstein (UKSH), Kiel</div>
-        <div class="tl-desc">Hematology Lab under Dr. Nikos Darzentas. Extended the ARResT/Interrogate Genome visualisation tool (R/Shiny); built Python libraries for patient data retrieval, processing and analysis for future publications. Attended two EuroClonality-NGS international meetings.</div>
-        <div class="tl-tags"><span class="tl-tag">R</span><span class="tl-tag">Shiny</span><span class="tl-tag">Python</span><span class="tl-tag">Bioinformatics</span></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-date">2020 — 2021</div>
-        <div class="tl-role">Maternity Leave</div>
-        <div class="tl-org">Career break</div>
-        <div class="tl-desc">First maternity leave following birth of son in March 2020.</div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-date">2016 — 2017</div>
-        <div class="tl-role">Programmer (Remote)</div>
-        <div class="tl-org">Trisoft</div>
-        <div class="tl-desc">Freelance web development during first two semesters of MSc studies.</div>
-        <div class="tl-tags"><span class="tl-tag">PHP</span><span class="tl-tag">JavaScript</span></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-date">2013 — 2016</div>
-        <div class="tl-role">Programmer → Team Lead</div>
-        <div class="tl-org">Pitech+Plus, Cluj-Napoca, Romania</div>
-        <div class="tl-desc">Progressed from trainee to team leader in three years. Designed, developed, tested and shipped PHP backends for industry clients across diverse technical domains. Became the third person in Romania to obtain Symfony framework certification.</div>
-        <div class="tl-tags"><span class="tl-tag">PHP</span><span class="tl-tag">Symfony</span><span class="tl-tag">Team Lead</span><span class="tl-tag">REST API</span><span class="tl-tag">PostgreSQL</span></div>
-        <div class="tl-note">Symfony Certified Developer — 3rd in Romania</div>
+      <!-- Pulsar Hunters / Zooniverse -->
+      <div class="citizen-card">
+        <div class="citizen-logo-panel">
+          <img src="assets/pics/zooniverse_logo.png"
+               onerror="this.style.display='none';"
+               alt="" style="height:52px;width:52px;object-fit:contain;flex-shrink:0;">
+          <span class="citizen-panel-title">Pulsar <strong style="color:#FF6B9D;">Hunters</strong></span>
+        </div>
+        <div class="citizen-body">
+          <div class="citizen-role">
+            a <a href="https://www.zooniverse.org" target="_blank" rel="noopener">Zooniverse</a> project
+            &nbsp;·&nbsp;
+            <a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters/stats" target="_blank" rel="noopener">classification results →</a>
+          </div>
+          <div class="citizen-desc">Pulsar Hunters is a Zooniverse citizen science project engaging the public in classifying pulsar candidates from radio survey data. Volunteers examine dedispersed time series and fold plots to separate genuine pulsars from radio frequency interference — a task where human pattern recognition still outperforms automated classifiers for edge cases. The project connects directly to the large-scale survey searches central to my research.</div>
+          <a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener" class="citizen-link">Join Pulsar Hunters →</a>
+        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- EDUCATION -->
-  <section class="section reveal" id="education" data-label="Education">
-    <p class="section-label">07 — Education</p>
-    <h2 class="section-title">Education</h2>
-    <div class="divider"></div>
-    <div class="timeline">
-
-      <div class="tl-item tl-highlight">
-        <div class="tl-date">2021 — Present</div>
-        <div class="tl-role">PhD in Radio Pulsar Astronomy</div>
-        <div class="tl-org">Leibniz University Hannover / Max Planck Institute for Gravitational Physics</div>
-        <div class="tl-desc">Supervisor: Prof. Bruce Allen (Director, AEI Hannover). Research group: Dr. Colin Clark Pulsar Group. Thesis: large-scale survey searches for new pulsars and compact binaries across multi-telescope archival datasets.</div>
-        <div class="tl-tags"><span class="tl-tag">Pulsar Astronomy</span><span class="tl-tag">Astroinformatics</span><span class="tl-tag">Binary Pulsars</span></div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-date">2017 — 2019</div>
-        <div class="tl-role">MSc Computational Science &amp; Engineering with Physics</div>
-        <div class="tl-org">University of Rostock · Grade 2.1</div>
-        <div class="tl-desc">Thesis: Impact of Stellar Variability on the Observational Appearance of Protoplanetary Disks (advisors: Prof. Sebastian Wolf, Prof. Ronald Redmer). Coursework included HPC (OpenMP), numerical methods, PDEs, computer vision (OpenCV), plasma and astrophysics.</div>
-        <div class="tl-tags"><span class="tl-tag">HPC</span><span class="tl-tag">Numerical Methods</span><span class="tl-tag">Astrophysics</span><span class="tl-tag">C++ / OpenMP</span></div>
-      </div>
-
-      <div class="tl-item tl-highlight">
-        <div class="tl-date">2010 — 2013</div>
-        <div class="tl-role">BA Natural Sciences: Physics</div>
-        <div class="tl-org">University of Cambridge (Trinity College)</div>
-        <div class="tl-desc">Part I: Mathematics (2010–2011). Part II: Experimental &amp; Theoretical Physics (2011–2013). STEP II/III examinations (1st in year). Member of Cambridge University Astronomy Society and Trinity Maths Society.</div>
-        <div class="tl-tags"><span class="tl-tag">Natural Sciences</span><span class="tl-tag">Mathematics</span><span class="tl-tag">Physics</span></div>
-        <div class="tl-note">STEP II/III · Cambridge</div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-date">2006 — 2010</div>
-        <div class="tl-role">Mathematics &amp; Computer Science with English</div>
-        <div class="tl-org">"Alexandru Papiu Ilarian" National College, Romania</div>
-        <div class="tl-desc">Valedictorian, GPA 9.99/10. Baccalaureate 9.73/10. Competed in 79 mathematics and physics competitions, including silver medal mentions at the National Physics and National Mathematics Olympiads (2008, 2009).</div>
-        <div class="tl-note">Valedictorian · GPA 9.99/10 · 2× National Olympiad silver</div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- CONFERENCES -->
+<!-- CONFERENCES -->
   <section class="section reveal" id="conferences" data-label="Talks">
-    <p class="section-label">08 — Conferences &amp; Outreach</p>
+    <p class="section-label">05 — Conferences &amp; Talks</p>
     <h2 class="section-title">Conferences &amp; Teaching</h2>
     <div class="divider"></div>
     <div class="timeline">
@@ -837,49 +838,57 @@
     </div>
   </section>
 
-  <!-- CITIZEN SCIENCE -->
-  <section class="section reveal" id="citizen" data-label="Citizen Sci">
-    <p class="section-label">09 — Citizen Science</p>
-    <h2 class="section-title">Citizen Science Projects</h2>
+<!-- PULSAR WIDGET -->
+  <section class="section reveal" id="pulsars" data-label="Pulsars">
+    <p class="section-label">07 — Pulsar Simulator</p>
+    <h2 class="section-title">Pulsar Simulator</h2>
     <div class="divider"></div>
-    <div class="citizen-grid">
-
-      <!-- Einstein@Home -->
-      <div class="citizen-card">
-        <a href="https://einsteinathome.org" target="_blank" rel="noopener" class="citizen-logo-link">
-          <img src="https://einsteinathome.org/sites/default/files/eah_logo_0.png"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
-               alt="Einstein@Home" class="citizen-logo">
-          <div class="citizen-logo-fallback" style="display:none;">
-            <span style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--white);">Einstein<span style="color:var(--cyan);">@</span>Home</span>
+    <div id="pulsar-widget">
+      <p class="widget-header">Lighthouse beam in 3D — sweeps toward the observer · signal spike on each pass · <a href="https://www.jb.man.ac.uk/~mkramer/" target="_blank" rel="noopener" style="color:var(--muted);opacity:.6;text-decoration:none;border-bottom:1px solid rgba(122,139,168,0.25);">visualisation inspired by M. Kramer</a></p>
+      <div class="widget-main">
+        <canvas id="pulsar-canvas" height="320"></canvas>
+        <canvas id="signal-canvas" height="44"></canvas>
+        <div class="widget-controls-row">
+          <div class="ctrl-col">
+            <div class="ctrl-group">
+              <label>Period (s) <span id="val-period">1.337</span></label>
+              <input type="range" id="sl-period" min="0.002" max="8" step="0.001" value="1.337">
+            </div>
+            <div class="ctrl-group">
+              <label>Pulse width (duty %) <span id="val-width">4</span></label>
+              <input type="range" id="sl-width" min="1" max="50" step="1" value="4">
+            </div>
+            <div class="ctrl-group">
+              <label>Beam half-angle (°) <span id="val-beam">8</span></label>
+              <input type="range" id="sl-beam" min="2" max="60" step="1" value="8">
+            </div>
+            <div class="ctrl-group">
+              <label>Dispersion measure <span id="val-dm">12.4</span></label>
+              <input type="range" id="sl-dm" min="0" max="500" step="0.5" value="12.4">
+            </div>
           </div>
-        </a>
-        <div class="citizen-body">
-          <div class="citizen-title"><a href="https://einsteinathome.org" target="_blank" rel="noopener">Einstein@Home</a></div>
-          <div class="citizen-role">Binary radio pulsar search · PALFA data</div>
-          <div class="citizen-desc">Einstein@Home harnesses donated computing time from volunteers worldwide to search for pulsars in radio survey data. A core part of my PhD involves running binary pulsar acceleration searches on PALFA (Arecibo L-band Feed Array) data through the Einstein@Home infrastructure — targeting compact binary systems that are too computationally expensive for standard FFT methods. The project was founded at AEI Hannover by Bruce Allen, my PhD supervisor.</div>
-          <a href="https://einsteinathome.org/science/binary-radio-pulsar-search" target="_blank" rel="noopener" class="citizen-link">Binary pulsar search info →</a>
+          <div class="ctrl-col">
+            <div class="ctrl-row">
+              <button class="ctrl-btn active" id="btn-play">Pause</button>
+            </div>
+            <div>
+              <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:9px;">Notable pulsars</p>
+              <div class="pulsar-presets" id="presets"></div>
+            </div>
+            <div class="widget-readout" id="readout"></div>
+          </div>
+        </div>
+        <div id="pulsar-info-panel" style="display:none;margin-top:16px;padding:16px 18px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;">
+          <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+            <img id="pulsar-info-photo" src="" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;display:none;">
+            <div style="flex:1;min-width:180px;">
+              <p id="pulsar-info-name" style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;"></p>
+              <a id="pulsar-info-discoverer" href="" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);letter-spacing:.06em;margin-bottom:7px;opacity:.8;display:block;text-decoration:none;border-bottom:1px solid rgba(0,255,231,0.18);padding-bottom:6px;margin-bottom:8px;transition:opacity .2s;"></a>
+              <p id="pulsar-info-text" style="font-size:12px;color:var(--muted);line-height:1.65;"></p>
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- Pulsar Hunters / Zooniverse -->
-      <div class="citizen-card">
-        <a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener" class="citizen-logo-link">
-          <img src="https://panoptes-uploads.zooniverse.org/production/project_avatar/4d19f8a9-6034-406c-9f44-8e5d2cd61b1c.jpeg"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
-               alt="Pulsar Hunters" class="citizen-logo citizen-logo-sq">
-          <div class="citizen-logo-fallback" style="display:none;">
-            <span style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--white);">Pulsar<span style="color:var(--magenta);"> Hunters</span></span>
-          </div>
-        </a>
-        <div class="citizen-body">
-          <div class="citizen-title"><a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener">Pulsar Hunters</a></div>
-          <div class="citizen-role">Zooniverse · Human candidate classification</div>
-          <div class="citizen-desc">Pulsar Hunters is a Zooniverse citizen science project engaging the public in classifying pulsar candidates from radio survey data. Volunteers examine dedispersed time series and fold plots to separate genuine pulsars from radio frequency interference — a task where human pattern recognition still outperforms automated classifiers for edge cases. The project connects directly to the large-scale survey searches central to my research.</div>
-          <a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener" class="citizen-link">Join Pulsar Hunters →</a>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -926,14 +935,35 @@
    + drives name sweep glow on title when beam faces left (toward name)
    ============================================================ */
 (function(){
-  // Try to load profile photo
-  const img = new Image();
-  img.onload = function(){
-    document.getElementById('avatar-circle').innerHTML =
-      `<img src="./profile_photo.jpg" alt="Alexandra Botnariuc">`;
-  };
-  img.onerror = function(){};
-  img.src = './profile_photo.jpg';
+  // Load profile photo from assets/, apply B&W filter via canvas
+  (function loadPhoto(){
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function(){
+      // Draw into offscreen canvas and apply greyscale
+      const oc = document.createElement('canvas');
+      oc.width = img.naturalWidth; oc.height = img.naturalHeight;
+      const oc2 = oc.getContext('2d');
+      oc2.drawImage(img, 0, 0);
+      // Greyscale pixel manipulation
+      const id = oc2.getImageData(0, 0, oc.width, oc.height);
+      const d = id.data;
+      for(let i = 0; i < d.length; i += 4){
+        const lum = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+        d[i] = d[i+1] = d[i+2] = lum;
+      }
+      oc2.putImageData(id, 0, 0);
+      // Put result into avatar circle as canvas element
+      const circle = document.getElementById('avatar-circle');
+      oc.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+      circle.innerHTML = '';
+      circle.appendChild(oc);
+    };
+    img.onerror = function(){
+      // Silently keep placeholder
+    };
+    img.src = 'assets/profile_photo.jpg';
+  })();
 
   const c = document.getElementById('avatar-pulsar-canvas');
   const ctx = c.getContext('2d');
@@ -1603,12 +1633,13 @@
    NAV DOTS
    ============================================================ */
 (function(){
-  const sections=['hero','about','research','pulsars','skills','experience','education','conferences','citizen','contact'];
-  const labels  =['Top','About','Research','Pulsars','Skills','Experience','Education','Talks','Citizen','Contact'];
+  const sections=['hero','about','research','cv','citizen','conferences','pulsars','contact'];
+  const labels  =['Intro','About','Research Interests','CV','Citizen Science','Talks','Simulator','Contact'];
   const container=document.getElementById('nav-dots');
   sections.forEach((id,i)=>{
     const d=document.createElement('div'); d.className='nav-dot';
     d.setAttribute('data-label',labels[i]);
+    d.innerHTML=`<span class="nav-dot-pip"></span><span class="nav-dot-label">${labels[i]}</span>`;
     d.addEventListener('click',()=>document.getElementById(id).scrollIntoView({behavior:'smooth'}));
     container.appendChild(d);
   });
@@ -2027,6 +2058,18 @@
   loop();
 })();
 
+
+function toggleCV(){
+  const el  = document.getElementById('cv-content');
+  const btn = document.getElementById('cv-toggle');
+  const open = el.style.display === 'none';
+  el.style.display  = open ? 'block' : 'none';
+  btn.innerHTML     = open ? '&#9650;&nbsp; Hide CV' : '&#9660;&nbsp; Show CV';
+}
+
+document.querySelectorAll('.interest-card').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('expanded'));
+});
 
 </script>
 </body>
