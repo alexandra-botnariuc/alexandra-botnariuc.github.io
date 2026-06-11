@@ -953,14 +953,16 @@
             <div class="widget-readout" id="readout"></div>
           </div>
         </div>
-        <div id="pulsar-info-panel" style="display:none;margin-top:16px;padding:16px 18px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;">
-          <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
-            <img id="pulsar-info-photo" src="" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;display:none;">
-            <div style="flex:1;min-width:180px;">
-              <p id="pulsar-info-name" style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;"></p>
-              <a id="pulsar-info-discoverer" href="" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);letter-spacing:.06em;margin-bottom:7px;opacity:.8;display:block;text-decoration:none;border-bottom:1px solid rgba(0,255,231,0.18);padding-bottom:6px;margin-bottom:8px;transition:opacity .2s;"></a>
-              <p id="pulsar-info-text" style="font-size:12px;color:var(--muted);line-height:1.65;"></p>
-            </div>
+        <div id="pulsar-info-panel" style="display:none;margin-top:16px;padding:16px 18px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;position:relative;">
+          <!-- Photo: absolute top-right corner -->
+          <img id="pulsar-info-photo" src="" alt=""
+               style="display:none;position:absolute;top:14px;right:14px;width:150px;height:130px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+          <!-- Text block: right-margin leaves room for photo -->
+          <div id="pulsar-info-textblock" style="padding-right:170px;">
+            <p id="pulsar-info-name" style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;"></p>
+            <a id="pulsar-info-discoverer" href="" target="_blank" rel="noopener"
+               style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);letter-spacing:.06em;opacity:.8;display:block;text-decoration:none;border-bottom:1px solid rgba(0,255,231,0.18);padding-bottom:6px;margin-bottom:8px;transition:opacity .2s;"></a>
+            <p id="pulsar-info-text" style="font-size:12px;color:var(--muted);line-height:1.65;"></p>
           </div>
         </div>
       </div>
@@ -1299,15 +1301,17 @@
   const infoText  = document.getElementById('pulsar-info-text');
   const infoPhoto = document.getElementById('pulsar-info-photo');
 
+  const infoTextBlock = document.getElementById('pulsar-info-textblock');
+
   function showInfo(ps){
     infoPanel.style.display = 'block';
-    infoName.textContent  = ps.name + (ps.label ? ' — ' + ps.label : '');
-    // Discoverer = clickable paper link
-    infoDisc.textContent  = (ps.discoverer || '');
-    infoDisc.href         = ps.link || '#';
-    infoDisc.title        = ps.linkLabel || '';
-    infoText.textContent  = ps.text;
-    // Second link if present
+    infoName.textContent = ps.name + (ps.label ? ' — ' + ps.label : '');
+    infoDisc.textContent = (ps.discoverer || '');
+    infoDisc.href        = ps.link || '#';
+    infoDisc.title       = ps.linkLabel || '';
+    infoText.textContent = ps.text;
+
+    // Second link
     let link2El = document.getElementById('pulsar-info-link2');
     if(!link2El){
       link2El = document.createElement('a');
@@ -1318,32 +1322,39 @@
     }
     if(ps.link2){ link2El.textContent = ps.linkLabel2 || 'Paper 2 →'; link2El.href = ps.link2; link2El.style.display='block'; }
     else { link2El.style.display='none'; }
-    // Photo with fallback URL
-    if(ps.photo || ps.photoFallback){
-      infoPhoto.style.display = 'block';
-      infoPhoto.alt   = ps.discoverer || '';
-      // Try local first, fall back to remote URL
-      infoPhoto._triedFallback = false;
-      infoPhoto.src = ps.photo || ps.photoFallback;
-      infoPhoto.onerror = ()=>{
-        if(!infoPhoto._triedFallback && ps.photoFallback){
-          infoPhoto._triedFallback = true;
-          infoPhoto.src = ps.photoFallback;
+
+    // Photo — try local path, fall back to CDN, hide if both fail
+    // Reset completely each time to avoid stale onerror handlers
+    const localSrc = ps.photo || '';
+    const fallSrc  = ps.photoFallback || '';
+
+    // Reset the element completely before setting new src
+    infoPhoto.style.display = 'none';
+    infoPhoto.removeAttribute('src');
+    if(infoTextBlock) infoTextBlock.style.paddingRight = '0';
+
+    if(localSrc || fallSrc){
+      let usedFallback = false;
+
+      infoPhoto.onload = function(){
+        this.style.display = 'block';
+        if(infoTextBlock) infoTextBlock.style.paddingRight = '170px';
+        this.title = ps.photoCredit || '';
+      };
+
+      infoPhoto.onerror = function(){
+        if(!usedFallback && fallSrc && this.src !== fallSrc){
+          usedFallback = true;
+          this.src = fallSrc;
         } else {
-          infoPhoto.style.display = 'none';
+          this.style.display = 'none';
+          if(infoTextBlock) infoTextBlock.style.paddingRight = '0';
         }
       };
-      // Photo credit
-      let creditEl = document.getElementById('pulsar-photo-credit');
-      if(!creditEl){
-        creditEl = document.createElement('p');
-        creditEl.id = 'pulsar-photo-credit';
-        creditEl.style.cssText = 'font-size:9px;color:var(--muted);opacity:.55;margin-top:3px;font-family:var(--font-mono);letter-spacing:.04em;';
-        infoPhoto.parentNode.appendChild(creditEl);
-      }
-      creditEl.textContent = ps.photoCredit || '';
-    } else {
-      infoPhoto.style.display = 'none';
+
+      infoPhoto.alt = ps.discoverer || '';
+      // Small timeout forces browser to process the reset before new src
+      setTimeout(()=>{ infoPhoto.src = localSrc || fallSrc; }, 10);
     }
   }
 
@@ -1415,7 +1426,7 @@
     const ry = R * Math.sin(INC);  // semi-minor axis of tilted ellipse
 
     // Earth offset slightly right of centre so beam hits it at one clear phase
-    const OBS_X = CX + R * 0.22;
+    const OBS_X = CX + R * 1.1;  // right side, aligns with signal window
     const OBS_Y = CY + R * 1.72;   // well below ellipse
 
     // ── Phase at which the lower beam points toward Earth ──
@@ -1509,41 +1520,103 @@
     pCtx.beginPath(); pCtx.arc(CX,CY,8,0,Math.PI*2); pCtx.fillStyle=cg; pCtx.fill();
 
     // ── Earth ──
-    const er = 13;
-    const earthG=pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er);
-    earthG.addColorStop(0,'rgba(30,100,200,0.65)');
-    earthG.addColorStop(0.55,'rgba(20,140,80,0.45)');
-    earthG.addColorStop(1,'rgba(0,20,60,0)');
-    pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er,0,Math.PI*2); pCtx.fillStyle=earthG; pCtx.fill();
-    pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er,0,Math.PI*2);
-    pCtx.strokeStyle='rgba(60,160,255,0.30)'; pCtx.lineWidth=1; pCtx.stroke();
-    pCtx.save(); pCtx.translate(OBS_X,OBS_Y);
-    pCtx.beginPath(); pCtx.ellipse(-3,-2,5,3.5,0.4,0,Math.PI*2);
-    pCtx.fillStyle='rgba(40,160,80,0.28)'; pCtx.fill();
-    pCtx.beginPath(); pCtx.ellipse(4,1,3.5,2.5,-0.3,0,Math.PI*2);
-    pCtx.fillStyle='rgba(40,160,80,0.22)'; pCtx.fill();
+    const er = 18;
+
+    // ── Earth: clean emoji-style globe ──
+    // Deep space-blue base
+    pCtx.beginPath(); pCtx.arc(OBS_X, OBS_Y, er, 0, Math.PI*2);
+    pCtx.fillStyle = '#1255a0'; pCtx.fill();
+
+    // Clip all continent drawing inside the circle
+    pCtx.save();
+    pCtx.beginPath(); pCtx.arc(OBS_X, OBS_Y, er, 0, Math.PI*2); pCtx.clip();
+
+    // Ocean highlight (top-left specular)
+    const oG = pCtx.createRadialGradient(OBS_X-8, OBS_Y-8, 1, OBS_X, OBS_Y, er);
+    oG.addColorStop(0, 'rgba(100,180,255,0.45)');
+    oG.addColorStop(1, 'rgba(0,30,100,0.3)');
+    pCtx.fillStyle = oG; pCtx.fillRect(OBS_X-er, OBS_Y-er, er*2, er*2);
+
+    // Continents — simple bold blobs, emoji-inspired
+    // Americas (left side)
+    pCtx.fillStyle = '#2ea84a';
+    pCtx.beginPath(); pCtx.ellipse(OBS_X-8, OBS_Y-5, 4, 6, -0.3, 0, Math.PI*2); pCtx.fill();
+    pCtx.beginPath(); pCtx.ellipse(OBS_X-7, OBS_Y+4, 3, 5, 0.2, 0, Math.PI*2); pCtx.fill();
+
+    // Europe + Africa (centre-right)
+    pCtx.fillStyle = '#35bc55';
+    pCtx.beginPath(); pCtx.ellipse(OBS_X+2, OBS_Y-6, 3.5, 4, 0.1, 0, Math.PI*2); pCtx.fill();
+    pCtx.beginPath(); pCtx.ellipse(OBS_X+3, OBS_Y+2, 3, 6, 0.1, 0, Math.PI*2); pCtx.fill();
+
+    // Asia (right)
+    pCtx.fillStyle = '#2ea84a';
+    pCtx.beginPath(); pCtx.ellipse(OBS_X+9, OBS_Y-4, 5, 4, 0.4, 0, Math.PI*2); pCtx.fill();
+
+    // Brown highlands
+    pCtx.fillStyle = '#7a5c1a';
+    pCtx.beginPath(); pCtx.ellipse(OBS_X+7, OBS_Y+3, 3, 2, 0.3, 0, Math.PI*2); pCtx.fill();
+
+    // Ice caps
+    pCtx.fillStyle = 'rgba(230,242,255,0.75)';
+    pCtx.beginPath(); pCtx.ellipse(OBS_X, OBS_Y-er+2, er*0.55, 3, 0, 0, Math.PI*2); pCtx.fill();
+    pCtx.beginPath(); pCtx.ellipse(OBS_X, OBS_Y+er-2, er*0.45, 2.5, 0, 0, Math.PI*2); pCtx.fill();
+
     pCtx.restore();
 
-    // Dish
-    pCtx.save(); pCtx.translate(OBS_X, OBS_Y-er);
-    pCtx.beginPath(); pCtx.moveTo(0,0); pCtx.lineTo(0,5);
-    pCtx.strokeStyle='rgba(180,210,230,0.6)'; pCtx.lineWidth=1; pCtx.stroke();
-    pCtx.beginPath(); pCtx.moveTo(-6,4); pCtx.quadraticCurveTo(0,8,6,4);
-    pCtx.strokeStyle='rgba(210,230,245,0.7)'; pCtx.lineWidth=1.3; pCtx.stroke();
-    pCtx.beginPath(); pCtx.moveTo(0,8); pCtx.lineTo(0,-2);
-    pCtx.strokeStyle='rgba(180,210,230,0.5)'; pCtx.lineWidth=0.8; pCtx.stroke();
-    pCtx.restore();
+    // Atmosphere glow rim
+    const atm = pCtx.createRadialGradient(OBS_X, OBS_Y, er-1, OBS_X, OBS_Y, er+5);
+    atm.addColorStop(0, 'rgba(80,160,255,0.4)');
+    atm.addColorStop(1, 'rgba(40,100,255,0)');
+    pCtx.beginPath(); pCtx.arc(OBS_X, OBS_Y, er+5, 0, Math.PI*2);
+    pCtx.fillStyle = atm; pCtx.fill();
+
+    // ── Effelsberg-style radio telescope above Earth ──
+    // Mount base on earth surface, dish pointing upward toward pulsar
+    const tx = OBS_X, ty = OBS_Y - er;
+
+    // Base structure: two legs forming an A-frame
+    pCtx.strokeStyle = 'rgba(200,215,230,0.80)'; pCtx.lineWidth = 1.2;
+    // Left leg
+    pCtx.beginPath(); pCtx.moveTo(tx-5, ty+1); pCtx.lineTo(tx-2, ty-8); pCtx.stroke();
+    // Right leg
+    pCtx.beginPath(); pCtx.moveTo(tx+5, ty+1); pCtx.lineTo(tx+2, ty-8); pCtx.stroke();
+    // Cross brace
+    pCtx.beginPath(); pCtx.moveTo(tx-4, ty-3); pCtx.lineTo(tx+4, ty-3); pCtx.stroke();
+
+    // Dish: parabola curve (pointing up toward pulsar)
+    pCtx.strokeStyle = 'rgba(220,232,245,0.90)'; pCtx.lineWidth = 1.5;
+    pCtx.beginPath();
+    pCtx.moveTo(tx-9, ty-8);
+    pCtx.quadraticCurveTo(tx, ty-2, tx+9, ty-8);
+    pCtx.stroke();
+    // Dish rim end ticks
+    pCtx.lineWidth = 1;
+    pCtx.beginPath(); pCtx.moveTo(tx-9, ty-8); pCtx.lineTo(tx-8, ty-10); pCtx.stroke();
+    pCtx.beginPath(); pCtx.moveTo(tx+9, ty-8); pCtx.lineTo(tx+8, ty-10); pCtx.stroke();
+
+    // Quadrupod: 4 support struts from dish edge to focus point above centre
+    pCtx.strokeStyle = 'rgba(180,200,220,0.65)'; pCtx.lineWidth = 0.8;
+    const focusY = ty-17;
+    [[-8,ty-8],[-4,ty-4],[4,ty-4],[8,ty-8]].forEach(([sx,sy])=>{
+      pCtx.beginPath(); pCtx.moveTo(tx+sx, sy); pCtx.lineTo(tx, focusY); pCtx.stroke();
+    });
+
+    // Focus cabin (small rectangle at top)
+    pCtx.fillStyle = 'rgba(200,218,235,0.85)';
+    pCtx.fillRect(tx-2.5, focusY-3, 5, 4);
+
+    // Cyan signal dot at focus cabin
+    pCtx.beginPath(); pCtx.arc(tx, focusY-1.5, 1.8, 0, Math.PI*2);
+    pCtx.fillStyle = 'rgba(0,255,231,0.9)'; pCtx.fill();
 
     // Store
     drawBeam.lastObsIntensity = obsIntensity;
-    // Earth glow is driven by drawSignal.lastWinAmp (pulse at window), not obsIntensity
-    // so it lights up when the pulse actually passes the observation strip
     const earthGlowAmp = drawBeam.earthGlow || 0;
     if(earthGlowAmp > 0.03){
-      const eg2=pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er*3);
-      eg2.addColorStop(0,`rgba(0,255,231,${earthGlowAmp*0.55})`);
-      eg2.addColorStop(0.5,`rgba(0,255,231,${earthGlowAmp*0.18})`);
-      eg2.addColorStop(1,'rgba(0,255,231,0)');
+      const eg2 = pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er*3);
+      eg2.addColorStop(0, `rgba(0,255,231,${earthGlowAmp*0.55})`);
+      eg2.addColorStop(0.5, `rgba(0,255,231,${earthGlowAmp*0.18})`);
+      eg2.addColorStop(1, 'rgba(0,255,231,0)');
       pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er*3,0,Math.PI*2);
       pCtx.fillStyle=eg2; pCtx.fill();
     }
@@ -1553,7 +1626,7 @@
   }
   drawBeam.lastObsIntensity = 0;
   drawBeam.earthGlow = 0;
-  drawBeam.earthX = 0; drawBeam.earthR = 13; drawBeam.earthY = 0;
+  drawBeam.earthX = 0; drawBeam.earthR = 18; drawBeam.earthY = 0;
 
       /* ── Signal trace ──
      Pulses injected at right edge (newest), scroll left (older = left).
@@ -1568,17 +1641,13 @@
     const ex = drawBeam.earthX || W / 2;
     const er = drawBeam.earthR || 14;
 
-    // Window: centred under Earth, width = Earth diameter
-    // Clamp so it doesn't go off-canvas
-    const winW  = Math.max(er * 2, 24);
-    const winX  = Math.max(2, Math.min(W - winW - 2, ex - er));
-    const winCX = winX + winW / 2;   // window centre x
+    // Window at RIGHT edge — newest sample = "now" = in sync with beam
+    const winW  = Math.max(er * 2, 28);
+    const winX  = W - winW - 2;     // right edge
+    const winCX = winX + winW / 2;
 
-    // Which buffer index corresponds to the window centre x?
-    // x = (i/(SIG_LEN-1))*(W-2)+1  =>  i = (x-1)*(SIG_LEN-1)/(W-2)
-    const winI  = Math.round((winCX - 1) * (SIG_LEN - 1) / Math.max(1, W - 2));
-    // What's the actual amplitude at that buffer position right now?
-    const winIdx = (sigHead - SIG_LEN + winI + SIG_LEN * 4) % SIG_LEN;
+    // The newest injected sample is at (sigHead - 1 + SIG_LEN) % SIG_LEN
+    const winIdx = (sigHead - 1 + SIG_LEN) % SIG_LEN;
     const winAmp = Math.max(0, sigBuf[winIdx] || 0);
 
     // background
