@@ -49,44 +49,35 @@
 
   /* Name */
   .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.25em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; }
-  .hero-name { font-family:var(--font-display); font-size:clamp(38px,6.5vw,70px); font-weight:700; line-height:1.05; letter-spacing:-.02em; margin-bottom:14px; }
-
-  /* Both names share the same sweep mechanism — JS sets --sweep (0→1) on each span */
+  .hero-name {
+    font-family:var(--font-display);
+    font-size:clamp(28px,5.5vw,70px);
+    font-weight:700; line-height:1.05; letter-spacing:-.02em;
+    margin-bottom:14px;
+    white-space: nowrap;   /* keep on one row */
+  }
   .hero-name .name-first,
   .hero-name .name-last {
-    display: inline-block;
-    position: relative;
+    display: inline;
     color: var(--white);
-    /* CSS var controlled by JS */
-    --sweep: 0;
+    transition: text-shadow 0.4s ease;
   }
-  /* The sweep is a pseudo-element gradient that travels bottom→top */
-  .hero-name .name-first::after,
-  .hero-name .name-last::after {
-    content: attr(data-text);
-    position: absolute;
-    inset: 0;
-    /* clip to only the swept portion using a linear-gradient mask */
-    background: linear-gradient(to top,
-      #FF6B9D   0%,
-      #E879F9  30%,
-      #C084FC  60%,
-      #a78bfa  80%,
-      transparent 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    /* clip-path reveals from bottom: calc(100% - sweep*110%) */
-    clip-path: inset(calc(100% - var(--sweep) * 115%) 0 0 0);
-    filter: drop-shadow(0 0 6px #E879F9) drop-shadow(0 0 14px #FF6B9D);
-    pointer-events: none;
-  }
-  /* subtle idle shimmer on last name only */
+  /* idle: very subtle cyan glow always present */
+  .hero-name .name-first,
   .hero-name .name-last {
-    --shimmer: 0%;
+    text-shadow: 0 0 30px rgba(0,255,231,0.08);
   }
-  @keyframes name-idle { 0%,100%{opacity:.92} 50%{opacity:1} }
+  /* lit state applied by JS when pulsar beam sweeps past */
+  .hero-name .name-first.name-lit,
+  .hero-name .name-last.name-lit {
+    text-shadow:
+      0 0 12px rgba(0,255,231,0.7),
+      0 0 28px rgba(0,255,231,0.35),
+      0 0 55px rgba(0,255,231,0.15);
+  }
+  @media(max-width:500px){
+    .hero-name { white-space: normal; font-size:clamp(32px,9vw,56px); }
+  }
 
   .hero-title { font-family:var(--font-display); font-size:clamp(14px,2vw,19px); font-weight:400; color:var(--muted); margin-bottom:24px; }
   .hero-tagline { font-size:14px; color:rgba(232,244,253,.6); max-width:500px; margin-bottom:36px; line-height:1.8; }
@@ -133,13 +124,18 @@
   .pill { padding:4px 11px; border-radius:20px; font-size:11px; font-family:var(--font-mono); letter-spacing:.04em; border:1px solid var(--border); color:var(--muted); background:rgba(255,255,255,.025); transition:all .2s; cursor:default; }
   .pill:hover { color:var(--white); border-color:var(--muted); }
   .pill.highlight { border-color:rgba(0,255,231,.35); color:rgba(232,244,253,.9); }
-  /* language bars */
-  .lang-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
-  .lang-item { display:flex; flex-direction:column; gap:5px; }
-  .lang-name { font-family:var(--font-mono); font-size:11px; color:var(--white); letter-spacing:.06em; display:flex; justify-content:space-between; }
+  /* language bars — flag right-aligned in fixed column, text left */
+  .lang-list  { display:flex; flex-direction:column; gap:13px; max-width:520px; }
+  .lang-item  { display:flex; align-items:center; gap:0; }
+  .lang-meta  { flex:1; padding-left:16px; }
+  .lang-flags { width:80px; display:flex; justify-content:flex-end; gap:4px; flex-shrink:0; align-items:center; padding-right:0; }
+  .flag       { width:30px; height:20px; border-radius:2px; display:block; border:1px solid rgba(255,255,255,0.07); }
+  /* vertical divider between flags and text */
+  .lang-item::after { content:''; display:block; width:1px; height:28px; background:var(--border); flex-shrink:0; margin:0 16px; }
+  .lang-name  { font-family:var(--font-mono); font-size:11px; color:var(--white); letter-spacing:.06em; display:flex; justify-content:space-between; margin-bottom:5px; }
   .lang-name span { color:var(--muted); font-size:10px; }
-  .lang-bar { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
-  .lang-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--cyan),var(--magenta)); }
+  .lang-bar   { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .lang-fill  { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--cyan),var(--magenta)); }
 
   /* Timeline */
   .timeline { position:relative; padding-left:26px; }
@@ -185,7 +181,7 @@
   .widget-header { font-family:var(--font-mono); font-size:10px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:22px; }
   .widget-main { display:flex; flex-direction:column; gap:14px; }
   #pulsar-canvas { display:block; border-radius:8px; background:#07090F; width:100%; }
-  #signal-canvas { display:block; border-radius:6px; background:#07090F; width:100%; }
+  #signal-canvas { display:block; border-radius:4px; background:#07090F; width:100%; margin-top:4px; }
   .widget-controls-row { display:flex; flex-wrap:wrap; gap:24px; }
   .ctrl-col { flex:1; min-width:180px; display:flex; flex-direction:column; gap:15px; }
   .ctrl-group label { display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin-bottom:7px; }
@@ -214,6 +210,34 @@
   footer { padding:40px 0 60px; text-align:center; font-family:var(--font-mono); font-size:10px; color:var(--muted); opacity:.3; letter-spacing:.1em; }
   .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s ease,transform .6s ease; }
   .reveal.visible { opacity:1; transform:none; }
+
+  /* Citizen science cards */
+  .citizen-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:20px; }
+  .citizen-card { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all .3s; display:flex; flex-direction:column; }
+  .citizen-card:hover { border-color:rgba(0,255,231,.3); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,255,231,.06); }
+  .citizen-logo-link { display:block; height:130px; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:20px; text-decoration:none; border-bottom:1px solid var(--border); }
+  .citizen-logo { max-height:90px; max-width:100%; object-fit:contain; opacity:.85; filter:brightness(1.1); }
+  .citizen-logo-sq { border-radius:8px; }
+  .citizen-logo-fallback { text-align:center; }
+  .citizen-body { padding:22px 22px 20px; flex:1; display:flex; flex-direction:column; gap:6px; }
+  .citizen-title { font-family:var(--font-display); font-size:16px; font-weight:600; }
+  .citizen-title a { color:var(--white); text-decoration:none; border-bottom:1px solid rgba(232,244,253,.15); }
+  .citizen-title a:hover { border-color:var(--cyan); color:var(--cyan); }
+  .citizen-role { font-family:var(--font-mono); font-size:10px; color:var(--cyan); letter-spacing:.1em; text-transform:uppercase; opacity:.8; }
+  .citizen-desc { font-size:13px; color:var(--muted); line-height:1.65; margin-top:4px; flex:1; }
+  .citizen-link { font-family:var(--font-mono); font-size:10px; color:var(--magenta); text-decoration:none; letter-spacing:.06em; opacity:.8; margin-top:8px; }
+  .citizen-link:hover { opacity:1; }
+
+  /* Contact list */
+  .contact-list { display:flex; flex-direction:column; gap:0; max-width:580px; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .clink { display:grid; grid-template-columns:36px 130px 1fr; align-items:center; gap:0; padding:14px 18px; text-decoration:none; border-bottom:1px solid var(--border); transition:background .2s; color:inherit; }
+  .clink:last-child { border-bottom:none; }
+  .clink:hover { background:rgba(0,255,231,0.04); }
+  .clink-icon { color:var(--muted); display:flex; align-items:center; }
+  .clink:hover .clink-icon { color:var(--cyan); }
+  .clink-label { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .clink-value { font-size:13px; color:var(--white); }
+  .clink:hover .clink-value { color:var(--cyan); }
 </style>
 </head>
 <body>
@@ -248,21 +272,21 @@
       <div class="hero-text">
         <p class="hero-eyebrow">PhD Candidate · Max Planck Institute for Gravitational Physics</p>
         <h1 class="hero-name">
-          <span class="name-first" data-text="Alexandra ">Alexandra </span><span class="name-last" data-text="Botnariuc">Botnariuc</span>
+          <span class="name-first">Alexandra&nbsp;</span><span class="name-last">Botnariuc</span>
         </h1>
         <p class="hero-title">Pulsar Astronomer &amp; Astroinformatician</p>
         <p class="hero-tagline">Searching for new pulsars and compact binaries in major radio surveys — from Arecibo and Parkes to FAST and MeerKAT. Combining custom search algorithms, GPU computing, and multi-telescope observations to find rare systems that push the boundaries of neutron star physics.</p>
         <div class="hero-links">
-          <a class="hero-link" href="mailto:alexandra.a.s.negrea@gmail.com">
+          <a class="hero-link" id="email-link" href="#" onclick="window.location.href='mai'+'lto:'+'alexandra.botnariuc'+'@'+'aei.mpg.de';return false;">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-email"/></svg> Email
           </a>
-          <a class="hero-link" href="https://github.com/yourusername" target="_blank" rel="noopener">
+          <a class="hero-link" href="https://github.com/alexandra-botnariuc/" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-github"/></svg> GitHub
           </a>
-          <a class="hero-link" href="https://orcid.org/0000-0000-0000-0000" target="_blank" rel="noopener">
+          <a class="hero-link" href="https://orcid.org/0000-0002-6874-8096" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-orcid"/></svg> ORCID
           </a>
-          <a class="hero-link" href="https://ui.adsabs.harvard.edu/" target="_blank" rel="noopener">
+          <a class="hero-link" href="https://ui.adsabs.harvard.edu/search/q=author%3ABotnariuc&sort=date+desc" target="_blank" rel="noopener">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-signal"/></svg> ADS
           </a>
           <a class="hero-link" href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">
@@ -304,7 +328,7 @@
     <div class="divider"></div>
     <div class="interests-grid">
       <div class="interest-card c-cyan">
-        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-code"/></svg></div>
+        <div class="interest-icon-canvas"><canvas id="ico-astro" width="54" height="42"></canvas></div>
         <div class="interest-title">Astroinformatics &amp; Survey Searches</div>
         <div class="interest-desc">Large-scale pulsar survey pipelines across PALFA, FAST GPPS, PMPS, and MeerKAT. Custom clustering algorithms and ML-based candidate classification on GPU/CPU clusters.</div>
       </div>
@@ -317,7 +341,7 @@
       </div>
 
       <div class="interest-card c-magenta">
-        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-telescope"/></svg></div>
+        <div class="interest-icon-canvas"><canvas id="ico-parkes" width="54" height="42"></canvas></div>
         <div class="interest-title">Radio Observations</div>
         <div class="interest-desc">Discovery follow-up and precision timing of new pulsars with Parkes/Murriyang. Observational campaigns bridging survey discoveries to full timing solutions.</div>
       </div>
@@ -351,27 +375,27 @@
     <h2 class="section-title">Pulsar Simulator</h2>
     <div class="divider"></div>
     <div id="pulsar-widget">
-      <p class="widget-header">Rotating neutron star — beam sweeps the observer · signal trace below</p>
+      <p class="widget-header">Lighthouse beam in 3D — sweeps toward the observer · signal spike on each pass · <a href="https://www.jb.man.ac.uk/~mkramer/" target="_blank" rel="noopener" style="color:var(--muted);opacity:.6;text-decoration:none;border-bottom:1px solid rgba(122,139,168,0.25);">visualisation inspired by M. Kramer</a></p>
       <div class="widget-main">
-        <canvas id="pulsar-canvas" height="300"></canvas>
-        <canvas id="signal-canvas" height="80"></canvas>
+        <canvas id="pulsar-canvas" height="320"></canvas>
+        <canvas id="signal-canvas" height="44"></canvas>
         <div class="widget-controls-row">
           <div class="ctrl-col">
             <div class="ctrl-group">
-              <label>Period (s) <span id="val-period">0.714</span></label>
-              <input type="range" id="sl-period" min="0.002" max="4" step="0.001" value="0.714">
+              <label>Period (s) <span id="val-period">1.337</span></label>
+              <input type="range" id="sl-period" min="0.002" max="8" step="0.001" value="1.337">
             </div>
             <div class="ctrl-group">
-              <label>Pulse width (duty %) <span id="val-width">8</span></label>
-              <input type="range" id="sl-width" min="1" max="50" step="1" value="8">
+              <label>Pulse width (duty %) <span id="val-width">4</span></label>
+              <input type="range" id="sl-width" min="1" max="50" step="1" value="4">
             </div>
             <div class="ctrl-group">
-              <label>Beam half-angle (°) <span id="val-beam">15</span></label>
-              <input type="range" id="sl-beam" min="2" max="60" step="1" value="15">
+              <label>Beam half-angle (°) <span id="val-beam">8</span></label>
+              <input type="range" id="sl-beam" min="2" max="60" step="1" value="8">
             </div>
             <div class="ctrl-group">
-              <label>Dispersion measure <span id="val-dm">97.0</span></label>
-              <input type="range" id="sl-dm" min="0" max="500" step="0.5" value="97">
+              <label>Dispersion measure <span id="val-dm">12.4</span></label>
+              <input type="range" id="sl-dm" min="0" max="500" step="0.5" value="12.4">
             </div>
           </div>
           <div class="ctrl-col">
@@ -379,16 +403,25 @@
               <button class="ctrl-btn active" id="btn-play">Pause</button>
             </div>
             <div>
-              <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:9px;">Known pulsars</p>
+              <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:9px;">Notable pulsars</p>
               <div class="pulsar-presets" id="presets"></div>
             </div>
             <div class="widget-readout" id="readout"></div>
           </div>
         </div>
+        <div id="pulsar-info-panel" style="display:none;margin-top:16px;padding:16px 18px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;">
+          <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+            <img id="pulsar-info-photo" src="" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;display:none;">
+            <div style="flex:1;min-width:180px;">
+              <p id="pulsar-info-name" style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;"></p>
+              <a id="pulsar-info-discoverer" href="" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);letter-spacing:.06em;margin-bottom:7px;opacity:.8;display:block;text-decoration:none;border-bottom:1px solid rgba(0,255,231,0.18);padding-bottom:6px;margin-bottom:8px;transition:opacity .2s;"></a>
+              <p id="pulsar-info-text" style="font-size:12px;color:var(--muted);line-height:1.65;"></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-
   <!-- SKILLS -->
   <section class="section reveal" id="skills" data-label="Skills">
     <p class="section-label">04 — Skills</p>
@@ -500,34 +533,115 @@
 
       <div>
         <p class="skill-block-title">Languages</p>
-        <div class="lang-grid">
+        <div class="lang-list">
+
+          <!-- Romanian -->
           <div class="lang-item">
-            <div class="lang-name">Romanian <span>Native</span></div>
-            <div class="lang-bar"><div class="lang-fill" style="width:100%"></div></div>
+            <div class="lang-flags">
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="10" height="20" fill="#002B7F" opacity=".55"/>
+                <rect x="10" width="10" height="20" fill="#FCD116" opacity=".55"/>
+                <rect x="20" width="10" height="20" fill="#CE1126" opacity=".55"/>
+              </svg>
+            </div>
+            <div class="lang-meta">
+              <div class="lang-name">Romanian <span>Native</span></div>
+              <div class="lang-bar"><div class="lang-fill" style="width:100%"></div></div>
+            </div>
           </div>
+
+          <!-- English — UK + US + AU -->
           <div class="lang-item">
-            <div class="lang-name">English <span>Fluent — CAE Grade A</span></div>
-            <div class="lang-bar"><div class="lang-fill" style="width:97%"></div></div>
+            <div class="lang-flags">
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="30" height="20" fill="#012169" opacity=".5"/>
+                <path d="M0,0 L30,20 M30,0 L0,20" stroke="#fff" stroke-width="4" opacity=".45"/>
+                <path d="M0,0 L30,20 M30,0 L0,20" stroke="#C8102E" stroke-width="2.5" opacity=".5"/>
+                <path d="M15,0 V20 M0,10 H30" stroke="#fff" stroke-width="5" opacity=".45"/>
+                <path d="M15,0 V20 M0,10 H30" stroke="#C8102E" stroke-width="3" opacity=".5"/>
+              </svg>
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="30" height="20" fill="#B22234" opacity=".5"/>
+                <rect y="1.54" width="30" height="1.54" fill="#fff" opacity=".4"/>
+                <rect y="4.62" width="30" height="1.54" fill="#fff" opacity=".4"/>
+                <rect y="7.7"  width="30" height="1.54" fill="#fff" opacity=".4"/>
+                <rect y="10.77" width="30" height="1.54" fill="#fff" opacity=".4"/>
+                <rect y="13.85" width="30" height="1.54" fill="#fff" opacity=".4"/>
+                <rect y="16.92" width="30" height="1.54" fill="#fff" opacity=".4"/>
+                <rect width="12" height="10.77" fill="#3C3B6E" opacity=".5"/>
+              </svg>
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="30" height="20" fill="#00008B" opacity=".5"/>
+                <path d="M0,0 L15,10 M15,0 L0,10" stroke="#fff" stroke-width="3" opacity=".4"/>
+                <path d="M0,0 L15,10 M15,0 L0,10" stroke="#C8102E" stroke-width="2" opacity=".45"/>
+                <path d="M7.5,0 V10 M0,5 H15" stroke="#fff" stroke-width="4" opacity=".4"/>
+                <path d="M7.5,0 V10 M0,5 H15" stroke="#C8102E" stroke-width="2.2" opacity=".45"/>
+                <circle cx="22" cy="4"  r="1.2" fill="#fff" opacity=".5"/>
+                <circle cx="27" cy="8"  r="1.2" fill="#fff" opacity=".5"/>
+                <circle cx="22" cy="13" r="1.2" fill="#fff" opacity=".5"/>
+                <circle cx="18" cy="9"  r="1.2" fill="#fff" opacity=".5"/>
+                <circle cx="24" cy="10" r="0.8" fill="#fff" opacity=".4"/>
+              </svg>
+            </div>
+            <div class="lang-meta">
+              <div class="lang-name">English <span>Fluent — CAE Grade A</span></div>
+              <div class="lang-bar"><div class="lang-fill" style="width:97%"></div></div>
+            </div>
           </div>
+
+          <!-- German -->
           <div class="lang-item">
-            <div class="lang-name">German <span>Fluent — C1</span></div>
-            <div class="lang-bar"><div class="lang-fill" style="width:82%"></div></div>
+            <div class="lang-flags">
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="30" height="7"  fill="#000" opacity=".5"/>
+                <rect y="7"  width="30" height="6" fill="#D00" opacity=".5"/>
+                <rect y="13" width="30" height="7" fill="#FFCE00" opacity=".55"/>
+              </svg>
+            </div>
+            <div class="lang-meta">
+              <div class="lang-name">German <span>Fluent — C1</span></div>
+              <div class="lang-bar"><div class="lang-fill" style="width:82%"></div></div>
+            </div>
           </div>
+
+          <!-- Spanish -->
           <div class="lang-item">
-            <div class="lang-name">Spanish <span>Intermediate</span></div>
-            <div class="lang-bar"><div class="lang-fill" style="width:45%"></div></div>
+            <div class="lang-flags">
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="30" height="20" fill="#AA151B" opacity=".5"/>
+                <rect y="5" width="30" height="10" fill="#F1BF00" opacity=".5"/>
+              </svg>
+            </div>
+            <div class="lang-meta">
+              <div class="lang-name">Spanish <span>Intermediate</span></div>
+              <div class="lang-bar"><div class="lang-fill" style="width:45%"></div></div>
+            </div>
           </div>
+
+          <!-- French -->
           <div class="lang-item">
-            <div class="lang-name">French <span>Beginner</span></div>
-            <div class="lang-bar"><div class="lang-fill" style="width:20%"></div></div>
+            <div class="lang-flags">
+              <svg class="flag" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                <rect width="10" height="20" fill="#002395" opacity=".5"/>
+                <rect x="10" width="10" height="20" fill="#fff" opacity=".35"/>
+                <rect x="20" width="10" height="20" fill="#ED2939" opacity=".5"/>
+              </svg>
+            </div>
+            <div class="lang-meta">
+              <div class="lang-name">French <span>Beginner</span></div>
+              <div class="lang-bar"><div class="lang-fill" style="width:20%"></div></div>
+            </div>
           </div>
+
         </div>
       </div>
 
     </div>
   </section>
 
-  <!-- COLLABORATIONS -->
+  <!-- COLLABORATIONS — commented out
+-- COLLABORATIONS -->
+  <!--
   <section class="section reveal" id="collaborations" data-label="Collabs">
     <p class="section-label">05 — Collaborations</p>
     <h2 class="section-title">Active Collaborations</h2>
@@ -555,8 +669,11 @@
       </div>
     </div>
   </section>
+  -->
 
-  <!-- EXPERIENCE -->
+
+  -->
+    <!-- EXPERIENCE -->
   <section class="section reveal" id="experience" data-label="Experience">
     <p class="section-label">06 — Experience</p>
     <h2 class="section-title">Experience</h2>
@@ -647,11 +764,11 @@
 
       <div class="tl-item tl-highlight">
         <div class="tl-date">2010 — 2013</div>
-        <div class="tl-role">BA Natural Sciences: Physics — 1st Class</div>
+        <div class="tl-role">BA Natural Sciences: Physics</div>
         <div class="tl-org">University of Cambridge (Trinity College)</div>
-        <div class="tl-desc">Part I: Mathematics (2010–2011). Part II: Experimental &amp; Theoretical Physics (2011–2013). STEP II/III examinations. Member of Cambridge University Astronomy Society and Trinity Maths Society.</div>
-        <div class="tl-tags"><span class="tl-tag">1st Class Honours</span><span class="tl-tag">Mathematics</span><span class="tl-tag">Physics</span></div>
-        <div class="tl-note">STEP II/III · 1st Class · Cambridge</div>
+        <div class="tl-desc">Part I: Mathematics (2010–2011). Part II: Experimental &amp; Theoretical Physics (2011–2013). STEP II/III examinations (1st in year). Member of Cambridge University Astronomy Society and Trinity Maths Society.</div>
+        <div class="tl-tags"><span class="tl-tag">Natural Sciences</span><span class="tl-tag">Mathematics</span><span class="tl-tag">Physics</span></div>
+        <div class="tl-note">STEP II/III · Cambridge</div>
       </div>
 
       <div class="tl-item">
@@ -720,36 +837,50 @@
     </div>
   </section>
 
-  <!-- PUBLICATIONS -->
-  <section class="section reveal" id="publications" data-label="Papers">
-    <p class="section-label">09 — Publications</p>
-    <h2 class="section-title">Publications &amp; Work in Progress</h2>
+  <!-- CITIZEN SCIENCE -->
+  <section class="section reveal" id="citizen" data-label="Citizen Sci">
+    <p class="section-label">09 — Citizen Science</p>
+    <h2 class="section-title">Citizen Science Projects</h2>
     <div class="divider"></div>
-    <div class="pub-list">
+    <div class="citizen-grid">
 
-      <div class="pub-card pub-inprep">
-        <span class="pub-badge inprep">In prep</span>
-        <div class="pub-title">ALMA Observations of a Candidate Pulsar Planet-Formation Disk: Upper Limits on Debris Disk Emission</div>
-        <div class="pub-authors">Lars Nieder, <strong>A. Botnariuc</strong>, et al.</div>
-        <div class="pub-venue">In preparation · AEI Hannover · ALMA programme</div>
+      <!-- Einstein@Home -->
+      <div class="citizen-card">
+        <a href="https://einsteinathome.org" target="_blank" rel="noopener" class="citizen-logo-link">
+          <img src="https://einsteinathome.org/sites/default/files/eah_logo_0.png"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+               alt="Einstein@Home" class="citizen-logo">
+          <div class="citizen-logo-fallback" style="display:none;">
+            <span style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--white);">Einstein<span style="color:var(--cyan);">@</span>Home</span>
+          </div>
+        </a>
+        <div class="citizen-body">
+          <div class="citizen-title"><a href="https://einsteinathome.org" target="_blank" rel="noopener">Einstein@Home</a></div>
+          <div class="citizen-role">Binary radio pulsar search · PALFA data</div>
+          <div class="citizen-desc">Einstein@Home harnesses donated computing time from volunteers worldwide to search for pulsars in radio survey data. A core part of my PhD involves running binary pulsar acceleration searches on PALFA (Arecibo L-band Feed Array) data through the Einstein@Home infrastructure — targeting compact binary systems that are too computationally expensive for standard FFT methods. The project was founded at AEI Hannover by Bruce Allen, my PhD supervisor.</div>
+          <a href="https://einsteinathome.org/science/binary-radio-pulsar-search" target="_blank" rel="noopener" class="citizen-link">Binary pulsar search info →</a>
+        </div>
       </div>
 
-      <div class="pub-card pub-inprep">
-        <span class="pub-badge inprep">In progress</span>
-        <div class="pub-title">Clustering-Based Classification of MeerKAT Galactic Centre Pulsar Candidates</div>
-        <div class="pub-authors">Prajwal Padmanabh, <strong>A. Botnariuc</strong> (algorithm), et al.</div>
-        <div class="pub-venue">Work in progress · AEI Hannover / MeerKAT GC survey</div>
-      </div>
-
-      <div class="pub-card pub-inprep">
-        <span class="pub-badge inprep">In progress</span>
-        <div class="pub-title">Pulsar Search Results from Parkes and FAST Archival Survey Data</div>
-        <div class="pub-authors"><strong>A. Botnariuc</strong>, R. Sengar, X. J. Liu, et al.</div>
-        <div class="pub-venue">Work in progress · Parkes / FAST archival</div>
+      <!-- Pulsar Hunters / Zooniverse -->
+      <div class="citizen-card">
+        <a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener" class="citizen-logo-link">
+          <img src="https://panoptes-uploads.zooniverse.org/production/project_avatar/4d19f8a9-6034-406c-9f44-8e5d2cd61b1c.jpeg"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+               alt="Pulsar Hunters" class="citizen-logo citizen-logo-sq">
+          <div class="citizen-logo-fallback" style="display:none;">
+            <span style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--white);">Pulsar<span style="color:var(--magenta);"> Hunters</span></span>
+          </div>
+        </a>
+        <div class="citizen-body">
+          <div class="citizen-title"><a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener">Pulsar Hunters</a></div>
+          <div class="citizen-role">Zooniverse · Human candidate classification</div>
+          <div class="citizen-desc">Pulsar Hunters is a Zooniverse citizen science project engaging the public in classifying pulsar candidates from radio survey data. Volunteers examine dedispersed time series and fold plots to separate genuine pulsars from radio frequency interference — a task where human pattern recognition still outperforms automated classifiers for edge cases. The project connects directly to the large-scale survey searches central to my research.</div>
+          <a href="https://www.zooniverse.org/projects/zooniverse/pulsar-hunters" target="_blank" rel="noopener" class="citizen-link">Join Pulsar Hunters →</a>
+        </div>
       </div>
 
     </div>
-    <p style="margin-top:20px;font-family:var(--font-mono);font-size:11px;color:var(--muted);opacity:.6;letter-spacing:.05em;">Publications forthcoming. Full list will appear on ADS once submitted.</p>
   </section>
 
   <!-- CONTACT -->
@@ -757,26 +888,31 @@
     <p class="section-label">10 — Contact</p>
     <h2 class="section-title">Get in Touch</h2>
     <div class="divider"></div>
-    <div class="contact-grid">
-      <a class="contact-card" href="mailto:alexandra.a.s.negrea@gmail.com">
-        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-email"/></svg>
-        <div><div class="contact-label">Email</div><div class="contact-value">alexandra.a.s.negrea@gmail.com</div></div>
+    <div class="contact-list">
+      <a class="clink" href="#" onclick="window.location.href='mai'+'lto:'+'alexandra.botnariuc'+'@'+'aei.mpg.de';return false;">
+        <span class="clink-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-email"/></svg></span>
+        <span class="clink-label">Email</span>
+        <span class="clink-value">alexandra.botnariuc&#64;aei.mpg.de</span>
       </a>
-      <a class="contact-card" href="https://github.com/yourusername" target="_blank" rel="noopener">
-        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-github"/></svg>
-        <div><div class="contact-label">GitHub</div><div class="contact-value">github.com/yourusername</div></div>
+      <a class="clink" href="https://github.com/alexandra-botnariuc/" target="_blank" rel="noopener">
+        <span class="clink-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-github"/></svg></span>
+        <span class="clink-label">GitHub</span>
+        <span class="clink-value">github.com/alexandra-botnariuc</span>
       </a>
-      <a class="contact-card" href="https://orcid.org/0000-0000-0000-0000" target="_blank" rel="noopener">
-        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-orcid"/></svg>
-        <div><div class="contact-label">ORCID</div><div class="contact-value">0000-0000-0000-0000</div></div>
+      <a class="clink" href="https://orcid.org/0000-0002-6874-8096" target="_blank" rel="noopener">
+        <span class="clink-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-orcid"/></svg></span>
+        <span class="clink-label">ORCID</span>
+        <span class="clink-value">0000-0002-6874-8096</span>
       </a>
-      <a class="contact-card" href="https://ui.adsabs.harvard.edu/" target="_blank" rel="noopener">
-        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-signal"/></svg>
-        <div><div class="contact-label">ADS</div><div class="contact-value">NASA/ADS publications</div></div>
+      <a class="clink" href="https://ui.adsabs.harvard.edu/search/q=author%3ABotnariuc&sort=date+desc" target="_blank" rel="noopener">
+        <span class="clink-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-signal"/></svg></span>
+        <span class="clink-label">NASA ADS</span>
+        <span class="clink-value">Search: Botnariuc</span>
       </a>
-      <a class="contact-card" href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">
-        <svg width="20" height="20" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-web"/></svg>
-        <div><div class="contact-label">Research Group</div><div class="contact-value">AEI Pulsar Group</div></div>
+      <a class="clink" href="https://www.aei.mpg.de/347310/pulsars" target="_blank" rel="noopener">
+        <span class="clink-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#ico-web"/></svg></span>
+        <span class="clink-label">Research Group</span>
+        <span class="clink-value">AEI Hannover · Pulsar Group</span>
       </a>
     </div>
   </section>
@@ -805,14 +941,21 @@
   const ORBIT_R = 118;
   const BEAM_HALF = 0.22;
 
-  // Name spans — we'll drive --sweep on them
+  // Name spans — toggled with .name-lit class on beam sweep
   const nameFirst = document.querySelector('.hero-name .name-first');
   const nameLast  = document.querySelector('.hero-name .name-last');
 
-  // sweep state: 0 = idle, going up to 1 then back
-  let sweepFirst = 0, sweepLast = 0;
-  let sweepActive = false;
-  let sweepT = 0; // 0→1 over ~1s when triggered
+  let litTimeout = null;
+
+  function triggerNameGlow(){
+    if(nameFirst) nameFirst.classList.add('name-lit');
+    if(nameLast)  nameLast.classList.add('name-lit');
+    clearTimeout(litTimeout);
+    litTimeout = setTimeout(()=>{
+      if(nameFirst) nameFirst.classList.remove('name-lit');
+      if(nameLast)  nameLast.classList.remove('name-lit');
+    }, 600);
+  }
 
   let orbitAngle = 0;
   let spinAngle  = 0;
@@ -856,28 +999,7 @@
     const facingLeft = normSpin > Math.PI - 0.3 && normSpin < Math.PI + 0.3;
 
     if(facingLeft && !lastWasFacing){
-      // trigger sweep
-      sweepActive = true;
-      sweepT = 0;
-    }
-    lastWasFacing = facingLeft;
-
-    // Advance sweep
-    if(sweepActive){
-      sweepT += 0.022; // ~45 frames = ~0.75s up, then decay
-      // triangle wave: rises 0→1 then falls 1→0
-      const raw = sweepT < 0.5 ? sweepT*2 : 2 - sweepT*2;
-      const val = Math.max(0, Math.min(1, raw));
-
-      if(nameFirst) nameFirst.style.setProperty('--sweep', val);
-      if(nameLast)  nameLast.style.setProperty('--sweep', val);
-
-      if(sweepT >= 1){
-        sweepActive = false;
-        sweepT = 0;
-        if(nameFirst) nameFirst.style.setProperty('--sweep', 0);
-        if(nameLast)  nameLast.style.setProperty('--sweep', 0);
-      }
+      triggerNameGlow();
     }
 
     // glow ring on photo when beam faces centre
@@ -906,43 +1028,154 @@
 })();
 
 /* ============================================================
-   PULSAR WIDGET
+   PULSAR WIDGET — lighthouse 3D beam + signal trace + info panel
    ============================================================ */
 (function(){
-  const PRESETS=[
-    {name:"B1919+21",period:1.3373,width:4, beam:8, dm:12.4},
-    {name:"B0833-45",period:0.0893,width:3, beam:6, dm:67.9},
-    {name:"J0437-47",period:0.00576,width:6,beam:12,dm:2.6},
-    {name:"B1257+12",period:0.00621,width:5,beam:10,dm:10.2},
-    {name:"B0531+21",period:0.0334,width:2, beam:5, dm:56.8},
-    {name:"J0737-30",period:0.0228,width:7, beam:14,dm:48.9},
+
+  /* ── Preset data ── */
+  const PRESETS = [
+    {
+      name: 'PSR B1919+21',
+      period: 1.3373, width: 4, beam: 8, dm: 12.4,
+      label: 'First pulsar ever discovered',
+      discoverer: 'Jocelyn Bell Burnell · Cambridge, 1967',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Dame_Jocelyn_Bell_Burnell_at_the_IAU_XXIX_General_Assembly_%28iauga15-d2-28%29.jpg/240px-Dame_Jocelyn_Bell_Burnell_at_the_IAU_XXIX_General_Assembly_%28iauga15-d2-28%29.jpg',
+      text: 'Discovered on 28 November 1967 by PhD student Jocelyn Bell Burnell at the Mullard Radio Astronomy Observatory, Cambridge. Initially nicknamed "LGM-1" (Little Green Men). The Nobel Prize for its discovery was awarded to her supervisor Antony Hewish — not to Bell Burnell herself.',
+      link: 'https://doi.org/10.1038/217709a0',
+      linkLabel: 'Hewish et al. 1968, Nature →'
+    },
+    {
+      name: 'PSR J1748-2446ad',
+      period: 0.001396, width: 6, beam: 12, dm: 242.0,
+      label: 'Fastest spinning pulsar known (as of June 2026)',
+      discoverer: 'Hessels et al. · Terzan 5 globular cluster, 2006',
+      photo: '',
+      text: 'Located in the globular cluster Terzan 5, this pulsar rotates 716 times per second (period 1.396 ms) — the fastest known as of today. It was discovered in 2004–2005 using the Green Bank Telescope. Its extreme spin was spun up by accreting matter from a companion star over billions of years.',
+      link: 'https://doi.org/10.1126/science.1123430',
+      linkLabel: 'Hessels et al. 2006, Science →'
+    },
+    {
+      name: 'PSR J1950+2414',
+      period: 0.00431, width: 5, beam: 10, dm: 67.9,
+      label: 'PALFA discovery by Einstein@Home',
+      discoverer: 'B. Knispel, B. Allen et al. · AEI Hannover, 2015',
+      photo: 'https://www.aei.mpg.de/person/23736/26370/photo.jpg',
+      text: 'Discovered by the Einstein@Home distributed computing project in PALFA (Arecibo L-band Feed Array) survey data. PSR J1950+2414 is a 4.3 ms millisecond pulsar in a 22-day eccentric binary orbit — unusual because standard recycling predicts circular orbits. Benjamin Knispel (then PhD student at AEI, supervisor: Bruce Allen) led the discovery paper.',
+      link: 'https://arxiv.org/abs/1504.03684',
+      linkLabel: 'Knispel et al. 2015, ApJ →'
+    },
+    {
+      name: 'PSR J1555-2908',
+      period: 0.00179, width: 6, beam: 12, dm: 71.5,
+      label: 'Black widow eclipsing pulsar',
+      discoverer: 'Ray, Nieder, Clark et al. · GBT / Fermi, 2022',
+      photo: 'https://www.aei.mpg.de/person/27310/43608/photo.jpg',
+      text: 'A 1.79 ms black widow millisecond pulsar with a 5.6 hr orbit. The companion star — whittled down to just 0.052 solar masses — eclipses the radio signal for ~10% of the orbit, twice what simple Roche-lobe geometry would predict. Discovered via a Fermi gamma-ray source, searched with GBT. Colin Clark is a co-author and group leader at AEI.',
+      link: 'https://arxiv.org/abs/2202.04783',
+      linkLabel: 'Ray, Nieder, Clark et al. 2022, ApJ →'
+    },
+    {
+      name: 'PSR J2039-5617',
+      period: 0.00265, width: 7, beam: 14, dm: 20.2,
+      label: 'Gamma-ray spider pulsar — Einstein@Home',
+      discoverer: 'Clark, Nieder et al. · Einstein@Home / Fermi, 2021',
+      photo: 'https://www.aei.mpg.de/person/97815/photo.jpg',
+      text: 'A 2.65 ms redback pulsar evaporating its companion (1/6 solar mass). Discovered by Einstein@Home searching Fermi gamma-ray data — the pulsations had been hiding in a known gamma-ray source for years. Lars Nieder (then PhD student at AEI) led the discovery search method. The companion\'s orbit varies unpredictably due to stellar activity.',
+      link: 'https://doi.org/10.1093/mnras/staa3484',
+      linkLabel: 'Clark, Nieder et al. 2021, MNRAS →'
+    },
+    {
+      name: 'PSR B0833-45',
+      period: 0.0893, width: 3, beam: 6, dm: 67.9,
+      label: 'Vela pulsar — young and energetic',
+      discoverer: 'Large, Vaughan & Mills · Molonglo, 1968',
+      photo: '',
+      text: 'One of the brightest radio pulsars, associated with the Vela supernova remnant ~1000 light-years away. About 11,000 years old. It "glitches" — suddenly spinning up — making it a key laboratory for neutron star interiors.',
+      link: 'https://doi.org/10.1038/220340a0',
+      linkLabel: 'Large et al. 1968, Nature →'
+    },
+    {
+      name: 'PSR B0531+21',
+      period: 0.0334, width: 2, beam: 5, dm: 56.8,
+      label: 'Crab pulsar — born 970 years ago',
+      discoverer: 'Staelin & Reifenstein · Arecibo, 1968',
+      photo: '',
+      text: 'The neutron star at the heart of the Crab Nebula, created in the supernova of 1054 AD observed by Chinese astronomers. At 33 ms it is one of the faster young pulsars. It powers the entire Crab Nebula through its relativistic wind and is visible across the electromagnetic spectrum.',
+      link: 'https://doi.org/10.1126/science.162.3861.1481',
+      linkLabel: 'Staelin & Reifenstein 1968, Science →'
+    },
+    {
+      name: 'PSR J0437-4715',
+      period: 0.00576, width: 6, beam: 12, dm: 2.6,
+      label: 'Nearest millisecond pulsar',
+      discoverer: 'Johnston et al. · Parkes, 1993',
+      photo: '',
+      text: 'The nearest and brightest millisecond pulsar, just 510 light-years away. Discovered at Parkes with a 5.76 ms period in a 5.7-day binary with a white dwarf. It is a primary target for pulsar timing arrays and for tests of general relativity.',
+      link: 'https://doi.org/10.1038/361613a0',
+      linkLabel: 'Johnston et al. 1993, Nature →'
+    },
+    {
+      name: 'PSR J0737-3039A',
+      period: 0.02277, width: 7, beam: 14, dm: 48.9,
+      label: 'Double pulsar system',
+      discoverer: 'Burgay et al. · Parkes, 2003',
+      photo: '',
+      text: 'The only known system where BOTH neutron stars are detectable as pulsars (B at 2.77 s). Discovered at Parkes, it provides the most stringent tests of general relativity in the strong-field regime and won the 2021 Einstein Prize.',
+      link: 'https://doi.org/10.1038/nature02124',
+      linkLabel: 'Burgay et al. 2003, Nature →'
+    },
   ];
 
-  const pC=document.getElementById('pulsar-canvas');
-  const sC=document.getElementById('signal-canvas');
-  const pCtx=pC.getContext('2d');
-  const sCtx=sC.getContext('2d');
+  const pC  = document.getElementById('pulsar-canvas');
+  const sC  = document.getElementById('signal-canvas');
+  const pCtx = pC.getContext('2d');
+  const sCtx = sC.getContext('2d');
 
   function resize(){
-    const w=pC.parentElement.clientWidth||600;
-    pC.width=w; sC.width=w;
+    const w = pC.parentElement.clientWidth || 600;
+    pC.width = w; sC.width = w;
   }
-  resize(); window.addEventListener('resize',resize);
+  resize(); window.addEventListener('resize', resize);
 
-  let period=0.714,dutyPct=8,beamDeg=15,dm=97;
-  let running=true,t=0,lastTS=null;
-  const SIG_LEN=600;
+  let period=1.3373, dutyPct=4, beamDeg=8, dm=12.4;
+  let running=true, t=0, lastTS=null;
+  const SIG_LEN=700;
   const sigBuf=new Float32Array(SIG_LEN);
   let sigHead=0;
 
-  function fmt(v){return v<0.01?(v*1000).toFixed(3)+' ms':v.toFixed(3)+' s';}
+  // Info panel elements
+  const infoPanel = document.getElementById('pulsar-info-panel');
+  const infoName  = document.getElementById('pulsar-info-name');
+  const infoDisc  = document.getElementById('pulsar-info-discoverer');
+  const infoText  = document.getElementById('pulsar-info-text');
+  const infoPhoto = document.getElementById('pulsar-info-photo');
+
+  function showInfo(ps){
+    infoPanel.style.display = 'block';
+    infoName.textContent  = ps.name + (ps.label ? ' — ' + ps.label : '');
+    // Discoverer line is now a clickable link to the paper
+    infoDisc.textContent  = (ps.linkLabel || ps.discoverer);
+    infoDisc.href         = ps.link || '#';
+    infoDisc.title        = ps.discoverer;
+    infoText.textContent  = ps.text;
+    if(ps.photo){
+      infoPhoto.src   = ps.photo;
+      infoPhoto.alt   = ps.discoverer;
+      infoPhoto.style.display = 'block';
+      infoPhoto.onerror = ()=>{ infoPhoto.style.display='none'; };
+    } else {
+      infoPhoto.style.display = 'none';
+    }
+  }
+
+  function fmt(v){ return v<0.01?(v*1000).toFixed(3)+' ms':v.toFixed(3)+' s'; }
 
   function sync(){
-    document.getElementById('val-period').textContent=fmt(period);
-    document.getElementById('val-width').textContent=dutyPct;
-    document.getElementById('val-beam').textContent=beamDeg;
-    document.getElementById('val-dm').textContent=parseFloat(dm).toFixed(1);
-    document.getElementById('readout').innerHTML=
+    document.getElementById('val-period').textContent = fmt(period);
+    document.getElementById('val-width').textContent  = dutyPct;
+    document.getElementById('val-beam').textContent   = beamDeg;
+    document.getElementById('val-dm').textContent     = parseFloat(dm).toFixed(1);
+    document.getElementById('readout').innerHTML =
       `Period &nbsp;&nbsp;<span class="readout-val">${fmt(period)}</span><br>`+
       `Freq &nbsp;&nbsp;&nbsp;<span class="readout-val">${(1/period).toFixed(4)} Hz</span><br>`+
       `Duty &nbsp;&nbsp;&nbsp;<span class="readout-val">${dutyPct}%</span><br>`+
@@ -950,14 +1183,17 @@
       `DM &nbsp;&nbsp;&nbsp;&nbsp;<span class="readout-val">${parseFloat(dm).toFixed(1)} pc·cm⁻³</span>`;
   }
 
+  // Sliders
   document.getElementById('sl-period').addEventListener('input',e=>{period=+e.target.value;sync();});
   document.getElementById('sl-width') .addEventListener('input',e=>{dutyPct=+e.target.value;sync();});
   document.getElementById('sl-beam')  .addEventListener('input',e=>{beamDeg=+e.target.value;sync();});
   document.getElementById('sl-dm')    .addEventListener('input',e=>{dm=+e.target.value;sync();});
 
-  const presetsEl=document.getElementById('presets');
-  PRESETS.forEach(ps=>{
-    const b=document.createElement('button'); b.className='preset-btn'; b.textContent=ps.name;
+  // Preset buttons
+  const presetsEl = document.getElementById('presets');
+  PRESETS.forEach((ps,i)=>{
+    const b = document.createElement('button');
+    b.className='preset-btn'; b.textContent=ps.name;
     b.addEventListener('click',()=>{
       period=ps.period; dutyPct=ps.width; beamDeg=ps.beam; dm=ps.dm;
       document.getElementById('sl-period').value=ps.period;
@@ -965,9 +1201,13 @@
       document.getElementById('sl-beam').value=ps.beam;
       document.getElementById('sl-dm').value=ps.dm;
       sync(); sigBuf.fill(0); t=0;
+      showInfo(ps);
     });
     presetsEl.appendChild(b);
   });
+
+  // Show first preset info on load
+  showInfo(PRESETS[0]);
 
   const btnPlay=document.getElementById('btn-play');
   btnPlay.addEventListener('click',()=>{
@@ -978,170 +1218,283 @@
   });
   sync();
 
-  function drawBeam(phase,W,H){
+  /* ── 3D lighthouse beam ──
+     The pulsar spin axis is tilted at INC to the line-of-sight.
+     The beam sweeps a cone. We project to 2D.
+     Key difference from radar: beam is a CONE pointing into/out of screen,
+     not rotating in the plane. When phase≈0 it fires TOWARD the viewer —
+     the beam fans out wide and bright. When phase≈0.5 it points away — dim, narrow.
+     The beam half-width on sky also scales with projection.
+  */
+  function drawBeam(phase, W, H){
     pCtx.clearRect(0,0,W,H);
-    const CX=W/2, CY=H/2, R=Math.min(W,H)*0.34;
 
-    // 3D precession: the rotation axis tilts relative to line-of-sight.
-    // We model the beam sweeping a CONE in 3D and project to 2D.
-    // inclination: angle between spin axis and line-of-sight (fixed at ~50 deg)
-    const INC = 50 * Math.PI/180;
-    // The beam traces a small circle on the sky. At phase=0 the beam tip
-    // is closest to the observer (max approach), at phase=0.5 it's farthest.
-    // We represent this by varying the beam direction in 3D and projecting.
+    const CX = W / 2;
+    const CY = H * 0.36;
+    const R  = Math.min(W, H) * 0.27;
+    const INC = 50 * Math.PI / 180;
+    const ry = R * Math.sin(INC);  // semi-minor axis of tilted ellipse
 
-    // Beam tip direction in 3D (spin axis = z, beam offset = beamDeg from z)
-    const beamOff = beamDeg * Math.PI/180;
-    const spinAng  = phase * Math.PI * 2;
+    // Earth offset slightly right of centre so beam hits it at one clear phase
+    const OBS_X = CX + R * 0.22;
+    const OBS_Y = CY + R * 1.72;   // well below ellipse
 
-    // direction cosines of the beam axis in the frame where spin axis = z
-    const bx_spin = Math.sin(beamOff) * Math.cos(spinAng);
-    const by_spin = Math.sin(beamOff) * Math.sin(spinAng);
-    const bz_spin = Math.cos(beamOff);
+    // ── Phase at which the lower beam points toward Earth ──
+    // The lower beam (pole 1 = opposite of pole 0) traces the bottom of the ellipse.
+    // We want it to hit Earth at a specific phase = EARTH_PHASE.
+    // Earth is at angle atan2(OBS_Y - CY, OBS_X - CX) from pulsar centre on screen.
+    // The beam projected angle on sky at phase φ: atan2(by, bx) where
+    //   bx = sin(beamOff)*cos(φ*2π), by = sin(beamOff)*sin(φ*2π)*cos(INC) - cos(beamOff)*sin(INC)
+    // For the lower pole (negated): projected angle = atan2(-by, -bx)
+    // We set EARTH_PHASE so that the lower beam projection points toward Earth.
+    // Rather than solving analytically, we pick phase = 0.75 which puts the lower
+    // beam pointing toward the bottom-right of the ellipse — close to Earth position.
+    const EARTH_PHASE = 0.75;
 
-    // rotate by inclination about x-axis so spin axis points at angle INC to LOS
-    // LOS = z after rotation
-    const bx = bx_spin;
-    const by = by_spin*Math.cos(INC) - bz_spin*Math.sin(INC);
-    const bz = by_spin*Math.sin(INC) + bz_spin*Math.cos(INC);   // bz>0 = coming toward viewer
+    // ── Obs detection: simple phase proximity ──
+    // How far is current phase from EARTH_PHASE (wrap-around distance)?
+    let dPhase = Math.abs(phase - EARTH_PHASE);
+    if(dPhase > 0.5) dPhase = 1 - dPhase;
+    // Beam width in phase units: beamDeg/360
+    const beamPhaseW = Math.max(beamDeg / 360, 0.025);
+    // obsIntensity: 0 when far, peaks to 1 at EARTH_PHASE
+    const obsIntensity = dPhase < beamPhaseW * 2.5
+      ? Math.max(0, 1 - dPhase / (beamPhaseW * 2.5))
+      : 0;
 
-    // project onto sky: screen coords from bx,by; depth from bz
-    // The beam makes an angle with LOS: cos(theta) = bz
-    // "toward viewer" = bz > cos(beamOff) means beam intersects LOS
-    const cosBeam = Math.cos(beamOff);
-    const onViewer = bz > cosBeam * 0.92;  // slight tolerance
-
-    // For the 2D rendering we draw the beam footprint:
-    // The beam cone's apparent direction on sky is (bx,by), length varies with depth
-    const projLen  = R * 1.3 * (0.5 + 0.5*Math.abs(bz)); // longer when pointing toward/away
-    const projAng  = Math.atan2(by, bx);                   // sky direction
-    const depthAlpha = 0.3 + 0.7*Math.max(0,bz);           // brighter when coming toward viewer
+    // ── 3D beam vectors (for visual rendering) ──
+    const beamOff = beamDeg * Math.PI / 180;
+    const spinAng = phase * Math.PI * 2;
+    const bx_s = Math.sin(beamOff)*Math.cos(spinAng);
+    const by_s = Math.sin(beamOff)*Math.sin(spinAng);
+    const bz_s = Math.cos(beamOff);
+    const bx = bx_s;
+    const by = by_s*Math.cos(INC) - bz_s*Math.sin(INC);
+    const bz = by_s*Math.sin(INC) + bz_s*Math.cos(INC);
 
     // ambient glow
-    const ag=pCtx.createRadialGradient(CX,CY,0,CX,CY,R*1.6);
-    ag.addColorStop(0,'rgba(0,255,231,0.03)'); ag.addColorStop(1,'rgba(0,0,0,0)');
+    const ag = pCtx.createRadialGradient(CX,CY,0,CX,CY,R*1.5);
+    ag.addColorStop(0,'rgba(0,255,231,0.04)'); ag.addColorStop(1,'rgba(0,0,0,0)');
     pCtx.fillStyle=ag; pCtx.fillRect(0,0,W,H);
 
-    // orbit reference ellipse — tilted to match inclination
-    const ry = R * Math.sin(INC); // semi-minor after tilt
+    // Tilted reference ellipse
     pCtx.save(); pCtx.translate(CX,CY);
-    [0.4,0.7,1.0].forEach((f,i)=>{
+    [0.45,0.75,1.0].forEach((f,i)=>{
       pCtx.beginPath(); pCtx.ellipse(0,0,R*f,ry*f,0,0,Math.PI*2);
-      pCtx.strokeStyle=`rgba(30,41,64,${0.7-i*0.15})`; pCtx.lineWidth=1; pCtx.stroke();
+      pCtx.strokeStyle=`rgba(30,41,64,${0.65-i*0.15})`; pCtx.lineWidth=1; pCtx.stroke();
     });
     pCtx.restore();
 
-    // observer marker
-    const vx=CX+R*1.42, vy=CY;
-    pCtx.save(); pCtx.translate(vx,vy);
-    pCtx.beginPath(); pCtx.arc(0,0,5,0,Math.PI*2);
-    pCtx.strokeStyle='rgba(255,179,71,0.45)'; pCtx.lineWidth=1.5; pCtx.stroke();
-    pCtx.beginPath(); pCtx.arc(0,0,2,0,Math.PI*2);
-    pCtx.fillStyle='rgba(255,179,71,0.55)'; pCtx.fill();
-    pCtx.font=`8px 'Space Mono',monospace`; pCtx.fillStyle='rgba(255,179,71,0.4)'; pCtx.textAlign='center';
-    pCtx.fillText('obs',0,17); pCtx.restore();
+    // ── Draw both beam poles ──
+    // Pole 0 = (bx,by,bz), Pole 1 = (-bx,-by,-bz)
+    // Pole 1 is the one that hits Earth — make it BRIGHTER, Pole 0 dimmer
+    [[bx,by,bz,false],[-bx,-by,-bz,true]].forEach(([bxp,byp,bzp,isEarthPole])=>{
+      const depth   = bzp;
+      const pLen    = R * 1.35 * (0.4 + 0.6 * Math.abs(depth));
+      const pAng    = Math.atan2(byp, bxp);
+      const appHalf = beamOff * (0.35 + 0.65 * Math.abs(depth));
 
-    // draw both beams (opposite poles)
-    [0, Math.PI].forEach((poleOff, bi)=>{
-      // recalc for opposite pole
-      const s2 = spinAng + poleOff;
-      const bx2 = Math.sin(beamOff)*Math.cos(s2);
-      const by2 = Math.sin(beamOff)*Math.sin(s2);
-      const bz2 = Math.cos(beamOff) * (bi===0?1:-1);
-      const bxR2= bx2;
-      const byR2= by2*Math.cos(INC)-bz2*Math.sin(INC);
-      const bzR2= by2*Math.sin(INC)+bz2*Math.cos(INC);
+      // Earth pole: brighter always, extra glow when sweeping Earth
+      let baseA;
+      if(isEarthPole){
+        baseA = 0.70 + obsIntensity * 0.28;  // bright + extra flash
+      } else {
+        baseA = 0.28;  // upper beam: dim
+      }
+      const depthA = 0.15 + 0.85 * Math.max(0, depth);
 
-      const pLen2 = R*1.3*(0.5+0.5*Math.abs(bzR2));
-      const pAng2 = Math.atan2(byR2,bxR2);
-      const dAlpha2 = 0.25+0.6*Math.max(0,bzR2);
-      const onV2 = bzR2 > cosBeam*0.92;
-
-      const baseA = bi===0 ? 0.62 : 0.28;
-      const extra  = onV2 ? 0.20 : 0;
-
-      pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(pAng2);
-      // beam width scales with depth — wider when coming straight at you
-      const halfAngle = beamDeg*Math.PI/180 * (0.5+0.5*Math.abs(bzR2));
+      pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(pAng);
       pCtx.beginPath(); pCtx.moveTo(0,0);
-      pCtx.arc(0,0,pLen2,-halfAngle,halfAngle); pCtx.closePath();
-      const g=pCtx.createRadialGradient(0,0,0,0,0,pLen2);
-      g.addColorStop(0,`rgba(0,255,231,${(baseA+extra)*dAlpha2})`);
-      g.addColorStop(0.55,`rgba(0,255,231,${(baseA+extra)*dAlpha2*0.3})`);
+      pCtx.arc(0,0,pLen,-appHalf,appHalf);
+      pCtx.closePath();
+      const g = pCtx.createRadialGradient(0,0,0,0,0,pLen);
+      g.addColorStop(0,`rgba(0,255,231,${baseA*depthA})`);
+      g.addColorStop(0.5,`rgba(0,255,231,${baseA*depthA*0.3})`);
       g.addColorStop(1,'rgba(0,255,231,0)');
       pCtx.fillStyle=g; pCtx.fill(); pCtx.restore();
-
-      // flash when sweeping observer
-      if(onV2){
-        const fl = Math.max(0, (bzR2-cosBeam*0.92)/(1-cosBeam*0.92));
-        pCtx.beginPath(); pCtx.arc(CX,CY,R*0.5,0,Math.PI*2);
-        pCtx.strokeStyle=`rgba(0,255,231,${fl*0.35})`; pCtx.lineWidth=2+fl*3; pCtx.stroke();
-      }
     });
 
-    // DM smear
-    if(dm>30){
-      const sf=Math.min(dm/500,0.28);
-      pCtx.beginPath(); pCtx.arc(CX,CY,R*0.52,0,Math.PI*2);
-      pCtx.strokeStyle=`rgba(255,179,71,${sf*0.9})`; pCtx.lineWidth=2; pCtx.stroke();
-    }
-
-    // spin axis — vertical dashed line with tilt shown
-    pCtx.save(); pCtx.setLineDash([4,6]);
-    const axTilt = (Math.PI/2 - INC); // tilt from vertical
-    const axLen  = R*1.4;
+    // Spin axis
+    pCtx.save(); pCtx.setLineDash([4,7]);
+    const axTilt = Math.PI/2-INC, axLen=R*1.3;
     pCtx.beginPath();
-    pCtx.moveTo(CX - axLen*Math.sin(axTilt), CY - axLen*Math.cos(axTilt));
-    pCtx.lineTo(CX + axLen*Math.sin(axTilt), CY + axLen*Math.cos(axTilt));
-    pCtx.strokeStyle='rgba(255,255,255,0.06)'; pCtx.lineWidth=1; pCtx.stroke(); pCtx.restore();
+    pCtx.moveTo(CX-axLen*Math.sin(axTilt),CY-axLen*Math.cos(axTilt));
+    pCtx.lineTo(CX+axLen*Math.sin(axTilt),CY+axLen*Math.cos(axTilt));
+    pCtx.strokeStyle='rgba(255,255,255,0.05)'; pCtx.lineWidth=1; pCtx.stroke(); pCtx.restore();
 
-    // neutron star core
-    const cg=pCtx.createRadialGradient(CX,CY,0,CX,CY,16);
+    // Neutron star core
+    const cg=pCtx.createRadialGradient(CX,CY,0,CX,CY,14);
     cg.addColorStop(0,'rgba(255,255,255,1)');
     cg.addColorStop(0.3,'rgba(0,255,231,0.9)');
     cg.addColorStop(1,'rgba(0,255,231,0)');
     pCtx.beginPath(); pCtx.arc(CX,CY,8,0,Math.PI*2); pCtx.fillStyle=cg; pCtx.fill();
 
-    // phase marker on tilt-ellipse
-    const mAngle = phase*Math.PI*2;
-    const mx = CX + R*Math.cos(mAngle);
-    const my = CY + ry*Math.sin(mAngle);
-    pCtx.beginPath(); pCtx.arc(mx,my,2.5,0,Math.PI*2);
-    pCtx.fillStyle='rgba(0,255,231,0.35)'; pCtx.fill();
-  }
+    // ── Earth ──
+    const er = 13;
+    const earthG=pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er);
+    earthG.addColorStop(0,'rgba(30,100,200,0.65)');
+    earthG.addColorStop(0.55,'rgba(20,140,80,0.45)');
+    earthG.addColorStop(1,'rgba(0,20,60,0)');
+    pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er,0,Math.PI*2); pCtx.fillStyle=earthG; pCtx.fill();
+    pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er,0,Math.PI*2);
+    pCtx.strokeStyle='rgba(60,160,255,0.30)'; pCtx.lineWidth=1; pCtx.stroke();
+    pCtx.save(); pCtx.translate(OBS_X,OBS_Y);
+    pCtx.beginPath(); pCtx.ellipse(-3,-2,5,3.5,0.4,0,Math.PI*2);
+    pCtx.fillStyle='rgba(40,160,80,0.28)'; pCtx.fill();
+    pCtx.beginPath(); pCtx.ellipse(4,1,3.5,2.5,-0.3,0,Math.PI*2);
+    pCtx.fillStyle='rgba(40,160,80,0.22)'; pCtx.fill();
+    pCtx.restore();
 
-    function drawSignal(W){
-    const H=sC.height;
-    sCtx.clearRect(0,0,W,H);
-    const bl=H*0.72;
-    sCtx.beginPath(); sCtx.moveTo(0,bl); sCtx.lineTo(W,bl);
-    sCtx.strokeStyle='rgba(30,41,64,0.8)'; sCtx.lineWidth=1; sCtx.stroke();
-    sCtx.font=`8px 'Space Mono',monospace`; sCtx.fillStyle='rgba(122,139,168,0.4)';
-    sCtx.fillText('flux',4,12); sCtx.fillText('time →',W-46,H-4);
-    sCtx.beginPath();
-    for(let i=0;i<SIG_LEN;i++){
-      const idx=(sigHead-SIG_LEN+i+SIG_LEN*2)%SIG_LEN;
-      const x=(i/SIG_LEN)*W, y=bl-sigBuf[idx]*(H*0.55);
-      if(i===0) sCtx.moveTo(x,y); else sCtx.lineTo(x,y);
+    // Earth glow when beam hits
+    if(obsIntensity > 0.03){
+      const eg2=pCtx.createRadialGradient(OBS_X,OBS_Y,0,OBS_X,OBS_Y,er*3);
+      eg2.addColorStop(0,`rgba(0,255,231,${obsIntensity*0.55})`);
+      eg2.addColorStop(0.5,`rgba(0,255,231,${obsIntensity*0.18})`);
+      eg2.addColorStop(1,'rgba(0,255,231,0)');
+      pCtx.beginPath(); pCtx.arc(OBS_X,OBS_Y,er*3,0,Math.PI*2);
+      pCtx.fillStyle=eg2; pCtx.fill();
     }
-    sCtx.strokeStyle='rgba(0,255,231,0.85)'; sCtx.lineWidth=1.5; sCtx.stroke();
-    sCtx.lineTo(W,bl); sCtx.lineTo(0,bl); sCtx.closePath();
-    sCtx.fillStyle='rgba(0,255,231,0.05)'; sCtx.fill();
+
+    // Dish
+    pCtx.save(); pCtx.translate(OBS_X, OBS_Y-er);
+    pCtx.beginPath(); pCtx.moveTo(0,0); pCtx.lineTo(0,5);
+    pCtx.strokeStyle='rgba(180,210,230,0.6)'; pCtx.lineWidth=1; pCtx.stroke();
+    pCtx.beginPath(); pCtx.moveTo(-6,4); pCtx.quadraticCurveTo(0,8,6,4);
+    pCtx.strokeStyle='rgba(210,230,245,0.7)'; pCtx.lineWidth=1.3; pCtx.stroke();
+    pCtx.beginPath(); pCtx.moveTo(0,8); pCtx.lineTo(0,-2);
+    pCtx.strokeStyle='rgba(180,210,230,0.5)'; pCtx.lineWidth=0.8; pCtx.stroke();
+    pCtx.restore();
+
+    // Store
+    drawBeam.lastObsIntensity = obsIntensity;
+    drawBeam.earthX = OBS_X;
+    drawBeam.earthR = er;
+    drawBeam.earthY = OBS_Y;
+  }
+  drawBeam.lastObsIntensity = 0;
+  drawBeam.earthX = 0; drawBeam.earthR = 13; drawBeam.earthY = 0;
+
+      /* ── Signal trace ──
+     Pulses injected at right edge (newest), scroll left (older = left).
+     Observation window sits near the right side, directly under Earth.
+     Window lights up as each pulse passes through it.
+     Inspired by M. Kramer (www.jb.man.ac.uk/~mkramer). ── */
+  function drawSignal(W){
+    const H = sC.height;
+    sCtx.clearRect(0,0,W,H);
+
+    // Earth x position from drawBeam
+    const ex = drawBeam.earthX || W / 2;
+    const er = drawBeam.earthR || 14;
+
+    // Window: centred under Earth, width = Earth diameter
+    // Clamp so it doesn't go off-canvas
+    const winW  = Math.max(er * 2, 24);
+    const winX  = Math.max(2, Math.min(W - winW - 2, ex - er));
+    const winCX = winX + winW / 2;   // window centre x
+
+    // Which buffer index corresponds to the window centre x?
+    // x = (i/(SIG_LEN-1))*(W-2)+1  =>  i = (x-1)*(SIG_LEN-1)/(W-2)
+    const winI  = Math.round((winCX - 1) * (SIG_LEN - 1) / Math.max(1, W - 2));
+    // What's the actual amplitude at that buffer position right now?
+    const winIdx = (sigHead - SIG_LEN + winI + SIG_LEN * 4) % SIG_LEN;
+    const winAmp = Math.max(0, sigBuf[winIdx] || 0);
+
+    // background
+    sCtx.fillStyle = 'rgba(7,9,15,0.95)';
+    sCtx.fillRect(0,0,W,H);
+
+    // baseline
+    const bl = H * 0.60;
+    sCtx.beginPath(); sCtx.moveTo(0,bl); sCtx.lineTo(W,bl);
+    sCtx.strokeStyle = 'rgba(30,41,64,0.7)'; sCtx.lineWidth = 1; sCtx.stroke();
+
+    // ── Detection window — glows when pulse is inside ──
+    const glowA = Math.min(1, winAmp * 2.5);  // amplify glow
+    // base amber background
+    const wg = sCtx.createLinearGradient(winX,0,winX+winW,0);
+    wg.addColorStop(0,   'rgba(255,160,40,0)');
+    wg.addColorStop(0.12,'rgba(255,160,40,0.10)');
+    wg.addColorStop(0.88,'rgba(255,160,40,0.10)');
+    wg.addColorStop(1,   'rgba(255,160,40,0)');
+    sCtx.fillStyle = wg; sCtx.fillRect(winX, 0, winW, H);
+
+    // active glow overlay — cyan-white when pulse is present
+    if(glowA > 0.02){
+      const ag = sCtx.createLinearGradient(winX,0,winX+winW,0);
+      ag.addColorStop(0,   'rgba(0,255,231,0)');
+      ag.addColorStop(0.2, `rgba(0,255,231,${glowA*0.35})`);
+      ag.addColorStop(0.5, `rgba(200,255,248,${glowA*0.18})`);
+      ag.addColorStop(0.8, `rgba(0,255,231,${glowA*0.35})`);
+      ag.addColorStop(1,   'rgba(0,255,231,0)');
+      sCtx.fillStyle = ag; sCtx.fillRect(winX, 0, winW, H);
+      // top+bottom glow bars
+      sCtx.fillStyle = `rgba(0,255,231,${glowA*0.5})`;
+      sCtx.fillRect(winX, 0, winW, 2);
+      sCtx.fillRect(winX, H-2, winW, 2);
+    }
+
+    // border lines
+    sCtx.strokeStyle = `rgba(255,160,40,${0.22 + glowA*0.4})`;
+    sCtx.lineWidth = 1;
+    sCtx.beginPath(); sCtx.moveTo(winX,0); sCtx.lineTo(winX,H); sCtx.stroke();
+    sCtx.beginPath(); sCtx.moveTo(winX+winW,0); sCtx.lineTo(winX+winW,H); sCtx.stroke();
+
+    // signal line
+    sCtx.beginPath();
+    for(let i = 0; i < SIG_LEN; i++){
+      const idx = (sigHead - SIG_LEN + i + SIG_LEN * 4) % SIG_LEN;
+      const x   = (i / (SIG_LEN - 1)) * (W - 2) + 1;
+      const y   = bl - Math.max(0, sigBuf[idx]) * (H * 0.75);
+      if(i === 0) sCtx.moveTo(x, y); else sCtx.lineTo(x, y);
+    }
+    sCtx.strokeStyle = 'rgba(0,255,231,0.95)'; sCtx.lineWidth = 1.8; sCtx.stroke();
+
+    // credit
+    sCtx.fillStyle = 'rgba(122,139,168,0.15)';
+    sCtx.font = `7px 'Space Mono',monospace`;
+    sCtx.textAlign = 'right';
+    sCtx.fillText('inspired by M. Kramer', W - 4, H - 2);
+    sCtx.textAlign = 'left';
   }
 
+    /* ── Pre-fill: visible pulses across the trace on startup ── */
+  (function prefill(){
+    const sigma = Math.max(5, dutyPct * 1.2);
+    // Space pulses evenly — they'll be visible scrolling left from the start
+    [0.12, 0.30, 0.50, 0.70, 0.88].forEach(frac => {
+      const centre = Math.round(frac * (SIG_LEN-1));
+      for(let i=0; i<SIG_LEN; i++){
+        const d = i - centre;
+        const amp = Math.exp(-0.5*(d/sigma)*(d/sigma)) * 0.90;
+        if(amp > sigBuf[i]) sigBuf[i] = amp;
+      }
+    });
+    for(let i=0; i<SIG_LEN; i++) sigBuf[i] += Math.max(0,(Math.random()-0.5)*0.012);
+    sigHead = 0;
+  })();
+
+  /* ── Main loop ── */
   function loop(ts){
     if(!running) return;
     if(!lastTS) lastTS=ts;
-    const dt=Math.min((ts-lastTS)/1000,0.05); lastTS=ts;
-    t+=dt/period;
-    const phase=t%1;
-    const W=pC.width,H=pC.height;
-    drawBeam(phase,W,H);
-    const beamPhase=beamDeg/360;
-    const dPhase=Math.min(Math.abs(phase),Math.abs(1-phase));
-    const amp=dPhase<beamPhase?Math.exp(-0.5*(dPhase/beamPhase)*(dPhase/beamPhase)*4):0;
-    sigBuf[sigHead%SIG_LEN]=amp+(Math.random()-.5)*0.035;
-    sigHead=(sigHead+1)%SIG_LEN;
+    const dt = Math.min((ts - lastTS) / 1000, 0.05); lastTS = ts;
+    t += dt / period;
+    const phase = t % 1;
+    const W = pC.width, H = pC.height;
+
+    drawBeam(phase, W, H);
+
+    // ── Signal injection at right edge ──
+    // obsIntensity rises from 0→1→0 as phase crosses EARTH_PHASE.
+    // Each frame we write the current value at the newest buffer slot.
+    // The pulse naturally has the right shape as obsIntensity varies.
+    const obsAmp  = drawBeam.lastObsIntensity;
+    const noise   = (Math.random()-0.5)*0.015;
+    // Boost so pulse is tall and clearly visible
+    sigBuf[sigHead] = obsAmp * 0.95 + Math.max(0, noise);
+    sigHead = (sigHead+1) % SIG_LEN;
+
     drawSignal(W);
     requestAnimationFrame(loop);
   }
@@ -1173,8 +1526,8 @@
    NAV DOTS
    ============================================================ */
 (function(){
-  const sections=['hero','about','research','pulsars','skills','collaborations','experience','education','conferences','publications','contact'];
-  const labels  =['Top','About','Research','Pulsars','Skills','Collabs','Experience','Education','Talks','Papers','Contact'];
+  const sections=['hero','about','research','pulsars','skills','experience','education','conferences','citizen','contact'];
+  const labels  =['Top','About','Research','Pulsars','Skills','Experience','Education','Talks','Citizen','Contact'];
   const container=document.getElementById('nav-dots');
   sections.forEach((id,i)=>{
     const d=document.createElement('div'); d.className='nav-dot';
@@ -1348,6 +1701,205 @@
   }
   draw();
 })();
+
+/* ── Parkes Radio Telescope icon
+   Side-view: alt-az mount base, elevation axle, dish (parabola), feed leg,
+   focus box. Dish tilts slowly to a new elevation every ~8s. ── */
+(function(){
+  const c = document.getElementById('ico-parkes');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W=54, H=42;
+
+  // dish elevation angle: 0=horizontal, 90=zenith. Starts near zenith, drifts.
+  let elev = 75;          // current elevation (degrees)
+  let elevTarget = 75;
+  let elevT = 0;          // interpolation progress 0→1
+  let elevFrom = 75;
+  let nextSlew = 280;     // frames until next slew
+  let t = 0;
+
+  // signal ripple: faint arcs emanating from focus box when nearly on-sky
+  let rippleT = 0;
+
+  function scheduleSlew(){
+    elevFrom   = elev;
+    elevTarget = 25 + Math.random() * 60; // random 25°–85°
+    elevT      = 0;
+    nextSlew   = 320 + Math.random() * 200;
+  }
+
+  function drawDish(elDeg){
+    ctx.clearRect(0,0,W,H);
+    const el = elDeg * Math.PI / 180;
+
+    // ── ground / base ──
+    // base box
+    ctx.fillStyle = 'rgba(90,110,130,0.55)';
+    ctx.fillRect(21, 34, 12, 6);
+    // base top cap
+    ctx.fillStyle = 'rgba(110,130,150,0.6)';
+    ctx.fillRect(20, 32, 14, 3);
+
+    // ── elevation axle point ──
+    const axX = 27, axY = 32;
+
+    // ── draw rotated dish group ──
+    ctx.save();
+    ctx.translate(axX, axY);
+    ctx.rotate(-el); // 0=pointing right (horizon), PI/2=up (zenith)
+
+    // back strut (yoke arm)
+    ctx.strokeStyle = 'rgba(140,165,185,0.7)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-4, 0); ctx.stroke();
+
+    // parabolic dish — drawn as a quadratic curve approximation
+    // dish radius ~16px when pointing at us
+    const dr = 15; // dish half-width in dish-local coords
+    ctx.strokeStyle = 'rgba(200,215,225,0.85)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    // rim-to-rim parabola: control point at depth ~5 behind centre
+    ctx.moveTo(-dr, 0);
+    ctx.quadraticCurveTo(0, 5, dr, 0);
+    ctx.stroke();
+    // dish rim ends (short ticks)
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(180,200,215,0.6)';
+    ctx.beginPath(); ctx.moveTo(-dr,-0.5); ctx.lineTo(-dr, 1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo( dr,-0.5); ctx.lineTo( dr, 1); ctx.stroke();
+
+    // feed support leg (single central strut to focus)
+    ctx.strokeStyle = 'rgba(160,180,195,0.65)';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(0, 5); ctx.lineTo(0, -9); ctx.stroke();
+
+    // focus box / receiver
+    ctx.fillStyle = 'rgba(220,235,245,0.75)';
+    ctx.fillRect(-2, -11, 4, 3);
+
+    // signal ripple arcs (faint, from focus box upward = "into sky")
+    if(rippleT > 0){
+      const rAlpha = rippleT * 0.4;
+      [5,9,13].forEach((r,i)=>{
+        const prog = (rippleT - i*0.15);
+        if(prog <= 0) return;
+        const a = rAlpha * (1 - prog*0.6);
+        ctx.beginPath();
+        ctx.arc(0, -11, r * prog, Math.PI*1.1, Math.PI*1.9);
+        ctx.strokeStyle = `rgba(0,255,231,${a})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      });
+    }
+
+    ctx.restore();
+
+    // axle dot
+    ctx.beginPath(); ctx.arc(axX, axY, 1.5, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(180,200,220,0.7)'; ctx.fill();
+
+    // ground line
+    ctx.strokeStyle = 'rgba(60,80,100,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(8, 40); ctx.lineTo(46, 40); ctx.stroke();
+  }
+
+  function loop(){
+    t++;
+    // interpolate elevation
+    if(elevT < 1){
+      elevT = Math.min(1, elevT + 0.008); // ~125 frames = ~2s slew
+      const ease = elevT < 0.5 ? 2*elevT*elevT : -1+(4-2*elevT)*elevT;
+      elev = elevFrom + (elevTarget - elevFrom) * ease;
+    }
+
+    // schedule next slew
+    nextSlew--;
+    if(nextSlew <= 0) scheduleSlew();
+
+    // ripple when dish is steadily pointed (not slewing) and elev>40
+    if(elevT >= 1 && elev > 40){
+      rippleT = Math.min(1, rippleT + 0.018);
+    } else {
+      rippleT = Math.max(0, rippleT - 0.04);
+    }
+
+    drawDish(elev);
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ── Astroinformatics — minimal single-line terminal icon
+   Just: blinking cursor at idle, then a short command types out,
+   holds briefly, clears. No bar, no traffic lights. Fires once on
+   first view of the research section, then quietly every ~28s. ── */
+(function(){
+  const c = document.getElementById('ico-astro');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W=54, H=42;
+
+  const COMMANDS = ['presto -dm 97','fold -p 714','./pipeline.py','cluster.py','readheader'];
+  let cmdIdx=0, charPos=0, blinkT=0;
+  let state='idle'; // idle | typing | hold | clearing
+  let holdT=0, clearT=0, nextTrigger=0, triggered=false, frame=0;
+
+  const section = document.getElementById('research');
+  if(section){
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting && !triggered){ triggered=true; nextTrigger=50; }
+      });
+    },{threshold:0.3}).observe(section);
+  }
+
+  function draw(cmd, cur){
+    ctx.clearRect(0,0,W,H);
+    // subtle dark bg
+    ctx.fillStyle='rgba(6,10,20,0.85)';
+    ctx.fillRect(0,0,W,H);
+    // single prompt line centered vertically
+    ctx.font='5px "Space Mono",monospace';
+    ctx.fillStyle='rgba(0,255,231,0.55)';
+    ctx.fillText('>', 3, H/2+2);
+    ctx.fillStyle='rgba(220,235,245,0.8)';
+    ctx.fillText(cmd, 10, H/2+2);
+    if(cur){
+      const tw=ctx.measureText(cmd).width;
+      ctx.fillStyle='rgba(0,255,231,0.7)';
+      ctx.fillRect(10+tw, H/2-5, 2.5, 7);
+    }
+  }
+
+  function loop(){
+    frame++; blinkT++;
+    if(state==='idle'){
+      if(nextTrigger>0){ nextTrigger--; if(nextTrigger===0){state='typing';charPos=0;cmdIdx=(cmdIdx+1)%COMMANDS.length;holdT=0;} }
+      draw('', Math.floor(blinkT/28)%2===0);
+      requestAnimationFrame(loop); return;
+    }
+    const cmd=COMMANDS[cmdIdx];
+    if(state==='typing'){
+      if(frame%5===0) charPos++;
+      if(charPos>=cmd.length){state='hold';holdT=0;}
+      draw(cmd.slice(0,charPos), Math.floor(blinkT/20)%2===0);
+    } else if(state==='hold'){
+      holdT++;
+      if(holdT>80){state='clearing';clearT=0;}
+      draw(cmd, false);
+    } else if(state==='clearing'){
+      clearT++;
+      if(clearT>14){state='idle';charPos=0;nextTrigger=1700;}
+      draw('',false);
+    }
+    requestAnimationFrame(loop);
+  }
+  draw('',true); loop();
+})();
+
 
 </script>
 </body>
