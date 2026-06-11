@@ -112,12 +112,12 @@
 
   /* HERO */
   #hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:80px 0 60px; position:relative; }
-  .hero-inner { display:flex; align-items:center; gap:56px; width:100%; }
+  .hero-inner { display:flex; align-items:center; gap:40px; width:100%; }
   .hero-text { flex:1; min-width:0; }
 
   /* Avatar */
-  .hero-avatar-wrap { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:0; }
-  .avatar-ring { position:relative; width:260px; height:260px; }
+  .hero-avatar-wrap { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:0; margin-top:60px; }
+  .avatar-ring { position:relative; width:300px; height:300px; }
   #avatar-pulsar-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
   .avatar-circle { position:absolute; inset:30px; border-radius:50%; overflow:hidden; background:var(--card); border:1.5px solid rgba(0,255,231,0.2); display:flex; align-items:center; justify-content:center; }
   .avatar-circle img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
@@ -126,12 +126,12 @@
   .avatar-placeholder span { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--muted); opacity:.5; text-align:center; line-height:1.4; }
 
   /* Name */
-  .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; white-space:nowrap; }
   .hero-name {
     font-family:var(--font-display);
     font-size:clamp(28px,5.5vw,70px);
     font-weight:700; line-height:1.05; letter-spacing:-.02em;
-    margin-bottom:14px;
+    margin-top:18px; margin-bottom:14px;
     white-space: nowrap;   /* keep on one row */
   }
   .hero-name .name-first,
@@ -157,8 +157,8 @@
     .hero-name { white-space: normal; font-size:clamp(32px,9vw,56px); }
   }
 
-  .hero-title { font-family:var(--font-display); font-size:clamp(14px,2vw,19px); font-weight:400; color:var(--muted); margin-bottom:24px; }
-  .hero-tagline { font-size:14px; color:rgba(232,244,253,.6); max-width:500px; margin-bottom:36px; line-height:1.8; }
+  .hero-title { font-family:var(--font-display); font-size:clamp(12px,1.5vw,16px); font-weight:400; color:var(--muted); margin-bottom:24px; white-space:nowrap; }
+  .hero-tagline { font-size:16px; color:rgba(232,244,253,.6); max-width:500px; margin-bottom:36px; line-height:1.9; }
   .hero-links { display:flex; flex-wrap:wrap; gap:10px; }
   .hero-link { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:5px; font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-decoration:none; border:1px solid var(--border); color:var(--muted); transition:all .25s; background:rgba(255,255,255,.02); }
   .hero-link:hover { border-color:var(--cyan); color:var(--cyan); background:var(--cyan-dim); }
@@ -378,7 +378,7 @@
       </div>
       <div class="hero-avatar-wrap">
         <div class="avatar-ring">
-          <canvas id="avatar-pulsar-canvas" width="260" height="260"></canvas>
+          <canvas id="avatar-pulsar-canvas" width="300" height="300"></canvas>
           <div class="avatar-circle" id="avatar-circle">
             <!-- profile_photo.jpg loaded by JS; fallback placeholder shown if missing -->
             <div class="avatar-placeholder" id="avatar-placeholder">
@@ -1042,8 +1042,8 @@
 
   const c = document.getElementById('avatar-pulsar-canvas');
   const ctx = c.getContext('2d');
-  const W=260, H=260, CX=130, CY=130;
-  const ORBIT_R = 118;
+  const W=300, H=300, CX=150, CY=150;
+  const ORBIT_R = 136;
   const BEAM_HALF = 0.22;
 
   // Name spans — toggled with .name-lit class on beam sweep
@@ -1323,9 +1323,11 @@
       infoPhoto.style.display = 'block';
       infoPhoto.alt   = ps.discoverer || '';
       // Try local first, fall back to remote URL
-      infoPhoto.src   = ps.photo || ps.photoFallback;
+      infoPhoto._triedFallback = false;
+      infoPhoto.src = ps.photo || ps.photoFallback;
       infoPhoto.onerror = ()=>{
-        if(ps.photoFallback && infoPhoto.src !== ps.photoFallback){
+        if(!infoPhoto._triedFallback && ps.photoFallback){
+          infoPhoto._triedFallback = true;
           infoPhoto.src = ps.photoFallback;
         } else {
           infoPhoto.style.display = 'none';
