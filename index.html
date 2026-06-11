@@ -46,20 +46,47 @@
   .avatar-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
   .avatar-placeholder svg { opacity:.3; }
   .avatar-placeholder span { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--muted); opacity:.5; text-align:center; line-height:1.4; }
-  .avatar-name-display { width:260px; margin-top:4px; }
-  #name-lightning-canvas { display:block; }
 
   /* Name */
   .hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.25em; color:var(--muted); text-transform:uppercase; margin-bottom:18px; }
   .hero-name { font-family:var(--font-display); font-size:clamp(38px,6.5vw,70px); font-weight:700; line-height:1.05; letter-spacing:-.02em; margin-bottom:14px; }
-  .hero-name .name-first { color:var(--white); }
+
+  /* Both names share the same sweep mechanism — JS sets --sweep (0→1) on each span */
+  .hero-name .name-first,
   .hero-name .name-last {
-    background: linear-gradient(135deg, #E8F4FD 0%, #a8d8ea 40%, #00FFE7 70%, #E8F4FD 100%);
-    background-size: 200% auto;
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-    animation: name-flow 6s ease-in-out infinite;
+    display: inline-block;
+    position: relative;
+    color: var(--white);
+    /* CSS var controlled by JS */
+    --sweep: 0;
   }
-  @keyframes name-flow { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+  /* The sweep is a pseudo-element gradient that travels bottom→top */
+  .hero-name .name-first::after,
+  .hero-name .name-last::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    /* clip to only the swept portion using a linear-gradient mask */
+    background: linear-gradient(to top,
+      #FF6B9D   0%,
+      #E879F9  30%,
+      #C084FC  60%,
+      #a78bfa  80%,
+      transparent 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* clip-path reveals from bottom: calc(100% - sweep*110%) */
+    clip-path: inset(calc(100% - var(--sweep) * 115%) 0 0 0);
+    filter: drop-shadow(0 0 6px #E879F9) drop-shadow(0 0 14px #FF6B9D);
+    pointer-events: none;
+  }
+  /* subtle idle shimmer on last name only */
+  .hero-name .name-last {
+    --shimmer: 0%;
+  }
+  @keyframes name-idle { 0%,100%{opacity:.92} 50%{opacity:1} }
 
   .hero-title { font-family:var(--font-display); font-size:clamp(14px,2vw,19px); font-weight:400; color:var(--muted); margin-bottom:24px; }
   .hero-tagline { font-size:14px; color:rgba(232,244,253,.6); max-width:500px; margin-bottom:36px; line-height:1.8; }
@@ -67,7 +94,7 @@
   .hero-link { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:5px; font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-decoration:none; border:1px solid var(--border); color:var(--muted); transition:all .25s; background:rgba(255,255,255,.02); }
   .hero-link:hover { border-color:var(--cyan); color:var(--cyan); background:var(--cyan-dim); }
 
-  @media(max-width:780px){ .hero-inner{flex-direction:column-reverse;gap:36px;} .avatar-ring{width:200px;height:200px;} .avatar-name-display{width:200px;} #name-lightning-canvas{width:200px;} }
+  @media(max-width:780px){ .hero-inner{flex-direction:column-reverse;gap:36px;} .avatar-ring{width:200px;height:200px;} }
   @media(max-width:500px){ #nav-dots{display:none;} }
 
   /* About */
@@ -221,7 +248,7 @@
       <div class="hero-text">
         <p class="hero-eyebrow">PhD Candidate · Max Planck Institute for Gravitational Physics</p>
         <h1 class="hero-name">
-          <span class="name-first">Alexandra </span><span class="name-last">Botnariuc</span>
+          <span class="name-first" data-text="Alexandra ">Alexandra </span><span class="name-last" data-text="Botnariuc">Botnariuc</span>
         </h1>
         <p class="hero-title">Pulsar Astronomer &amp; Astroinformatician</p>
         <p class="hero-tagline">Searching for new pulsars and compact binaries in major radio surveys — from Arecibo and Parkes to FAST and MeerKAT. Combining custom search algorithms, GPU computing, and multi-telescope observations to find rare systems that push the boundaries of neutron star physics.</p>
@@ -254,9 +281,6 @@
             </div>
           </div>
         </div>
-        <div class="avatar-name-display" id="avatar-name-display">
-          <canvas id="name-lightning-canvas" width="260" height="52"></canvas>
-        </div>
       </div>
     </div>
   </section>
@@ -285,9 +309,9 @@
         <div class="interest-desc">Large-scale pulsar survey pipelines across PALFA, FAST GPPS, PMPS, and MeerKAT. Custom clustering algorithms and ML-based candidate classification on GPU/CPU clusters.</div>
       </div>
 
-      <!-- Compact Binary — inspired by image 1: accretion disk + jet -->
+      <!-- Compact Binary — tight two-body orbit with GW spirals (image 3) -->
       <div class="interest-card c-amber">
-        <div class="interest-icon-canvas"><canvas id="ico-compact" width="48" height="36"></canvas></div>
+        <div class="interest-icon-canvas"><canvas id="ico-compact" width="54" height="42"></canvas></div>
         <div class="interest-title">Compact Binary Searches</div>
         <div class="interest-desc">Targeted acceleration searches for tight-orbit binary radio pulsars — computationally the hardest problem in pulsar astronomy, requiring jerk searches and GPU-accelerated pipelines.</div>
       </div>
@@ -298,22 +322,23 @@
         <div class="interest-desc">Discovery follow-up and precision timing of new pulsars with Parkes/Murriyang. Observational campaigns bridging survey discoveries to full timing solutions.</div>
       </div>
 
+      <!-- Pulsar Planets — planets as main show, muted pulsar behind (new image) -->
       <div class="interest-card c-purple">
-        <div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#7A8BA8" stroke-width="1.5"><use href="#ico-planet"/></svg></div>
+        <div class="interest-icon-canvas"><canvas id="ico-planets" width="54" height="42"></canvas></div>
         <div class="interest-title">Pulsar Planets</div>
         <div class="interest-desc">Timing residual searches for planetary companions, formation theory, and ALMA observational constraints on post-supernova debris disks — a long-term ERC target.</div>
       </div>
 
-      <!-- Binary Evolution — inspired by image 2: mass transfer stream between two stars -->
+      <!-- Binary Evolution — mass transfer stream, Roche lobe (image 2) -->
       <div class="interest-card c-green">
-        <div class="interest-icon-canvas"><canvas id="ico-evolution" width="48" height="36"></canvas></div>
+        <div class="interest-icon-canvas"><canvas id="ico-evolution" width="54" height="42"></canvas></div>
         <div class="interest-title">Binary Evolution</div>
         <div class="interest-desc">Recycling scenarios, mass transfer, and the formation of exotic compact binaries. Bridging observational search results to population synthesis models.</div>
       </div>
 
-      <!-- Spider Pulsars — inspired by image 3: two compact objects + gravitational wave spirals -->
+      <!-- Spider Pulsars — ablating companion, accretion stream, disk (image 1) -->
       <div class="interest-card c-rose">
-        <div class="interest-icon-canvas"><canvas id="ico-spider" width="48" height="36"></canvas></div>
+        <div class="interest-icon-canvas"><canvas id="ico-spider" width="54" height="42"></canvas></div>
         <div class="interest-title">Spider Pulsars</div>
         <div class="interest-desc">Black widow and redback MSPs ablating their companions in tight orbits — characterisation, orbital dynamics, and multi-wavelength follow-up.</div>
       </div>
@@ -761,7 +786,8 @@
 
 <script>
 /* ============================================================
-   AVATAR — orbiting pulsar with its own spinning beams + name lightning
+   AVATAR — orbiting pulsar with its own spinning beams
+   + drives name sweep glow on title when beam faces left (toward name)
    ============================================================ */
 (function(){
   // Try to load profile photo
@@ -776,11 +802,21 @@
   const c = document.getElementById('avatar-pulsar-canvas');
   const ctx = c.getContext('2d');
   const W=260, H=260, CX=130, CY=130;
-  const ORBIT_R = 118;   // orbit radius (pulsar path)
-  const BEAM_HALF = 0.22; // beam half-angle radians on the mini pulsar
+  const ORBIT_R = 118;
+  const BEAM_HALF = 0.22;
 
-  let orbitAngle = 0;      // pulsar position around photo
-  let spinAngle  = 0;      // beam spin on the pulsar itself
+  // Name spans — we'll drive --sweep on them
+  const nameFirst = document.querySelector('.hero-name .name-first');
+  const nameLast  = document.querySelector('.hero-name .name-last');
+
+  // sweep state: 0 = idle, going up to 1 then back
+  let sweepFirst = 0, sweepLast = 0;
+  let sweepActive = false;
+  let sweepT = 0; // 0→1 over ~1s when triggered
+
+  let orbitAngle = 0;
+  let spinAngle  = 0;
+  let lastWasFacing = false;
 
   function draw(){
     ctx.clearRect(0,0,W,H);
@@ -792,22 +828,21 @@
     ctx.strokeStyle='rgba(0,255,231,0.12)'; ctx.lineWidth=1; ctx.stroke();
     ctx.restore();
 
-    // pulsar position on orbit
+    // pulsar position
     const px = CX + ORBIT_R * Math.cos(orbitAngle);
     const py = CY + ORBIT_R * Math.sin(orbitAngle);
 
-    // draw the two spinning beams emanating from the orbiting pulsar
-    const beamLen = 38;
+    // spinning beams on orbiting pulsar
     [spinAngle, spinAngle + Math.PI].forEach((ba, bi) => {
       ctx.save();
       ctx.translate(px, py);
       ctx.rotate(ba);
       ctx.beginPath();
       ctx.moveTo(0,0);
-      ctx.arc(0,0, beamLen, -BEAM_HALF, BEAM_HALF);
+      ctx.arc(0,0, 38, -BEAM_HALF, BEAM_HALF);
       ctx.closePath();
       const base = bi===0 ? 0.65 : 0.30;
-      const g = ctx.createRadialGradient(0,0,0,0,0,beamLen);
+      const g = ctx.createRadialGradient(0,0,0,0,0,38);
       g.addColorStop(0, `rgba(0,255,231,${base})`);
       g.addColorStop(0.5, `rgba(0,255,231,${base*0.35})`);
       g.addColorStop(1, 'rgba(0,255,231,0)');
@@ -815,20 +850,48 @@
       ctx.restore();
     });
 
-    // check if either beam points roughly toward centre (the "viewer" = photo)
-    // direction from pulsar to centre
+    // ── Detect when beam faces LEFT (toward the title name, π angle) ──
+    // "facing left" = spinAngle mod 2π ≈ π  (beam pointing left)
+    const normSpin = ((spinAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    const facingLeft = normSpin > Math.PI - 0.3 && normSpin < Math.PI + 0.3;
+
+    if(facingLeft && !lastWasFacing){
+      // trigger sweep
+      sweepActive = true;
+      sweepT = 0;
+    }
+    lastWasFacing = facingLeft;
+
+    // Advance sweep
+    if(sweepActive){
+      sweepT += 0.022; // ~45 frames = ~0.75s up, then decay
+      // triangle wave: rises 0→1 then falls 1→0
+      const raw = sweepT < 0.5 ? sweepT*2 : 2 - sweepT*2;
+      const val = Math.max(0, Math.min(1, raw));
+
+      if(nameFirst) nameFirst.style.setProperty('--sweep', val);
+      if(nameLast)  nameLast.style.setProperty('--sweep', val);
+
+      if(sweepT >= 1){
+        sweepActive = false;
+        sweepT = 0;
+        if(nameFirst) nameFirst.style.setProperty('--sweep', 0);
+        if(nameLast)  nameLast.style.setProperty('--sweep', 0);
+      }
+    }
+
+    // glow ring on photo when beam faces centre
     const toCentreAngle = Math.atan2(CY-py, CX-px);
     [spinAngle, spinAngle+Math.PI].forEach(ba => {
       let diff = Math.abs(((ba - toCentreAngle + Math.PI*3) % (Math.PI*2)) - Math.PI);
       if(diff < BEAM_HALF * 1.2){
         const intensity = 1 - diff/(BEAM_HALF*1.2);
-        // glow ring around photo circle when beam hits
         ctx.beginPath(); ctx.arc(CX,CY,88,0,Math.PI*2);
         ctx.strokeStyle=`rgba(0,255,231,${intensity*0.35})`; ctx.lineWidth=2+intensity*2; ctx.stroke();
       }
     });
 
-    // pulsar core (the orbiting dot)
+    // pulsar core
     const dg = ctx.createRadialGradient(px,py,0,px,py,10);
     dg.addColorStop(0,'rgba(255,255,255,1)');
     dg.addColorStop(0.25,'rgba(0,255,231,0.9)');
@@ -836,115 +899,10 @@
     ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2); ctx.fillStyle=dg; ctx.fill();
 
     orbitAngle += 0.012;
-    spinAngle  += 0.055; // pulsar spins ~4.5× faster than it orbits
+    spinAngle  += 0.055;
     requestAnimationFrame(draw);
   }
   draw();
-
-  // ── Name lightning canvas ──
-  const nc = document.getElementById('name-lightning-canvas');
-  const nCtx = nc.getContext('2d');
-  const NW=260, NH=52;
-  let nT=0;
-
-  // lightning bolt helper: jagged line between two points
-  function lightning(x0,y0,x1,y1,roughness,depth){
-    if(depth<=0){
-      nCtx.beginPath(); nCtx.moveTo(x0,y0); nCtx.lineTo(x1,y1); nCtx.stroke();
-      return;
-    }
-    const mx=(x0+x1)/2 + (Math.random()-0.5)*roughness;
-    const my=(y0+y1)/2 + (Math.random()-0.5)*roughness;
-    lightning(x0,y0,mx,my,roughness*0.5,depth-1);
-    lightning(mx,my,x1,y1,roughness*0.5,depth-1);
-  }
-
-  function drawName(){
-    nCtx.clearRect(0,0,NW,NH);
-    nT++;
-
-    // fonts
-    nCtx.textAlign='center';
-    nCtx.textBaseline='middle';
-
-    const firstName = 'Alexandra';
-    const lastName  = 'Botnariuc';
-
-    // ── First name — magenta/purple lightning ──
-    const pulse1 = Math.sin(nT * 0.07) * 0.5 + 0.5;
-    const pulse1b = Math.sin(nT * 0.11 + 1) * 0.5 + 0.5;
-
-    // base text — white
-    nCtx.font = 'bold 17px "Space Grotesk", sans-serif';
-    nCtx.fillStyle = `rgba(232,220,255,${0.82 + pulse1*0.18})`;
-    nCtx.fillText(firstName, 65, NH/2);
-
-    // glow layer 1 — magenta
-    nCtx.shadowColor = '#FF6B9D';
-    nCtx.shadowBlur  = 8 + pulse1*12;
-    nCtx.fillStyle   = `rgba(255,107,157,${0.55 + pulse1*0.45})`;
-    nCtx.fillText(firstName, 65, NH/2);
-
-    // glow layer 2 — purple
-    nCtx.shadowColor = '#C084FC';
-    nCtx.shadowBlur  = 14 + pulse1b*18;
-    nCtx.fillStyle   = `rgba(192,132,252,${0.3 + pulse1b*0.4})`;
-    nCtx.fillText(firstName, 65, NH/2);
-    nCtx.shadowBlur=0; nCtx.shadowColor='transparent';
-
-    // occasional lightning arcs over first name
-    if(Math.random() < 0.18){
-      const x0 = 20 + Math.random()*90, y0 = 4+Math.random()*8;
-      const x1 = 20 + Math.random()*90, y1 = NH-4-Math.random()*8;
-      nCtx.strokeStyle=`rgba(255,107,157,${0.5+Math.random()*0.5})`;
-      nCtx.lineWidth=0.8;
-      lightning(x0,y0,x1,y1,10,4);
-    }
-    if(Math.random() < 0.10){
-      const x0 = 22+Math.random()*86, y0 = NH/2-6;
-      const x1 = x0+(Math.random()-0.5)*30, y1 = NH/2+6;
-      nCtx.strokeStyle=`rgba(216,180,254,${0.4+Math.random()*0.5})`;
-      nCtx.lineWidth=0.6;
-      lightning(x0,y0,x1,y1,6,3);
-    }
-
-    // ── Last name — brighter magenta/electric purple ──
-    const pulse2  = Math.sin(nT * 0.09 + 2) * 0.5 + 0.5;
-    const pulse2b = Math.sin(nT * 0.13 + 3.5) * 0.5 + 0.5;
-
-    nCtx.font = 'bold 17px "Space Grotesk", sans-serif';
-    nCtx.fillStyle = `rgba(255,230,255,${0.85 + pulse2*0.15})`;
-    nCtx.fillText(lastName, 195, NH/2);
-
-    nCtx.shadowColor = '#E879F9';
-    nCtx.shadowBlur  = 10 + pulse2*16;
-    nCtx.fillStyle   = `rgba(232,121,249,${0.6 + pulse2*0.4})`;
-    nCtx.fillText(lastName, 195, NH/2);
-
-    nCtx.shadowColor = '#FF6B9D';
-    nCtx.shadowBlur  = 6 + pulse2b*10;
-    nCtx.fillStyle   = `rgba(255,107,157,${0.25 + pulse2b*0.35})`;
-    nCtx.fillText(lastName, 195, NH/2);
-    nCtx.shadowBlur=0; nCtx.shadowColor='transparent';
-
-    if(Math.random() < 0.20){
-      const x0 = 145+Math.random()*100, y0 = 3+Math.random()*8;
-      const x1 = 145+Math.random()*100, y1 = NH-3-Math.random()*8;
-      nCtx.strokeStyle=`rgba(232,121,249,${0.5+Math.random()*0.5})`;
-      nCtx.lineWidth=0.8;
-      lightning(x0,y0,x1,y1,10,4);
-    }
-    if(Math.random() < 0.12){
-      const x0 = 148+Math.random()*94, y0 = NH/2-8;
-      const x1 = x0+(Math.random()-0.5)*28, y1 = NH/2+8;
-      nCtx.strokeStyle=`rgba(255,200,255,${0.35+Math.random()*0.5})`;
-      nCtx.lineWidth=0.6;
-      lightning(x0,y0,x1,y1,5,3);
-    }
-
-    requestAnimationFrame(drawName);
-  }
-  drawName();
 })();
 
 /* ============================================================
@@ -1022,18 +980,59 @@
 
   function drawBeam(phase,W,H){
     pCtx.clearRect(0,0,W,H);
-    const CX=W/2,CY=H/2,R=Math.min(W,H)*0.35;
+    const CX=W/2, CY=H/2, R=Math.min(W,H)*0.34;
+
+    // 3D precession: the rotation axis tilts relative to line-of-sight.
+    // We model the beam sweeping a CONE in 3D and project to 2D.
+    // inclination: angle between spin axis and line-of-sight (fixed at ~50 deg)
+    const INC = 50 * Math.PI/180;
+    // The beam traces a small circle on the sky. At phase=0 the beam tip
+    // is closest to the observer (max approach), at phase=0.5 it's farthest.
+    // We represent this by varying the beam direction in 3D and projecting.
+
+    // Beam tip direction in 3D (spin axis = z, beam offset = beamDeg from z)
+    const beamOff = beamDeg * Math.PI/180;
+    const spinAng  = phase * Math.PI * 2;
+
+    // direction cosines of the beam axis in the frame where spin axis = z
+    const bx_spin = Math.sin(beamOff) * Math.cos(spinAng);
+    const by_spin = Math.sin(beamOff) * Math.sin(spinAng);
+    const bz_spin = Math.cos(beamOff);
+
+    // rotate by inclination about x-axis so spin axis points at angle INC to LOS
+    // LOS = z after rotation
+    const bx = bx_spin;
+    const by = by_spin*Math.cos(INC) - bz_spin*Math.sin(INC);
+    const bz = by_spin*Math.sin(INC) + bz_spin*Math.cos(INC);   // bz>0 = coming toward viewer
+
+    // project onto sky: screen coords from bx,by; depth from bz
+    // The beam makes an angle with LOS: cos(theta) = bz
+    // "toward viewer" = bz > cos(beamOff) means beam intersects LOS
+    const cosBeam = Math.cos(beamOff);
+    const onViewer = bz > cosBeam * 0.92;  // slight tolerance
+
+    // For the 2D rendering we draw the beam footprint:
+    // The beam cone's apparent direction on sky is (bx,by), length varies with depth
+    const projLen  = R * 1.3 * (0.5 + 0.5*Math.abs(bz)); // longer when pointing toward/away
+    const projAng  = Math.atan2(by, bx);                   // sky direction
+    const depthAlpha = 0.3 + 0.7*Math.max(0,bz);           // brighter when coming toward viewer
+
+    // ambient glow
     const ag=pCtx.createRadialGradient(CX,CY,0,CX,CY,R*1.6);
     ag.addColorStop(0,'rgba(0,255,231,0.03)'); ag.addColorStop(1,'rgba(0,0,0,0)');
     pCtx.fillStyle=ag; pCtx.fillRect(0,0,W,H);
+
+    // orbit reference ellipse — tilted to match inclination
+    const ry = R * Math.sin(INC); // semi-minor after tilt
+    pCtx.save(); pCtx.translate(CX,CY);
     [0.4,0.7,1.0].forEach((f,i)=>{
-      pCtx.beginPath(); pCtx.arc(CX,CY,R*f,0,Math.PI*2);
+      pCtx.beginPath(); pCtx.ellipse(0,0,R*f,ry*f,0,0,Math.PI*2);
       pCtx.strokeStyle=`rgba(30,41,64,${0.7-i*0.15})`; pCtx.lineWidth=1; pCtx.stroke();
     });
-    const beamRad=beamDeg*Math.PI/180;
-    const angle=phase*Math.PI*2;
-    // observer
-    const vx=CX+R*1.42,vy=CY;
+    pCtx.restore();
+
+    // observer marker
+    const vx=CX+R*1.42, vy=CY;
     pCtx.save(); pCtx.translate(vx,vy);
     pCtx.beginPath(); pCtx.arc(0,0,5,0,Math.PI*2);
     pCtx.strokeStyle='rgba(255,179,71,0.45)'; pCtx.lineWidth=1.5; pCtx.stroke();
@@ -1041,43 +1040,77 @@
     pCtx.fillStyle='rgba(255,179,71,0.55)'; pCtx.fill();
     pCtx.font=`8px 'Space Mono',monospace`; pCtx.fillStyle='rgba(255,179,71,0.4)'; pCtx.textAlign='center';
     pCtx.fillText('obs',0,17); pCtx.restore();
-    [angle,angle+Math.PI].forEach((a,bi)=>{
-      let diff=((a%(Math.PI*2))+(Math.PI*2))%(Math.PI*2);
-      if(diff>Math.PI) diff=Math.PI*2-diff;
-      const onV=diff<beamRad;
-      const base=bi===0?0.58:0.26;
-      const extra=onV?0.22:0;
-      pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(a);
+
+    // draw both beams (opposite poles)
+    [0, Math.PI].forEach((poleOff, bi)=>{
+      // recalc for opposite pole
+      const s2 = spinAng + poleOff;
+      const bx2 = Math.sin(beamOff)*Math.cos(s2);
+      const by2 = Math.sin(beamOff)*Math.sin(s2);
+      const bz2 = Math.cos(beamOff) * (bi===0?1:-1);
+      const bxR2= bx2;
+      const byR2= by2*Math.cos(INC)-bz2*Math.sin(INC);
+      const bzR2= by2*Math.sin(INC)+bz2*Math.cos(INC);
+
+      const pLen2 = R*1.3*(0.5+0.5*Math.abs(bzR2));
+      const pAng2 = Math.atan2(byR2,bxR2);
+      const dAlpha2 = 0.25+0.6*Math.max(0,bzR2);
+      const onV2 = bzR2 > cosBeam*0.92;
+
+      const baseA = bi===0 ? 0.62 : 0.28;
+      const extra  = onV2 ? 0.20 : 0;
+
+      pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(pAng2);
+      // beam width scales with depth — wider when coming straight at you
+      const halfAngle = beamDeg*Math.PI/180 * (0.5+0.5*Math.abs(bzR2));
       pCtx.beginPath(); pCtx.moveTo(0,0);
-      pCtx.arc(0,0,R*1.32,-beamRad,beamRad); pCtx.closePath();
-      const g=pCtx.createRadialGradient(0,0,0,0,0,R*1.32);
-      g.addColorStop(0,`rgba(0,255,231,${base+extra})`);
-      g.addColorStop(0.55,`rgba(0,255,231,${(base+extra)*0.3})`);
+      pCtx.arc(0,0,pLen2,-halfAngle,halfAngle); pCtx.closePath();
+      const g=pCtx.createRadialGradient(0,0,0,0,0,pLen2);
+      g.addColorStop(0,`rgba(0,255,231,${(baseA+extra)*dAlpha2})`);
+      g.addColorStop(0.55,`rgba(0,255,231,${(baseA+extra)*dAlpha2*0.3})`);
       g.addColorStop(1,'rgba(0,255,231,0)');
       pCtx.fillStyle=g; pCtx.fill(); pCtx.restore();
+
+      // flash when sweeping observer
+      if(onV2){
+        const fl = Math.max(0, (bzR2-cosBeam*0.92)/(1-cosBeam*0.92));
+        pCtx.beginPath(); pCtx.arc(CX,CY,R*0.5,0,Math.PI*2);
+        pCtx.strokeStyle=`rgba(0,255,231,${fl*0.35})`; pCtx.lineWidth=2+fl*3; pCtx.stroke();
+      }
     });
+
+    // DM smear
     if(dm>30){
       const sf=Math.min(dm/500,0.28);
       pCtx.beginPath(); pCtx.arc(CX,CY,R*0.52,0,Math.PI*2);
       pCtx.strokeStyle=`rgba(255,179,71,${sf*0.9})`; pCtx.lineWidth=2; pCtx.stroke();
     }
-    // rotation axis
+
+    // spin axis — vertical dashed line with tilt shown
     pCtx.save(); pCtx.setLineDash([4,6]);
-    pCtx.beginPath(); pCtx.moveTo(CX,CY-R*1.42); pCtx.lineTo(CX,CY+R*1.42);
-    pCtx.strokeStyle='rgba(255,255,255,0.05)'; pCtx.lineWidth=1; pCtx.stroke(); pCtx.restore();
-    // core
+    const axTilt = (Math.PI/2 - INC); // tilt from vertical
+    const axLen  = R*1.4;
+    pCtx.beginPath();
+    pCtx.moveTo(CX - axLen*Math.sin(axTilt), CY - axLen*Math.cos(axTilt));
+    pCtx.lineTo(CX + axLen*Math.sin(axTilt), CY + axLen*Math.cos(axTilt));
+    pCtx.strokeStyle='rgba(255,255,255,0.06)'; pCtx.lineWidth=1; pCtx.stroke(); pCtx.restore();
+
+    // neutron star core
     const cg=pCtx.createRadialGradient(CX,CY,0,CX,CY,16);
     cg.addColorStop(0,'rgba(255,255,255,1)');
     cg.addColorStop(0.3,'rgba(0,255,231,0.9)');
     cg.addColorStop(1,'rgba(0,255,231,0)');
     pCtx.beginPath(); pCtx.arc(CX,CY,8,0,Math.PI*2); pCtx.fillStyle=cg; pCtx.fill();
-    // tick
-    pCtx.save(); pCtx.translate(CX,CY); pCtx.rotate(angle);
-    pCtx.beginPath(); pCtx.moveTo(0,-R*1.02); pCtx.lineTo(0,-R*1.14);
-    pCtx.strokeStyle='rgba(0,255,231,0.35)'; pCtx.lineWidth=1.5; pCtx.stroke(); pCtx.restore();
+
+    // phase marker on tilt-ellipse
+    const mAngle = phase*Math.PI*2;
+    const mx = CX + R*Math.cos(mAngle);
+    const my = CY + ry*Math.sin(mAngle);
+    pCtx.beginPath(); pCtx.arc(mx,my,2.5,0,Math.PI*2);
+    pCtx.fillStyle='rgba(0,255,231,0.35)'; pCtx.fill();
   }
 
-  function drawSignal(W){
+    function drawSignal(W){
     const H=sC.height;
     sCtx.clearRect(0,0,W,H);
     const bl=H*0.72;
@@ -1169,192 +1202,153 @@
 })();
 
 /* ============================================================
-   INTEREST CARD ICONS — canvas illustrations
+   INTEREST CARD ICONS — canvas illustrations, consistent style
+   W=54 H=42, glow-based, animated
    ============================================================ */
 
-/* ── Icon 1: Compact Binary (image 1 reference)
-   Large companion star (red/orange) on left, neutron star with accretion
-   disk + two jets on right, mass-transfer stream between them ── */
+/* ── Compact Binary: two NS orbiting, GW elliptical rings, purple ── */
 (function(){
   const c = document.getElementById('ico-compact');
   if(!c) return;
   const ctx = c.getContext('2d');
-  const W=48, H=36;
+  const W=54, H=42, CX=27, CY=21, OR=9;
   let t=0;
-
   function draw(){
     ctx.clearRect(0,0,W,H);
-
-    // companion star — large orange-red glow, left
-    const cg = ctx.createRadialGradient(11,18,1,11,18,11);
-    cg.addColorStop(0,'rgba(255,160,40,0.95)');
-    cg.addColorStop(0.5,'rgba(220,70,10,0.7)');
-    cg.addColorStop(1,'rgba(180,30,0,0)');
-    ctx.beginPath(); ctx.arc(11,18,10,0,Math.PI*2);
-    ctx.fillStyle=cg; ctx.fill();
-
-    // mass-transfer stream — curved orange line
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(19,15);
-    ctx.bezierCurveTo(26,12, 30,16, 34,18);
-    ctx.strokeStyle='rgba(255,120,20,0.55)';
-    ctx.lineWidth=2.5; ctx.stroke();
-    ctx.restore();
-
-    // accretion disk — elliptical rings around neutron star
-    const diskPulse = 0.5 + 0.15*Math.sin(t*0.08);
-    [[9,0.55],[6,0.4],[3.5,0.25]].forEach(([rx,a])=>{
-      ctx.save();
-      ctx.translate(35,19); ctx.scale(1,0.28);
-      ctx.beginPath(); ctx.arc(0,0,rx,0,Math.PI*2);
-      ctx.strokeStyle=`rgba(255,${140+rx*8},0,${a*diskPulse})`;
-      ctx.lineWidth=1; ctx.stroke();
+    const orb = t*0.048;
+    for(let i=5;i>=1;i--){
+      const rr=4+i*4.2, a=(6-i)*0.038;
+      ctx.save(); ctx.translate(CX,CY); ctx.scale(1,0.38);
+      ctx.beginPath(); ctx.arc(0,0,rr,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(150,90,230,${a})`; ctx.lineWidth=1.2; ctx.stroke();
       ctx.restore();
-    });
-
-    // neutron star core
-    const ng = ctx.createRadialGradient(35,19,0,35,19,4);
-    ng.addColorStop(0,'rgba(255,255,255,1)');
-    ng.addColorStop(0.4,'rgba(180,220,255,0.9)');
-    ng.addColorStop(1,'rgba(100,180,255,0)');
-    ctx.beginPath(); ctx.arc(35,19,3,0,Math.PI*2);
-    ctx.fillStyle=ng; ctx.fill();
-
-    // jets — two cones above and below, white/blue
-    const jetA = 0.35+0.15*Math.sin(t*0.06);
-    ctx.save(); ctx.translate(35,19);
-    // upper jet
-    ctx.beginPath(); ctx.moveTo(0,0);
-    ctx.lineTo(-4,-14); ctx.lineTo(4,-14); ctx.closePath();
-    ctx.fillStyle=`rgba(200,230,255,${jetA})`; ctx.fill();
-    // lower jet
-    ctx.beginPath(); ctx.moveTo(0,0);
-    ctx.lineTo(-3,13); ctx.lineTo(3,13); ctx.closePath();
-    ctx.fillStyle=`rgba(200,230,255,${jetA*0.7})`; ctx.fill();
-    ctx.restore();
-
+    }
+    const p1x=CX+OR*Math.cos(orb), p1y=CY+OR*0.38*Math.sin(orb);
+    const g1=ctx.createRadialGradient(p1x,p1y,0,p1x,p1y,6);
+    g1.addColorStop(0,'rgba(255,255,255,1)'); g1.addColorStop(0.4,'rgba(180,210,255,0.85)'); g1.addColorStop(1,'rgba(120,160,255,0)');
+    ctx.beginPath(); ctx.arc(p1x,p1y,4,0,Math.PI*2); ctx.fillStyle=g1; ctx.fill();
+    ctx.save(); ctx.translate(p1x,p1y); ctx.rotate(orb*4.2);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,11,-0.18,0.18); ctx.closePath();
+    const bg=ctx.createRadialGradient(0,0,0,0,0,11);
+    bg.addColorStop(0,'rgba(0,255,231,0.55)'); bg.addColorStop(1,'rgba(0,255,231,0)');
+    ctx.fillStyle=bg; ctx.fill(); ctx.restore();
+    const p2x=CX+OR*Math.cos(orb+Math.PI), p2y=CY+OR*0.38*Math.sin(orb+Math.PI);
+    const g2=ctx.createRadialGradient(p2x,p2y,0,p2x,p2y,5);
+    g2.addColorStop(0,'rgba(255,255,255,1)'); g2.addColorStop(0.4,'rgba(200,180,255,0.85)'); g2.addColorStop(1,'rgba(160,120,240,0)');
+    ctx.beginPath(); ctx.arc(p2x,p2y,3.5,0,Math.PI*2); ctx.fillStyle=g2; ctx.fill();
     t++; requestAnimationFrame(draw);
   }
   draw();
 })();
 
-/* ── Icon 2: Binary Evolution (image 2 reference)
-   Two stars, large white donor on left, smaller cyan neutron star on right,
-   Roche-lobe overflow stream connecting them ── */
+/* ── Pulsar Planets: 3 prominent planets, muted pulsar+disk behind ── */
+(function(){
+  const c = document.getElementById('ico-planets');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W=54, H=42, CX=27, CY=21;
+  let t=0;
+  const planets=[
+    {orbitR:0,  orbitS:0,    off:0,   r:5,  ox:-3,oy:3,  c0:'rgba(170,100,55,0.95)',c1:'rgba(120,55,25,0.55)'},
+    {orbitR:16, orbitS:0.028,off:0,   r:4.5,ox:0, oy:0,  c0:'rgba(70,110,200,0.92)',c1:'rgba(35,65,150,0.5)'},
+    {orbitR:10, orbitS:0.042,off:2.1, r:3.5,ox:0, oy:0,  c0:'rgba(200,155,70,0.9)', c1:'rgba(150,100,35,0.5)'},
+    {orbitR:22, orbitS:0.018,off:4.0, r:2.8,ox:0, oy:0,  c0:'rgba(55,40,30,0.88)',  c1:'rgba(25,15,10,0.5)'},
+  ];
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // muted disk rings
+    [18,13,9].forEach((rr,i)=>{
+      ctx.save(); ctx.translate(CX,CY); ctx.scale(1,0.22);
+      ctx.beginPath(); ctx.arc(0,0,rr,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(100,80,180,${0.10-i*0.02})`; ctx.lineWidth=1; ctx.stroke();
+      ctx.restore();
+    });
+    // muted pulsar
+    const pg=ctx.createRadialGradient(CX,CY,0,CX,CY,7);
+    pg.addColorStop(0,'rgba(180,160,255,0.20)'); pg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath(); ctx.arc(CX,CY,7,0,Math.PI*2); ctx.fillStyle=pg; ctx.fill();
+    // planets
+    const drawn=planets.map((p,i)=>{
+      const px=p.orbitR>0?CX+p.orbitR*Math.cos(t*p.orbitS+p.off):CX+p.ox;
+      const py=p.orbitR>0?CY+p.orbitR*0.35*Math.sin(t*p.orbitS+p.off):CY+p.oy;
+      return {px,py,r:p.r,c0:p.c0,c1:p.c1};
+    }).sort((a,b)=>a.py-b.py);
+    drawn.forEach(({px,py,r,c0,c1})=>{
+      const g=ctx.createRadialGradient(px-r*0.3,py-r*0.3,r*0.1,px,py,r);
+      g.addColorStop(0,c0); g.addColorStop(0.7,c1); g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+      ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+      ctx.strokeStyle='rgba(200,180,150,0.10)'; ctx.lineWidth=0.7; ctx.stroke();
+    });
+    t++; requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Binary Evolution: large white donor (Roche lobe) → cyan NS, stream ── */
 (function(){
   const c = document.getElementById('ico-evolution');
   if(!c) return;
   const ctx = c.getContext('2d');
-  const W=48, H=36;
+  const W=54, H=42, CY=21;
   let t=0;
-
   function draw(){
     ctx.clearRect(0,0,W,H);
-
-    const pulse = 0.5+0.5*Math.sin(t*0.07);
-
-    // large donor star — white/blue glow, left
-    const lg = ctx.createRadialGradient(13,18,1,13,18,12);
-    lg.addColorStop(0,'rgba(255,255,255,0.95)');
-    lg.addColorStop(0.4,'rgba(180,210,255,0.75)');
-    lg.addColorStop(1,'rgba(100,150,255,0)');
-    ctx.beginPath(); ctx.arc(13,18,11,0,Math.PI*2);
-    ctx.fillStyle=lg; ctx.fill();
-
-    // teardrop distortion toward neutron star (Roche lobe)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(22,18);
-    ctx.bezierCurveTo(24,15,26,16,27,18);
-    ctx.bezierCurveTo(26,20,24,21,22,18);
-    ctx.fillStyle=`rgba(160,200,255,${0.35+pulse*0.2})`; ctx.fill();
-    ctx.restore();
-
-    // mass stream
-    ctx.beginPath();
-    ctx.moveTo(26,17);
-    ctx.bezierCurveTo(29,15,32,16,34,18);
-    ctx.strokeStyle=`rgba(150,200,255,${0.5+pulse*0.25})`;
-    ctx.lineWidth=1.8; ctx.stroke();
-
-    // smaller neutron star — bright cyan
-    const sg = ctx.createRadialGradient(36,18,0,36,18,6);
-    sg.addColorStop(0,'rgba(255,255,255,1)');
-    sg.addColorStop(0.35,'rgba(0,220,255,0.9)');
-    sg.addColorStop(1,'rgba(0,180,255,0)');
-    ctx.beginPath(); ctx.arc(36,18,5,0,Math.PI*2);
-    ctx.fillStyle=sg; ctx.fill();
-
-    // spin glow on neutron star
-    ctx.beginPath(); ctx.arc(36,18,6+pulse*2,0,Math.PI*2);
-    ctx.strokeStyle=`rgba(0,255,231,${0.15+pulse*0.2})`; ctx.lineWidth=1; ctx.stroke();
-
+    const pulse=0.5+0.5*Math.sin(t*0.065);
+    const lg=ctx.createRadialGradient(13,CY,0,13,CY,13);
+    lg.addColorStop(0,'rgba(255,255,255,0.95)'); lg.addColorStop(0.45,'rgba(180,210,255,0.70)'); lg.addColorStop(1,'rgba(100,150,255,0)');
+    ctx.beginPath(); ctx.arc(13,CY,12,0,Math.PI*2); ctx.fillStyle=lg; ctx.fill();
+    ctx.save(); ctx.beginPath();
+    ctx.moveTo(22,CY); ctx.bezierCurveTo(25,CY-4,27,CY-2,28,CY); ctx.bezierCurveTo(27,CY+2,25,CY+4,22,CY);
+    ctx.fillStyle=`rgba(160,200,255,${0.28+pulse*0.22})`; ctx.fill(); ctx.restore();
+    ctx.beginPath(); ctx.moveTo(27,CY-1); ctx.bezierCurveTo(32,CY-4,36,CY-2,39,CY);
+    ctx.strokeStyle=`rgba(140,200,255,${0.45+pulse*0.3})`; ctx.lineWidth=1.8; ctx.stroke();
+    const sg=ctx.createRadialGradient(41,CY,0,41,CY,7);
+    sg.addColorStop(0,'rgba(255,255,255,1)'); sg.addColorStop(0.3,'rgba(0,230,255,0.9)'); sg.addColorStop(1,'rgba(0,180,255,0)');
+    ctx.beginPath(); ctx.arc(41,CY,5,0,Math.PI*2); ctx.fillStyle=sg; ctx.fill();
+    ctx.beginPath(); ctx.arc(41,CY,6+pulse*2.5,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(0,255,231,${0.12+pulse*0.22})`; ctx.lineWidth=1; ctx.stroke();
     t++; requestAnimationFrame(draw);
   }
   draw();
 })();
 
-/* ── Icon 3: Spider Pulsars (image 3 reference)
-   Two compact objects in a tight orbit, gravitational-wave-like spiral
-   rings fading outward, purple/dark palette ── */
+/* ── Spider Pulsars: large red companion, ablation stream, disk+jets around pulsar ── */
 (function(){
   const c = document.getElementById('ico-spider');
   if(!c) return;
   const ctx = c.getContext('2d');
-  const W=48, H=36;
+  const W=54, H=42;
   let t=0;
-  const CX=24, CY=18, OR=8; // orbit centre and radius
-
   function draw(){
     ctx.clearRect(0,0,W,H);
-
-    const orb = t*0.055;
-
-    // spiral/GW rings — elliptical, purple, fading out
-    for(let i=4;i>=1;i--){
-      const rr=5+i*5;
-      const alpha=(5-i)*0.055;
-      ctx.save(); ctx.translate(CX,CY); ctx.scale(1,0.42);
-      ctx.beginPath(); ctx.arc(0,0,rr,0,Math.PI*2);
-      ctx.strokeStyle=`rgba(160,100,220,${alpha})`; ctx.lineWidth=1+0.3*i; ctx.stroke();
+    const pulse=0.5+0.5*Math.sin(t*0.07);
+    const cg=ctx.createRadialGradient(12,21,1,12,21,12);
+    cg.addColorStop(0,'rgba(255,150,30,0.95)'); cg.addColorStop(0.5,'rgba(210,60,10,0.65)'); cg.addColorStop(1,'rgba(160,20,0,0)');
+    ctx.beginPath(); ctx.arc(12,21,11,0,Math.PI*2); ctx.fillStyle=cg; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(21,18); ctx.bezierCurveTo(28,13,33,16,38,20);
+    ctx.strokeStyle=`rgba(255,110,20,${0.4+pulse*0.2})`; ctx.lineWidth=2.2; ctx.stroke();
+    [[10,0.5],[7,0.38],[4.5,0.25]].forEach(([rx,a])=>{
+      ctx.save(); ctx.translate(39,21); ctx.scale(1,0.3);
+      ctx.beginPath(); ctx.arc(0,0,rx,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(255,${130+rx*9},10,${a*(0.7+pulse*0.3)})`; ctx.lineWidth=1; ctx.stroke();
       ctx.restore();
-    }
-
-    // pulsar — bright white, smaller, primary
-    const p1x = CX + OR*Math.cos(orb);
-    const p1y = CY + OR*0.42*Math.sin(orb);
-    const p1g = ctx.createRadialGradient(p1x,p1y,0,p1x,p1y,5);
-    p1g.addColorStop(0,'rgba(255,255,255,1)');
-    p1g.addColorStop(0.4,'rgba(200,200,255,0.85)');
-    p1g.addColorStop(1,'rgba(160,120,255,0)');
-    ctx.beginPath(); ctx.arc(p1x,p1y,3.5,0,Math.PI*2); ctx.fillStyle=p1g; ctx.fill();
-
-    // mini pulsar beam
-    ctx.save(); ctx.translate(p1x,p1y); ctx.rotate(orb*3.5);
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,10,-0.2,0.2); ctx.closePath();
-    const bg=ctx.createRadialGradient(0,0,0,0,0,10);
-    bg.addColorStop(0,'rgba(0,255,231,0.5)'); bg.addColorStop(1,'rgba(0,255,231,0)');
-    ctx.fillStyle=bg; ctx.fill(); ctx.restore();
-
-    // companion — slightly larger, pinkish, ablated
-    const p2x = CX + OR*Math.cos(orb+Math.PI);
-    const p2y = CY + OR*0.42*Math.sin(orb+Math.PI);
-    const p2g = ctx.createRadialGradient(p2x,p2y,0,p2x,p2y,5);
-    p2g.addColorStop(0,'rgba(255,200,230,0.95)');
-    p2g.addColorStop(0.5,'rgba(200,100,180,0.6)');
-    p2g.addColorStop(1,'rgba(180,80,160,0)');
-    ctx.beginPath(); ctx.arc(p2x,p2y,4.5,0,Math.PI*2); ctx.fillStyle=p2g; ctx.fill();
-
-    // ablation stream from companion toward pulsar
-    const midX=(p1x+p2x)/2, midY=(p1y+p2y)/2;
-    ctx.beginPath(); ctx.moveTo(p2x,p2y); ctx.quadraticCurveTo(midX,midY-3,p1x,p1y);
-    ctx.strokeStyle='rgba(255,150,200,0.25)'; ctx.lineWidth=1.2; ctx.stroke();
-
+    });
+    const ng=ctx.createRadialGradient(39,21,0,39,21,5);
+    ng.addColorStop(0,'rgba(255,255,255,1)'); ng.addColorStop(0.35,'rgba(180,220,255,0.9)'); ng.addColorStop(1,'rgba(100,180,255,0)');
+    ctx.beginPath(); ctx.arc(39,21,3.5,0,Math.PI*2); ctx.fillStyle=ng; ctx.fill();
+    const ja=0.3+0.18*Math.sin(t*0.055);
+    ctx.save(); ctx.translate(39,21);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-3.5,-14); ctx.lineTo(3.5,-14); ctx.closePath();
+    ctx.fillStyle=`rgba(210,230,255,${ja})`; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-3,12); ctx.lineTo(3,12); ctx.closePath();
+    ctx.fillStyle=`rgba(210,230,255,${ja*0.65})`; ctx.fill();
+    ctx.restore();
     t++; requestAnimationFrame(draw);
   }
   draw();
 })();
+
 </script>
 </body>
 </html>
